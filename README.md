@@ -1,7 +1,5 @@
 # Laboratórios de Informática / Programação I
 
-LEONOR
-
 ## Interpretador
 
 Para abrir o interpretador do Haskell (GHCi) com o projeto carregado, utilize o comando `repl` do Cabal
