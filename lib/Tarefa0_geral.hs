@@ -48,7 +48,7 @@ dimensaoMatriz m = (length m ,length (head m))
 ePosicaoMatrizValida :: Posicao -> Matriz a -> Bool 
 ePosicaoMatrizValida (l, c) m = l >= 0 && l < length m && c>= 0 && c < length (head m)
 
--- | Move uma posição uma unidade no sentido de uma direção.
+-- | Mover uma posição uma unidade no sentido de uma direção.
 movePosicao :: Direcao -> Posicao -> Posicao
 movePosicao Norte (l, c) = (l-1, c)
 movePosicao Sul (l, c) = (l+1,c)
