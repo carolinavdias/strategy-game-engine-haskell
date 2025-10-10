@@ -12,11 +12,19 @@ import Labs2025
 
 -- | Retorna a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 encontraQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int
-encontraQuantidadeArmaMinhoca = undefined
+encontraQuantidadeArmaMinhoca Jetpack minhoca = jetpackMinhoca minhoca
+encontraQuantidadeArmaMinhoca Escavadora minhoca = escavadoraMinhoca minhoca
+encontraQuantidadeArmaMinhoca Bazuca minhoca = bazucaMinhoca minhoca
+encontraQuantidadeArmaMinhoca Mina minhoca = minaMinhoca minhoca         
+encontraQuantidadeArmaMinhoca Dinamite minhoca = dinamiteMinhoca minhoca
 
 -- | Atualia a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 atualizaQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int -> Minhoca
-atualizaQuantidadeArmaMinhoca = undefined
+atualizaQuantidadeArmaMinhoca Jetpack minhoca n = minhoca { jetpackMinhoca = n }
+atualizaQuantidadeArmaMinhoca Escavadora minhoca n = minhoca { escavadoraMinhoca = n }
+atualizaQuantidadeArmaMinhoca Bazuca minhoca n = minhoca { bazucaMinhoca = n } 
+atualizaQuantidadeArmaMinhoca Mina minhoca n = minhoca { minaMinhoca = n }
+atualizaQuantidadeArmaMinhoca Dinamite minhoca n = minhoca {dinamiteMinhoca = n }
 
 -- | Verifica se um tipo de terreno é destrutível, i.e., pode ser destruído por explosões.
 --
