@@ -26,45 +26,45 @@ atualizaQuantidadeArmaMinhoca Bazuca minhoca n = minhoca { bazucaMinhoca = n }
 atualizaQuantidadeArmaMinhoca Mina minhoca n = minhoca { minaMinhoca = n }
 atualizaQuantidadeArmaMinhoca Dinamite minhoca n = minhoca {dinamiteMinhoca = n }
 
--- | Verifica se um tipo de terreno é destrutível, i.e., pode ser destruído por explosões.
---
--- __NB:__ Apenas @Terra@ é destrutível.
-eTerrenoDestrutivel :: Terreno -> Bool
-eTerrenoDestrutivel = undefined
-
 -- | Verifica se um tipo de terreno é opaco, i.e., não permite que objetos ou minhocas se encontrem por cima dele.
 --
 -- __NB:__ Apenas @Terra@ ou @Pedra@ são opacos.
 eTerrenoOpaco :: Terreno -> Bool
-eTerrenoOpaco = undefined
+eTerrenoOpaco x = (x == Terra) || (x== Pedra)
 
 -- | Verifica se uma posição do mapa está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
 -- __NB:__ Uma posição está livre se não contiver um terreno opaco.
 ePosicaoMapaLivre :: Posicao -> Mapa -> Bool
-ePosicaoMapaLivre = undefined
+ePosicaoMapaLivre x = not(eTerrenoOpaco x)
 
 -- | Verifica se uma posição do estado está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
 -- __NB:__ Uma posição está livre se o mapa estiver livre e se não estiver já uma minhoca ou um barril nessa posição.
 ePosicaoEstadoLivre :: Posicao -> Estado -> Bool
-ePosicaoEstadoLivre = undefined
+ePosicaoEstadoLivre pos estado =
+    let mapaLivre = case encontraPosicaoMatriz pos (mapaEstado estado) of
+                        Just terreno -> not (eTerrenoOpaco terreno)
+                        Nothing      -> False
+        minhocaLivre = all (\m -> posicaoMinhoca m /= Just pos) (minhocasEstado estado)
+        barrilLivre = all (\obj -> case obj of
+                                    Barril { posicaoBarril = p } -> p /= pos _ -> True) (objetosEstado estado)
+    in mapaLivre && minhocaLivre && barrilLivre
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
-minhocaTemDisparo = undefined
+minhocaTemDisparo arma numMinhoca objs =any (\obj -> case obj of Disparo { tipoDisparo = t, donoDisparo = n } -> t == arma && n == numMinhoca
+                                                _ -> False ) objs
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
 --
 -- __NB__: Só terrenos @Terra@ pode ser destruídos.
 destroiPosicao :: Posicao -> Mapa -> Mapa
-destroiPosicao = undefined
+destroiPosicao (l, c) (m:ms) = if l == 0  undefined
 
 -- Adiciona um novo objeto a um estado.
 --
 -- __NB__: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto = undefined
-
-
 
