@@ -36,7 +36,10 @@ eTerrenoOpaco x = (x == Terra) || (x== Pedra)
 --
 -- __NB:__ Uma posição está livre se não contiver um terreno opaco.
 ePosicaoMapaLivre :: Posicao -> Mapa -> Bool
-ePosicaoMapaLivre x = not(eTerrenoOpaco x)
+ePosicaoMapaLivre pos mapa = 
+    case encontraPosicaoMatriz pos mapa of
+        Just terreno -> not (eTerrenoOpaco terreno)
+        Nothing      -> False
 
 -- | Verifica se uma posição do estado está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
@@ -48,23 +51,40 @@ ePosicaoEstadoLivre pos estado =
                         Nothing      -> False
         minhocaLivre = all (\m -> posicaoMinhoca m /= Just pos) (minhocasEstado estado)
         barrilLivre = all (\obj -> case obj of
-                                    Barril { posicaoBarril = p } -> p /= pos _ -> True) (objetosEstado estado)
+                                    Barril { posicaoBarril = p } -> p /= pos
+                                    _ -> True) (objetosEstado estado)
     in mapaLivre && minhocaLivre && barrilLivre
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
-minhocaTemDisparo arma numMinhoca objs =any (\obj -> case obj of Disparo { tipoDisparo = t, donoDisparo = n } -> t == arma && n == numMinhoca
-                                                _ -> False ) objs
+minhocaTemDisparo arma numMinhoca objs = 
+    any (\obj -> case obj of 
+                    Disparo { tipoDisparo = t, donoDisparo = n } -> t == arma && n == numMinhoca
+                    _ -> False) objs
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
 --
--- __NB__: Só terrenos @Terra@ pode ser destruídos.
+-- __NB__: Só terrenos @Terra@ podem ser destruídos.
 destroiPosicao :: Posicao -> Mapa -> Mapa
-destroiPosicao (l, c) (m:ms) = if l == 0  undefined
+destroiPosicao (l, c) mapa = atualizaPosicaoMatriz (l, c) Ar mapa
+  where
+    atualizaPosicaoMatriz :: Posicao -> Terreno -> Mapa -> Mapa
+    atualizaPosicaoMatriz (0, col) novoTerreno (linha:resto) = 
+        atualizaColuna col novoTerreno linha : resto
+    atualizaPosicaoMatriz (lin, col) novoTerreno (linha:resto) = 
+        linha : atualizaPosicaoMatriz (lin - 1, col) novoTerreno resto
+    atualizaPosicaoMatriz _ _ [] = []
+    
+    atualizaColuna :: Int -> Terreno -> [Terreno] -> [Terreno]
+    atualizaColuna 0 novoTerreno (Terra:resto) = novoTerreno : resto
+    atualizaColuna 0 _ (terreno:resto) = terreno : resto  -- Não destrói se não for Terra
+    atualizaColuna n novoTerreno (terreno:resto) = 
+        terreno : atualizaColuna (n - 1) novoTerreno resto
+    atualizaColuna _ _ [] = []
 
--- Adiciona um novo objeto a um estado.
+
+-- | Adiciona um novo objeto a um estado.
 --
 -- __NB__: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
-adicionaObjeto = undefined
-
+adicionaObjeto obj estado = estado { objetosEstado = obj : objetosEstado estado }
