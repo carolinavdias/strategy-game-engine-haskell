@@ -63,10 +63,12 @@ movePosicao Sudoeste (l, c) = (l +1, c-1)
 --
 -- __NB:__ Considere uma janela retangular com origem no canto superior esquerdo definida como uma matriz. A função recebe a dimensao da janela.
 movePosicaoJanela :: Dimensao -> Direcao -> Posicao -> Posicao
-movePosicaoJanela (l1, c1) dir (l, c) = 
-    if (l+1<=l1) && (c+1<=c1)  
-        then movePosicao dir (l, c) 
-        else (l, c)
+movePosicaoJanela (maxL, maxC) dir pos = 
+    let novaPosicao = movePosicao dir pos
+        (l, c) = novaPosicao
+    in if l >= 0 && l < maxL && c >= 0 && c<maxC
+        then  novaPosicao
+        else pos
 
 -- n sei se é menor e igua ou só menor e n sei o que por no else
 
@@ -75,7 +77,7 @@ movePosicaoJanela (l1, c1) dir (l, c) =
 -- __NB:__ Considere posições válidas. Efetue arredondamentos como achar necessário. 
 
 origemAoCentro :: Dimensao -> Posicao -> Posicao
-origemAoCentro (lt,ct) _ = (div lt 2, div ct 2)
+origemAoCentro (lt,ct) (l, c) = (l - div lt 2, c-div ct 2)
 
 
 -- | Roda um par (posição,direção) 25% para a direita.
@@ -87,7 +89,8 @@ origemAoCentro (lt,ct) _ = (div lt 2, div ct 2)
 -- <<https://haslab.github.io/Teaching/LI1/2526/img/rodaposicaodirecao.png>>
 
 rodaPosicaoDirecao :: (Posicao,Direcao) -> (Posicao,Direcao)
-rodaPosicaoDirecao (pos, dir) = (movePosicao dir pos, dir)
+rodaPosicaoDirecao (pos, Noroeste) = (movePosicao Noroeste pos, Norte)
+rodaPosicaoDirecao (pos, dir) = (movePosicao dir pos, succ dir)
 
 -- * Funções recursivas.
 
