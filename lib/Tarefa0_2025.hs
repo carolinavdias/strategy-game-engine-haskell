@@ -5,6 +5,8 @@ Description : Funções auxiliares.
 Módulo que define funções auxiliares que serão úteis na resolução do trabalho prático de LI1\/LP1 em 2025\/26.
 -}
 
+-- oki
+
 -- | Este módulo 
 module Tarefa0_2025 where
     
