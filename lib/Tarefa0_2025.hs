@@ -15,7 +15,7 @@ encontraQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int
 encontraQuantidadeArmaMinhoca Jetpack minhoca = jetpackMinhoca minhoca
 encontraQuantidadeArmaMinhoca Escavadora minhoca = escavadoraMinhoca minhoca
 encontraQuantidadeArmaMinhoca Bazuca minhoca = bazucaMinhoca minhoca
-encontraQuantidadeArmaMinhoca Mina minhoca = minaMinhoca minhoca         
+encontraQuantidadeArmaMinhoca Mina minhoca = minaMinhoca minhoca
 encontraQuantidadeArmaMinhoca Dinamite minhoca = dinamiteMinhoca minhoca
 
 -- | Atualia a quantidade de munições disponíveis de uma minhoca para uma dada arma.
@@ -26,11 +26,20 @@ atualizaQuantidadeArmaMinhoca Bazuca minhoca n = minhoca { bazucaMinhoca = n }
 atualizaQuantidadeArmaMinhoca Mina minhoca n = minhoca { minaMinhoca = n }
 atualizaQuantidadeArmaMinhoca Dinamite minhoca n = minhoca {dinamiteMinhoca = n }
 
+-- | Verifica se um tipo de terreno é destrutível, i.e., pode ser destruído por explosões.
+--
+-- __NB:__ Apenas @Terra@ é destrutível.
+eTerrenoDestrutivel :: Terreno -> Bool
+eTerrenoDestrutivel Terra = True
+eTerrenoDestrutivel _ = False
+
 -- | Verifica se um tipo de terreno é opaco, i.e., não permite que objetos ou minhocas se encontrem por cima dele.
 --
 -- __NB:__ Apenas @Terra@ ou @Pedra@ são opacos.
 eTerrenoOpaco :: Terreno -> Bool
-eTerrenoOpaco x = (x == Terra) || (x== Pedra)
+eTerrenoOpaco Terra = True
+eTerrenoOpaco Pedra = True
+eTerrenoOpaco _ = False
 
 -- | Verifica se uma posição do mapa está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
@@ -39,51 +48,55 @@ ePosicaoMapaLivre :: Posicao -> Mapa -> Bool
 ePosicaoMapaLivre pos mapa = 
     case encontraPosicaoMatriz pos mapa of
         Just terreno -> not (eTerrenoOpaco terreno)
-        Nothing      -> False
+        Nothing -> False  -- se a pos não existe no mapa, não está livre!
 
 -- | Verifica se uma posição do estado está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
 -- __NB:__ Uma posição está livre se o mapa estiver livre e se não estiver já uma minhoca ou um barril nessa posição.
 ePosicaoEstadoLivre :: Posicao -> Estado -> Bool
-ePosicaoEstadoLivre pos estado =
-    let mapaLivre = case encontraPosicaoMatriz pos (mapaEstado estado) of
-                        Just terreno -> not (eTerrenoOpaco terreno)
-                        Nothing      -> False
-        minhocaLivre = all (\m -> posicaoMinhoca m /= Just pos) (minhocasEstado estado)
-        barrilLivre = all (\obj -> case obj of
-                                    Barril { posicaoBarril = p } -> p /= pos
-                                    _ -> True) (objetosEstado estado)
-    in mapaLivre && minhocaLivre && barrilLivre
+ePosicaoEstadoLivre pos estado = 
+    ePosicaoMapaLivre pos (mapaEstado estado) &&
+    not (posicaoTemMinhoca pos (minhocasEstado estado)) &&
+    not (posicaoTemBarril pos (objetosEstado estado))
+  where
+    -- verificar se há uma minhoca na posição:posicaoTemMinhoca
+    posicaoTemMinhoca :: Posicao -> [Minhoca] -> Bool
+    posicaoTemMinhoca _ [] = False
+    posicaoTemMinhoca p (m:ms) = 
+        case posicaoMinhoca m of
+            Just posMinhoca -> p == posMinhoca || posicaoTemMinhoca p ms
+            Nothing -> posicaoTemMinhoca p ms
+    
+    -- verifica se há um barril na posição: posicaoTemBarril
+    posicaoTemBarril :: Posicao -> [Objeto] -> Bool
+    posicaoTemBarril _ [] = False
+    posicaoTemBarril p (obj:objs) = 
+        case obj of
+            Barril posBarril _ -> p == posBarril || posicaoTemBarril p objs
+            _ -> posicaoTemBarril p objs
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
-minhocaTemDisparo arma numMinhoca objs = 
-    any (\obj -> case obj of 
-                    Disparo { tipoDisparo = t, donoDisparo = n } -> t == arma && n == numMinhoca
-                    _ -> False) objs
+minhocaTemDisparo _ _ [] = False
+minhocaTemDisparo arma numMinhoca (obj:objs) =
+    case obj of
+        Disparo _ _ tipoDisp _ dono -> 
+            (tipoDisp == arma && dono == numMinhoca) || minhocaTemDisparo arma numMinhoca objs
+        _ -> minhocaTemDisparo arma numMinhoca objs
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
 --
--- __NB__: Só terrenos @Terra@ podem ser destruídos.
+-- __NB__: Só terrenos @Terra@ pode ser destruídos.
 destroiPosicao :: Posicao -> Mapa -> Mapa
-destroiPosicao (l, c) mapa = atualizaPosicaoMatriz (l, c) Ar mapa
-  where
-    atualizaPosicaoMatriz :: Posicao -> Terreno -> Mapa -> Mapa
-    atualizaPosicaoMatriz (0, col) novoTerreno (linha:resto) = 
-        atualizaColuna col novoTerreno linha : resto
-    atualizaPosicaoMatriz (lin, col) novoTerreno (linha:resto) = 
-        linha : atualizaPosicaoMatriz (lin - 1, col) novoTerreno resto
-    atualizaPosicaoMatriz _ _ [] = []
-    
-    atualizaColuna :: Int -> Terreno -> [Terreno] -> [Terreno]
-    atualizaColuna 0 novoTerreno (Terra:resto) = novoTerreno : resto
-    atualizaColuna 0 _ (terreno:resto) = terreno : resto  -- Não destrói se não for Terra
-    atualizaColuna n novoTerreno (terreno:resto) = 
-        terreno : atualizaColuna (n - 1) novoTerreno resto
-    atualizaColuna _ _ [] = []
+destroiPosicao pos mapa = 
+    case encontraPosicaoMatriz pos mapa of
+        Just terreno -> 
+            if eTerrenoDestrutivel terreno
+                then atualizaPosicaoMatriz pos Ar mapa
+                else mapa
+        Nothing -> mapa  -- se a posição não existe, retorna o mapa não alterado
 
-
--- | Adiciona um novo objeto a um estado.
+-- Adiciona um novo objeto a um estado.
 --
 -- __NB__: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
