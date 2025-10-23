@@ -21,16 +21,15 @@ validaEstado estado =
 --Denota corretamente uma grelha, i.e. tem o mesmo número de colunas em todas as linhas.
 --Contém terrenos, que podem ser do tipo Ar/Agua (não opacos) ou do tipo Terra/Pedra (opacos);
 
-
 validaMapa :: Mapa -> Bool
-validaMapa x = eMatrizValida e && all validaPeca (concat m)
+validaMapa mapa =
+    not (null mapa) && eMatrizValida mapa && all validaPeca (concat mapa)
   where
-     validaPeca p = case p of
+    validaPeca p = case p of
       Ar    -> True
       Agua  -> True
       Terra -> True
       Pedra -> True
-      _     -> False
 
 --Cada objeto é válido, o que se verifica quando:
 --Tem uma posição válida (dentro dos limites do mapa) e livre (que não corresponde a nenhum terreno opaco).
@@ -49,25 +48,6 @@ validaMapa x = eMatrizValida e && all validaPeca (concat m)
     --O dono do disparo tem que ser um índice válido na lista de minhocas. 
     --O mesmo dono não pode ter simultaneamente mais do que um disparo de cada tipo.
 
-
---Cada minhoca é válida, o que se verifica quando:
---Tem uma posição válida e livre, ou opcionalmente nenhuma posição.
---A sua posição não se encontra ocupada por um objeto de barril ou por outra minhoca.
---Quando não tem posição ou se encontra numa posição em que o terreno é água, a minhoca tem que estar obrigatoriamente morta.
---Quando viva, a vida da minhoca é um inteiro entre 0 e 100.
---A quantidade de munições das diversas armas é um número inteiro maior ou igual a 0.
-
-validaMinhocas :: [Minhoca] -> Bool
-
--- | Valida se o mapa é válido.
-validaMapa :: Mapa -> Bool
-validaMapa [] = False  -- Não pode ser vazio
-validaMapa mapa = todasLinhasMesmoTamanho mapa
-
--- | Verifica se todas as linhas têm o mesmo tamanho.
-todasLinhasMesmoTamanho :: Mapa -> Bool
-todasLinhasMesmoTamanho [] = True
-todasLinhasMesmoTamanho (l:ls) = all (\linha -> length linha == length l) ls
 
 -- | Valida todos os objetos.
 validaObjetos :: [Objeto] -> Mapa -> [Minhoca] -> Bool
@@ -177,6 +157,13 @@ removerDuplicados [] = []
 removerDuplicados (x:xs) = x : removerDuplicados (filter (/= x) xs)
 
 -- ========== VALIDAÇÃO DE MINHOCAS ==========
+
+--Cada minhoca é válida, o que se verifica quando:
+--Tem uma posição válida e livre, ou opcionalmente nenhuma posição.
+--A sua posição não se encontra ocupada por um objeto de barril ou por outra minhoca.
+--Quando não tem posição ou se encontra numa posição em que o terreno é água, a minhoca tem que estar obrigatoriamente morta.
+--Quando viva, a vida da minhoca é um inteiro entre 0 e 100.
+--A quantidade de munições das diversas armas é um número inteiro maior ou igual a 0.
 
 -- | Valida todas as minhocas.
 validaMinhocas :: [Minhoca] -> Mapa -> [Objeto] -> Bool
