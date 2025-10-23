@@ -2,7 +2,7 @@
 Module      : Tarefa1_2025
 Description : Validação de estados do jogo.
 -}
-module Tarefa1_2025 where
+module Tarefa1 where
 
 import Labs2025
 
