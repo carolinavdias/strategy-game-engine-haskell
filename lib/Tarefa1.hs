@@ -14,7 +14,6 @@ validaEstado estado =
     validaObjetos (objetosEstado estado) (mapaEstado estado) (minhocasEstado estado) &&
     validaMinhocas (minhocasEstado estado) (mapaEstado estado) (objetosEstado estado)
 
--- ========== VALIDAÇÃO DO MAPA ==========
 
 -- | Valida se o mapa é válido.
 validaMapa :: Mapa -> Bool
@@ -25,8 +24,6 @@ validaMapa mapa = todasLinhasMesmoTamanho mapa
 todasLinhasMesmoTamanho :: Mapa -> Bool
 todasLinhasMesmoTamanho [] = True
 todasLinhasMesmoTamanho (l:ls) = all (\linha -> length linha == length l) ls
-
--- ========== VALIDAÇÃO DE OBJETOS ==========
 
 -- | Valida todos os objetos.
 validaObjetos :: [Objeto] -> Mapa -> [Minhoca] -> Bool
