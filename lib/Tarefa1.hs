@@ -57,26 +57,28 @@ validaObjetos objs mapa minhocas =
 
 -- | Valida um objeto individual.
 validaObjeto :: Objeto -> Mapa -> [Minhoca] -> [Objeto] -> Bool
-validaObjeto obj mapa minhocas todosObjs = case obj of
-    Barril pos -> 
-        posicaoValidaELivre pos mapa &&
-        posicaoNaoOcupadaPorBarril pos todosObjs obj &&
-        posicaoNaoOcupadaPorMinhoca pos minhocas
+validaObjeto obj mapa minhocas todosObjs = 
+    case obj of
+        Barril pos -> 
+            Barril { posicaoBarril = pos } -> 
+            posicaoValidaELivre pos mapa &&
+            posicaoNaoOcupadaPorBarril pos todosObjs obj &&
+            posicaoNaoOcupadaPorMinhoca pos minhocas
     
-    Mina pos dono -> 
-        posicaoValidaELivre pos mapa &&
-        posicaoNaoOcupadaPorBarril pos todosObjs obj
+        Mina pos dono -> 
+            posicaoValidaELivre pos mapa &&
+            posicaoNaoOcupadaPorBarril pos todosObjs obj
     
-    Dinamite pos dono tempo -> 
-        posicaoValidaELivre pos mapa &&
-        posicaoNaoOcupadaPorBarril pos todosObjs obj &&
-        tempo >= 0 && tempo <= 4
+        Dinamite pos dono tempo -> 
+            posicaoValidaELivre pos mapa &&
+            posicaoNaoOcupadaPorBarril pos todosObjs obj &&
+            tempo >= 0 && tempo <= 4
     
-    Disparo tipo dono pos dir tempo -> 
-        tipo /= Jetpack && tipo /= Escavadora &&
-        validaPosicaoDisparo pos dir mapa tipo &&
-        donoValido dono minhocas &&
-        validaTempoDisparo tipo tempo
+        Disparo tipo dono pos dir tempo -> 
+            tipo /= Jetpack && tipo /= Escavadora &&
+            validaPosicaoDisparo pos dir mapa tipo &&
+            donoValido dono minhocas &&
+            validaTempoDisparo tipo tempo
 
 -- | Verifica se a posição é válida e livre (não opaca).
 posicaoValidaELivre :: Posicao -> Mapa -> Bool
@@ -104,7 +106,7 @@ validaPosicaoDisparo pos _ mapa _ = posicaoValidaELivre pos mapa
 -- A posição anterior é calculada na direção oposta ao movimento do projétil.
 posicaoAnteriorNaoOpaca :: Posicao -> Direcao -> Mapa -> Bool
 posicaoAnteriorNaoOpaca (l, c) dir mapa = 
-    let radianos = dir * pi / 180
+    let radianos =( dir * 3.14 ) / 180
         dx = -cos radianos  -- Direção oposta
         dy = -sin radianos  -- Direção oposta
         posAnt = (l + round dy, c + round dx)
