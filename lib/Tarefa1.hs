@@ -5,7 +5,6 @@ Description : Validação de estados do jogo.
 module Tarefa1 where
 
 import Labs2025
-
 import Tarefa0_geral
 import Tarefa0_2025
 
@@ -16,40 +15,27 @@ validaEstado estado =
     validaObjetos (objetosEstado estado) (mapaEstado estado) (minhocasEstado estado) &&
     validaMinhocas (minhocasEstado estado) (mapaEstado estado) (objetosEstado estado)
 
--- O mapa é válido, i.e. satisfaz os seguintes critérios:
---Não vazio;
---Denota corretamente uma grelha, i.e. tem o mesmo número de colunas em todas as linhas.
---Contém terrenos, que podem ser do tipo Ar/Agua (não opacos) ou do tipo Terra/Pedra (opacos);
+-- ========== VALIDAÇÃO DE MAPA ==========
 
+-- | O mapa é válido quando:
+-- 1. Não vazio
+-- 2. Denota corretamente uma grelha (mesmo número de colunas em todas as linhas)
+-- 3. Contém terrenos válidos (Ar/Agua/Terra/Pedra)
 validaMapa :: Mapa -> Bool
 validaMapa mapa =
-    not (null mapa) && eMatrizValida mapa && all validaPeca (concat mapa)
+    not (null mapa) && 
+    eMatrizValida mapa && 
+    all validaTerreno (concat mapa)
   where
-    validaPeca p = case p of
-      Ar    -> True
-      Agua  -> True
-      Terra -> True
-      Pedra -> True
+    validaTerreno :: Terreno -> Bool
+    validaTerreno Ar = True
+    validaTerreno Agua = True
+    validaTerreno Terra = True
+    validaTerreno Pedra = True
 
---Cada objeto é válido, o que se verifica quando:
---Tem uma posição válida (dentro dos limites do mapa) e livre (que não corresponde a nenhum terreno opaco).
-    --Uma excepção será feita para disparos de bazuca, que podem “temporariamente perfurar” terrenos opacos, 
-        --mas apenas na superfície, i.e., apenas se a posição anterior dada a direção do projétil não for também um terreno opaco.
---A posição:
-    --De um barril: não se encontra ocupada por um barril (que não o próprio objeto) ou por uma minhoca.
-    --De uma mina ou dinamite: não se encontra ocupada por um barril.
-    --De outro objeto: não requer nenhuma validação adicional.
---Se for um disparo:
-    --Não pode ser um disparo de jetpack ou de escavadora, já que estas armas terão efeito instantâneo no estado do jogo e não criarão disparos.
-    --O tempo do disparo tem que ser coerente com o tipo de arma:
-        --Bazuca: sem tempo
-        --Mina: sem tempo, ou um inteiro entre 0 e 2
-        --Dinamite: um inteiro entre 0 e 4
-    --O dono do disparo tem que ser um índice válido na lista de minhocas. 
-    --O mesmo dono não pode ter simultaneamente mais do que um disparo de cada tipo.
+-- ========== VALIDAÇÃO DE OBJETOS ==========
 
-
--- | Valida todos os objetos.
+-- | Valida todos os objetos do estado.
 validaObjetos :: [Objeto] -> Mapa -> [Minhoca] -> Bool
 validaObjetos objs mapa minhocas = 
     all (\obj -> validaObjeto obj mapa minhocas objs) objs &&
@@ -59,71 +45,73 @@ validaObjetos objs mapa minhocas =
 validaObjeto :: Objeto -> Mapa -> [Minhoca] -> [Objeto] -> Bool
 validaObjeto obj mapa minhocas todosObjs = 
     case obj of
-        Barril pos -> 
-            Barril { posicaoBarril = pos } -> 
-            posicaoValidaELivre pos mapa &&
-            posicaoNaoOcupadaPorBarril pos todosObjs obj &&
+        Barril pos _ -> 
+            posicaoValidaELivreNoMapa pos mapa &&
+            posicaoNaoOcupadaPorOutroBarril pos todosObjs obj &&
             posicaoNaoOcupadaPorMinhoca pos minhocas
-    
-        Mina pos dono -> 
-            posicaoValidaELivre pos mapa &&
-            posicaoNaoOcupadaPorBarril pos todosObjs obj
-    
-        Dinamite pos dono tempo -> 
-            posicaoValidaELivre pos mapa &&
-            posicaoNaoOcupadaPorBarril pos todosObjs obj &&
-            tempo >= 0 && tempo <= 4
-    
-        Disparo tipo dono pos dir tempo -> 
-            tipo /= Jetpack && tipo /= Escavadora &&
-            validaPosicaoDisparo pos dir mapa tipo &&
-            donoValido dono minhocas &&
-            validaTempoDisparo tipo tempo
+        
+        Disparo pos dir tipo tempo dono -> 
+            validaDisparo pos dir tipo tempo dono mapa minhocas
 
--- | Verifica se a posição é válida e livre (não opaca).
-posicaoValidaELivre :: Posicao -> Mapa -> Bool
-posicaoValidaELivre (l, c) mapa = 
-    l >= 0 && c >= 0 && l < length mapa &&
-    (not (null mapa) && c < length (head mapa)) &&
-    case encontraPosicaoMatriz (l, c) mapa of
+-- | Valida um disparo.
+validaDisparo :: Posicao -> Direcao -> TipoArma -> Maybe Ticks -> NumMinhoca -> Mapa -> [Minhoca] -> Bool
+validaDisparo pos dir tipo tempo dono mapa minhocas =
+    tipo /= Jetpack &&
+    tipo /= Escavadora &&
+    validaPosicaoDisparo pos dir tipo mapa &&
+    validaTempoDisparo tipo tempo &&
+    donoValido dono minhocas
+
+-- | Verifica se a posição é válida e livre no mapa (não contém terreno opaco).
+posicaoValidaELivreNoMapa :: Posicao -> Mapa -> Bool
+posicaoValidaELivreNoMapa pos mapa = 
+    ePosicaoMatrizValida pos mapa &&
+    case encontraPosicaoMatriz pos mapa of
         Just terreno -> not (eTerrenoOpaco terreno)
         Nothing -> False
 
--- | Valida posição de disparo (bazuca pode perfurar superfície).
-validaPosicaoDisparo :: Posicao -> Direcao -> Mapa -> TipoArma -> Bool
-validaPosicaoDisparo pos@(l, c) dir mapa Bazuca = 
-    l >= 0 && c >= 0 && l < length mapa && 
-    (not (null mapa) && c < length (head mapa)) &&
+-- | Valida posição de disparo.
+-- Bazuca pode perfurar terreno opaco apenas na superfície.
+validaPosicaoDisparo :: Posicao -> Direcao -> TipoArma -> Mapa -> Bool
+validaPosicaoDisparo pos dir Bazuca mapa = 
+    ePosicaoMatrizValida pos mapa &&
     case encontraPosicaoMatriz pos mapa of
         Just terreno -> 
             if eTerrenoOpaco terreno
             then posicaoAnteriorNaoOpaca pos dir mapa
             else True
         Nothing -> False
-validaPosicaoDisparo pos _ mapa _ = posicaoValidaELivre pos mapa
+validaPosicaoDisparo pos _ _ mapa = posicaoValidaELivreNoMapa pos mapa
 
--- | Verifica se a posição anterior não é opaca (para bazuca).
--- A posição anterior é calculada na direção oposta ao movimento do projétil.
+-- | Verifica se a posição anterior (direção oposta) não é opaca.
 posicaoAnteriorNaoOpaca :: Posicao -> Direcao -> Mapa -> Bool
-posicaoAnteriorNaoOpaca (l, c) dir mapa = 
-    let radianos =( dir * 3.14 ) / 180
-        dx = -cos radianos  -- Direção oposta
-        dy = -sin radianos  -- Direção oposta
-        posAnt = (l + round dy, c + round dx)
+posicaoAnteriorNaoOpaca pos dir mapa = 
+    let posAnt = movePosicao (direcaoOposta dir) pos
     in case encontraPosicaoMatriz posAnt mapa of
         Just terreno -> not (eTerrenoOpaco terreno)
-        Nothing -> True  -- Se sair do mapa, considera válido
+        Nothing -> True
+
+-- | Retorna a direção oposta.
+direcaoOposta :: Direcao -> Direcao
+direcaoOposta Norte = Sul
+direcaoOposta Sul = Norte
+direcaoOposta Este = Oeste
+direcaoOposta Oeste = Este
+direcaoOposta Nordeste = Sudoeste
+direcaoOposta Sudoeste = Nordeste
+direcaoOposta Noroeste = Sudeste
+direcaoOposta Sudeste = Noroeste
 
 -- | Verifica se a posição não está ocupada por outro barril.
-posicaoNaoOcupadaPorBarril :: Posicao -> [Objeto] -> Objeto -> Bool
-posicaoNaoOcupadaPorBarril pos objs objAtual = 
+posicaoNaoOcupadaPorOutroBarril :: Posicao -> [Objeto] -> Objeto -> Bool
+posicaoNaoOcupadaPorOutroBarril pos objs objAtual = 
     all (\obj -> case obj of
-            Barril p -> p /= pos || objetosIguais obj objAtual
+            Barril p _ -> p /= pos || objetosIguais obj objAtual
             _ -> True) objs
 
--- | Verifica se dois objetos são o mesmo (comparação por posição).
+-- | Verifica se dois objetos são o mesmo (para evitar auto-comparação).
 objetosIguais :: Objeto -> Objeto -> Bool
-objetosIguais (Barril p1) (Barril p2) = p1 == p2
+objetosIguais (Barril p1 e1) (Barril p2 e2) = p1 == p2 && e1 == e2
 objetosIguais _ _ = False
 
 -- | Verifica se a posição não está ocupada por uma minhoca.
@@ -131,12 +119,12 @@ posicaoNaoOcupadaPorMinhoca :: Posicao -> [Minhoca] -> Bool
 posicaoNaoOcupadaPorMinhoca pos minhocas = 
     all (\m -> posicaoMinhoca m /= Just pos) minhocas
 
--- | Verifica se o dono é um índice válido.
+-- | Verifica se o dono é um índice válido na lista de minhocas.
 donoValido :: NumMinhoca -> [Minhoca] -> Bool
 donoValido num minhocas = num >= 0 && num < length minhocas
 
 -- | Valida o tempo do disparo conforme o tipo de arma.
-validaTempoDisparo :: TipoArma -> Maybe Int -> Bool
+validaTempoDisparo :: TipoArma -> Maybe Ticks -> Bool
 validaTempoDisparo Bazuca Nothing = True
 validaTempoDisparo Bazuca (Just _) = False
 validaTempoDisparo Mina Nothing = True
@@ -147,13 +135,11 @@ validaTempoDisparo _ _ = False
 
 -- | Valida que cada dono não tem disparos duplicados do mesmo tipo.
 validaDisparosUnicos :: [Objeto] -> Bool
-validaDisparosUnicos objs = validaDisparosPorDono objs
-
-validaDisparosPorDono :: [Objeto] -> Bool
-validaDisparosPorDono objs = 
-    let disparos = [(tipo, dono) | Disparo tipo dono _ _ _ <- objs]
+validaDisparosUnicos objs = 
+    let disparos = [(tipo, dono) | Disparo _ _ tipo _ dono <- objs]
     in length disparos == length (removerDuplicados disparos)
 
+-- | Remove duplicados de uma lista.
 removerDuplicados :: Eq a => [a] -> [a]
 removerDuplicados [] = []
 removerDuplicados (x:xs) = x : removerDuplicados (filter (/= x) xs)
@@ -175,27 +161,28 @@ validaMinhocas minhocas mapa objs =
 
 -- | Valida uma minhoca individual.
 validaMinhoca :: Minhoca -> Mapa -> [Objeto] -> [Minhoca] -> Bool
-validaMinhoca minhoca mapa objs todasMinhocas = case posicaoMinhoca minhoca of
-    Nothing -> 
-        vidaMinhoca minhoca == 0  -- Sem posição = morta
-    Just pos -> 
-        validaPosicaoMinhocaComTerreno pos mapa minhoca &&
-        posicaoNaoOcupadaPorBarril pos objs undefined &&
-        posicaoNaoOcupadaPorOutraMinhoca pos todasMinhocas minhoca &&
-        validaVidaEMunicoes minhoca
+validaMinhoca minhoca mapa objs todasMinhocas = 
+    case posicaoMinhoca minhoca of
+        Nothing -> 
+            vidaMinhoca minhoca == Morta
+        Just pos -> 
+            posicaoValidaELivreNoMapa pos mapa &&
+            posicaoLivreNoEstado pos objs todasMinhocas minhoca &&
+            validaMinhocaEmAgua pos mapa minhoca &&
+            validaVidaEMunicoes minhoca
 
--- | Valida posição da minhoca considerando o terreno.
-validaPosicaoMinhocaComTerreno :: Posicao -> Mapa -> Minhoca -> Bool
-validaPosicaoMinhocaComTerreno pos mapa minhoca =
-    posicaoValidaELivre pos mapa &&
-    validaMinhocaEmAgua pos mapa minhoca
+-- | Verifica se a posição está livre no estado (não tem barril nem outra minhoca).
+posicaoLivreNoEstado :: Posicao -> [Objeto] -> [Minhoca] -> Minhoca -> Bool
+posicaoLivreNoEstado pos objs minhocas minhocaAtual =
+    posicaoNaoTemBarril pos objs &&
+    posicaoNaoOcupadaPorOutraMinhoca pos minhocas minhocaAtual
 
--- | Verifica se minhoca em água está morta.
-validaMinhocaEmAgua :: Posicao -> Mapa -> Minhoca -> Bool
-validaMinhocaEmAgua pos mapa minhoca = 
-    case encontraPosicaoMatriz pos mapa of
-        Just Agua -> vidaMinhoca minhoca == 0
-        _ -> True
+-- | Verifica se a posição não tem barril.
+posicaoNaoTemBarril :: Posicao -> [Objeto] -> Bool
+posicaoNaoTemBarril pos objs = 
+    all (\obj -> case obj of
+            Barril p _ -> p /= pos
+            _ -> True) objs
 
 -- | Verifica se a posição não está ocupada por outra minhoca.
 posicaoNaoOcupadaPorOutraMinhoca :: Posicao -> [Minhoca] -> Minhoca -> Bool
@@ -203,21 +190,32 @@ posicaoNaoOcupadaPorOutraMinhoca pos minhocas minhocaAtual =
     all (\m -> posicaoMinhoca m /= Just pos || 
                minhocasIguais m minhocaAtual) minhocas
 
--- | Compara minhocas (assumindo que posições únicas as identificam).
+-- | Compara minhocas (são iguais se tiverem a mesma posição e vida).
 minhocasIguais :: Minhoca -> Minhoca -> Bool
-minhocasIguais m1 m2 = posicaoMinhoca m1 == posicaoMinhoca m2
+minhocasIguais m1 m2 = 
+    posicaoMinhoca m1 == posicaoMinhoca m2 &&
+    vidaMinhoca m1 == vidaMinhoca m2
+
+-- | Verifica se minhoca em água está morta.
+validaMinhocaEmAgua :: Posicao -> Mapa -> Minhoca -> Bool
+validaMinhocaEmAgua pos mapa minhoca = 
+    case encontraPosicaoMatriz pos mapa of
+        Just Agua -> vidaMinhoca minhoca == Morta
+        _ -> True
 
 -- | Valida vida e munições da minhoca.
 validaVidaEMunicoes :: Minhoca -> Bool
 validaVidaEMunicoes minhoca = 
-    let vida = vidaMinhoca minhoca
-        viva = vida > 0
-    in (not viva || (vida >= 0 && vida <= 100)) &&
-       jetpackMinhoca minhoca >= 0 &&
-       escavadoraMinhoca minhoca >= 0 &&
-       bazucaMinhoca minhoca >= 0 &&
-       minaMinhoca minhoca >= 0 &&
-       dinamiteMinhoca minhoca >= 0
+    validaVida (vidaMinhoca minhoca) &&
+    jetpackMinhoca minhoca >= 0 &&
+    escavadoraMinhoca minhoca >= 0 &&
+    bazucaMinhoca minhoca >= 0 &&
+    minaMinhoca minhoca >= 0 &&
+    dinamiteMinhoca minhoca >= 0
+  where
+    validaVida :: VidaMinhoca -> Bool
+    validaVida Morta = True
+    validaVida (Viva v) = v >= 0 && v <= 100
 
 -- | Valida que minhocas não compartilham a mesma posição.
 validaPosicoesMinhocasUnicas :: [Minhoca] -> Bool
