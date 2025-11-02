@@ -103,3 +103,4 @@ destroiPosicao pos mapa =
 -- __NB__: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto obj estado = estado { objetosEstado = obj : objetosEstado estado }
+
