@@ -3,7 +3,6 @@ Module      : Tarefa1_2025
 Description : Validação de estados do jogo.
 -}
 module Tarefa1 where
-
 import Labs2025
 import Tarefa0_geral
 import Tarefa0_2025
@@ -21,6 +20,7 @@ validaEstado estado =
 -- 1. Não vazio
 -- 2. Denota corretamente uma grelha (mesmo número de colunas em todas as linhas)
 -- 3. Contém terrenos válidos (Ar/Agua/Terra/Pedra)
+
 validaMapa :: Mapa -> Bool
 validaMapa mapa =
     not (null mapa) && 
