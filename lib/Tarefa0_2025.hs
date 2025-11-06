@@ -32,16 +32,14 @@ atualizaQuantidadeArmaMinhoca Dinamite minhoca n = minhoca {dinamiteMinhoca = n 
 --
 -- __NB:__ Apenas @Terra@ é destrutível.
 eTerrenoDestrutivel :: Terreno -> Bool
-eTerrenoDestrutivel Terra = True
-eTerrenoDestrutivel _ = False
+eTerrenoDestrutivel = (== Terra)
+
 
 -- | Verifica se um tipo de terreno é opaco, i.e., não permite que objetos ou minhocas se encontrem por cima dele.
 --
 -- __NB:__ Apenas @Terra@ ou @Pedra@ são opacos.
 eTerrenoOpaco :: Terreno -> Bool
-eTerrenoOpaco Terra = True
-eTerrenoOpaco Pedra = True
-eTerrenoOpaco _ = False
+eTerrenoOpaco t = t == Terra || t == Pedra
 
 -- | Verifica se uma posição do mapa está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
@@ -79,12 +77,11 @@ ePosicaoEstadoLivre pos estado =
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
-minhocaTemDisparo _ _ [] = False
-minhocaTemDisparo arma numMinhoca (obj:objs) =
-    case obj of
-        Disparo _ _ tipoDisp _ dono -> 
-            (tipoDisp == arma && dono == numMinhoca) || minhocaTemDisparo arma numMinhoca objs
-        _ -> minhocaTemDisparo arma numMinhoca objs
+minhocaTemDisparo arma n = any match
+  where
+    match (Disparo _ _ tipo _ dono) = tipo == arma && dono == n
+    match _ = False
+
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
 --
