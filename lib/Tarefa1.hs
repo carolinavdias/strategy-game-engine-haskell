@@ -221,3 +221,4 @@ validaVidaEMunicoes minhoca =
 validaPosicoesMinhocasUnicas :: [Minhoca] -> Bool
 validaPosicoesMinhocasUnicas minhocas = 
     let posicoes = [pos | m <- minhocas, Just pos <- [posicaoMinhoca m]]
+    in length posicoes == length (removerDuplicados posicoes)
