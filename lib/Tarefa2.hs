@@ -7,16 +7,12 @@ Módulo para a realização da Tarefa 2 de LI1\/LP1 em 2025\/26.
 module Tarefa2 where
 
 import Labs2025
-import Tarefa1
 
-
--- | Função principal da Tarefa 2. Recebe o índice de uma minhoca na lista de minhocas, 
--- | uma jogada, um estado e retorna um novo estado em que essa minhoca efetuou essa jogada.
+-- | Efetua uma jogada para uma minhoca específica
 efetuaJogada :: NumMinhoca -> Jogada -> Estado -> Estado
 efetuaJogada numMinhoca jogada estado
   | not (indiceMinhocaValido numMinhoca estado) = estado
   | otherwise = processaJogada numMinhoca jogada estado
-
 
 -- | Verifica se o índice da minhoca é válido
 indiceMinhocaValido :: NumMinhoca -> Estado -> Bool
@@ -37,9 +33,7 @@ moveMinhoca numMinhoca dir estado =
     (Morta, _) -> estado
     (_, Nothing) -> estado
     (Viva _, Just pos) ->
-      if minhocaNoAr estado pos
-        then estado
-        else executaMovimento numMinhoca dir pos estado
+      executaMovimento numMinhoca dir pos estado
 
 -- | Executa o movimento da minhoca
 executaMovimento :: NumMinhoca -> Direcao -> Posicao -> Estado -> Estado
@@ -126,13 +120,13 @@ jaTemDisparoAtivo numMinhoca arma estado =
 executaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Posicao -> Estado -> Estado
 executaDisparo numMinhoca Jetpack dir pos estado =
   let novaPos = proximaPosicao pos dir
-      mapa = mapaEstado estado
-  in if posicaoDentroMapa novaPos mapa && 
-        terrenoNaPosicao novaPos mapa `elem` [Ar, Agua] &&
-        not (posicaoOcupadaPorOutraMinhoca numMinhoca novaPos estado) &&
-        not (posicaoOcupadaPorObjeto novaPos estado)
+  in if posicaoValidaLivre novaPos estado
+       -- destino livre: gasta munição e move
        then gastaMunicaoEMove numMinhoca Jetpack novaPos estado
-       else estado
+       -- destino bloqueado: gasta munição mas fica no sítio
+       else gastaMunicao numMinhoca Jetpack estado
+
+
 
 executaDisparo numMinhoca Escavadora dir pos estado =
   let novaPos = proximaPosicao pos dir
@@ -293,4 +287,3 @@ terrenoNaPosicao (l, c) mapa = (mapa !! l) !! c
 posicaoDentroMapa :: Posicao -> Mapa -> Bool
 posicaoDentroMapa (l, c) mapa =
   l >= 0 && l < length mapa && c >= 0 && c < length (head mapa)
-
