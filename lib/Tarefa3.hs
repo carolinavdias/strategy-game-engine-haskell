@@ -179,7 +179,7 @@ avancaDinamite estado pos dir tempo dono =
             let mapa = mapaEstado estado -- Dinamite em movimento
                 (novaPos, novaDir) = if dinamiteEstaNoChao pos mapa
                                         then (pos, Norte)
-                                        else calculaMovimentoDinamite pos dir mapa
+                                        else calculaMovimentoDinamite pos dir 
             in if ePosicaoMatrizValida novaPos mapa
                   then Left (Disparo novaPos novaDir Dinamite (Just (n-1)) dono)
                   else Right []  -- Sai do mapa
@@ -193,8 +193,8 @@ dinamiteEstaNoChao pos mapa =
         _ -> False
 
 -- | Calcula movimento da dinamite (parábola)
-calculaMovimentoDinamite :: Posicao -> Direcao -> Mapa -> (Posicao, Direcao)
-calculaMovimentoDinamite pos dir mapa = 
+calculaMovimentoDinamite :: Posicao -> Direcao -> (Posicao, Direcao)
+calculaMovimentoDinamite pos dir = 
     case dir of
         Norte -> (movePosicao Sul pos, Sul) -- gravidade
         Sul -> (movePosicao Sul pos, Norte)
@@ -230,7 +230,7 @@ calculaDanoPosicao (lc, cc) (lp, cp) diametro =
         distC = abs (cc - cp)  -- Distância em colunas (horizontal)
         distMax = max distL distC
         eCardeal = (distL == 0 || distC == 0) && distMax > 0
-        eDiagonal = distL > 0 && distC > 0  -- Classificar diracao
+        -- eDiagonal = distL > 0 && distC > 0  -- Classificar diracao
     in if distL == 0 && distC == 0 -- se a explosao é exatamente no centro
         then diametro * 10  -- Centro da explosão
         else if eCardeal
