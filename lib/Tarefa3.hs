@@ -10,6 +10,7 @@ module Tarefa3 where
 import Data.Either
 
 import Labs2025
+import Tarefa0_2025
 
 type Dano = Int
 type Danos = [(Posicao,Dano)]
