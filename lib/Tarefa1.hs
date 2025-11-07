@@ -4,7 +4,6 @@ Description : Validação de estados do jogo.
 -}
 module Tarefa1 where
 import Labs2025
-import Tarefa0_geral
 import Tarefa0_2025
 
 -- | Valida se um estado é válido segundo as regras do jogo.
