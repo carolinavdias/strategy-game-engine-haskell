@@ -121,9 +121,9 @@ executaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Posicao -> Estado -> Esta
 executaDisparo numMinhoca Jetpack dir pos estado =
   let novaPos = proximaPosicao pos dir
   in if posicaoValidaLivre novaPos estado
-       -- destino livre: gasta munição e move
+       -- ^ destino livre: gasta munição e move
        then gastaMunicaoEMove numMinhoca Jetpack novaPos estado
-       -- destino bloqueado: gasta munição mas fica no sítio
+       -- ^ destino bloqueado: gasta munição mas fica no sítio
        else gastaMunicao numMinhoca Jetpack estado
 
 
@@ -135,7 +135,7 @@ executaDisparo numMinhoca Escavadora dir pos estado =
        then estado
      else let terreno = terrenoNaPosicao novaPos mapa
           in if terreno == Terra
-               then -- Destrói terra e move
+               then -- ^ Destrói terra e move
                     let novoMapa = destroiTerra novaPos mapa
                         estadoComMapaNovo = estado { mapaEstado = novoMapa }
                     in if not (posicaoOcupadaPorOutraMinhoca numMinhoca novaPos estadoComMapaNovo)
@@ -143,7 +143,7 @@ executaDisparo numMinhoca Escavadora dir pos estado =
                          else gastaMunicao numMinhoca Escavadora estadoComMapaNovo
                else if terreno `elem` [Ar, Agua] && 
                        not (posicaoOcupadaPorOutraMinhoca numMinhoca novaPos estado)
-                      then -- Move sem destruir (posição já livre)
+                      then -- ^ Move sem destruir (posição já livre)
                            gastaMunicaoEMove numMinhoca Escavadora novaPos estado
                       else estado
 

@@ -13,7 +13,7 @@ module Tarefa0_geral where
 --
 -- Em notação matemática, é geralmente representada por:
 --
--- a introdução ao <<https://haslab.github.io/Teaching/LI1/2526/img/matriz.png>>
+--  <<https://haslab.github.io/Teaching/LI1/2526/img/matriz.png>>
 type Matriz a = [[a]]
 
 -- | Uma posição numa matriz é dada como um par (/linha/,/colunha/).
@@ -39,7 +39,7 @@ eIndiceListaValido i l = i>=0 && i < length l
 
 -- | Calcula a dimensão de uma matriz.
 --
--- __NB:__ Note que não existem matrizes de dimensão /m * 0/ ou /0 * n/, e que qualquer matriz vazia deve ter dimensão /0 * 0/.
+-- __N:__ Note que não existem matrizes de dimensão /m * 0/ ou /0 * n/, e que qualquer matriz vazia deve ter dimensão /0 * 0/.
 dimensaoMatriz :: Matriz a -> Dimensao
 dimensaoMatriz [] = (0,0)
 dimensaoMatriz m = (length m ,length (head m))
@@ -61,7 +61,7 @@ movePosicao Sudoeste (l, c) = (l +1, c-1)
 
 -- | Versão da função 'movePosicao' que garante que o movimento não se desloca para fora de uma janela.
 --
--- __NB:__ Considere uma janela retangular com origem no canto superior esquerdo definida como uma matriz. A função recebe a dimensao da janela.
+-- __N:__ Considere uma janela retangular com origem no canto superior esquerdo definida como uma matriz. A função recebe a dimensao da janela.
 movePosicaoJanela :: Dimensao -> Direcao -> Posicao -> Posicao
 movePosicaoJanela (maxL, maxC) dir pos = 
     let novaPosicao = movePosicao dir pos
@@ -70,11 +70,9 @@ movePosicaoJanela (maxL, maxC) dir pos =
         then  novaPosicao
         else pos
 
--- n sei se é menor e igua ou só menor e n sei o que por no else
-
 -- | Converte uma posição no referencial em que a origem é no canto superior esquerdo da janela numa posição em que a origem passa a estar no centro da janela.
 --
--- __NB:__ Considere posições válidas. Efetue arredondamentos como achar necessário. 
+-- __N:__ Considere posições válidas. Efetue arredondamentos como achar necessário. 
 
 origemAoCentro :: Dimensao -> Posicao -> Posicao
 origemAoCentro (lt,ct) (l, c) = (l - div lt 2, c-div ct 2)
@@ -82,7 +80,7 @@ origemAoCentro (lt,ct) (l, c) = (l - div lt 2, c-div ct 2)
 
 -- | Roda um par (posição,direção) 25% para a direita.
 --
--- __NB:__ Vendo um par (posição,direção) como um vector, avança da posição de origem 
+-- __N:__ Vendo um par (posição,direção) como um vector, avança da posição de origem 
 -- para a posição de destino do vetor, e cria um novo vetor a partir da 
 -- posição de destino com a próxima direção na rosa dos ventos para a direita.
 --
@@ -96,7 +94,7 @@ rodaPosicaoDirecao (pos, dir) = (movePosicao dir pos, succ dir)
 
 -- | Devolve o elemento num dado índce de uma lista.
 --
--- __NB:__ Retorna @Nothing@ se o índice não existir.
+-- __N:__ Retorna @Nothing@ se o índice não existir.
 encontraIndiceLista :: Int -> [a] -> Maybe a
 encontraIndiceLista _ [] = Nothing
 encontraIndiceLista 0 (x:_) = Just x
@@ -104,7 +102,7 @@ encontraIndiceLista a (_:xs) = encontraIndiceLista (a-1) xs
 
 -- | Modifica um elemento num dado índice.
 --
--- __NB:__ Devolve a própria lista se o elemento não existir.
+-- __N:__ Devolve a própria lista se o elemento não existir.
 atualizaIndiceLista :: Int -> a -> [a] -> [a]
 atualizaIndiceLista _ _ [] = []
 atualizaIndiceLista 0 novo (_:xs) = novo:xs
@@ -112,7 +110,7 @@ atualizaIndiceLista i novo (x:xs) = x : atualizaIndiceLista (i-1) novo xs
 
 -- | Devolve o elemento numa dada posição de uma matriz.
 --
--- __NB:__ Retorna @Nothing@ se a posição não existir.
+-- __N:__ Retorna @Nothing@ se a posição não existir.
 encontraPosicaoMatriz :: Posicao -> Matriz a -> Maybe a
 encontraPosicaoMatriz (l, c) m 
     | l < 0 || c < 0 = Nothing
@@ -124,7 +122,7 @@ encontraPosicaoMatriz (l, c) m
 
 -- | Modifica um elemento numa dada posição de uma matriz.
 --
--- __NB:__ Devolve a própria matriz se o elemento não existir.
+-- __N:__ Devolve a própria matriz se o elemento não existir.
 atualizaPosicaoMatriz :: Posicao -> a -> Matriz a -> Matriz a
 atualizaPosicaoMatriz (l, c) n x 
     | l < 0 || c < 0 = x
@@ -144,7 +142,7 @@ moveDirecaoPosicoes dir (x:xs) = movePosicao dir x : moveDirecaoPosicoes dir xs
 
 -- | Verifica se uma matriz é válida, no sentido em que modela um rectângulo.
 --
--- __NB:__ Todas as linhas devem ter o mesmo número de colunas. 
+-- __N:__ Todas as linhas devem ter o mesmo número de colunas. 
 eMatrizValida :: Matriz a -> Bool
 eMatrizValida [] = True
 eMatrizValida m = all (\linha -> length linha == length (head m)) m

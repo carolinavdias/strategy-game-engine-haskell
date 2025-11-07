@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-|
+Module      : Tarefa0_2025
+Description : Fun&#231;&#245;es auxiliares.
+
+M&#243;dulo que define fun&#231;&#245;es auxiliares que ser&#227;o &#250;teis na resolu&#231;&#227;o do trabalho pr&#225;tico de LI1\/LP1 em 2025\/26.
+-}</span></span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- oki</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- | Este m&#243;dulo </span><span>
+</span><span id="line-11"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Tarefa0_2025</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-12"></span><span>    </span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Labs2025.html"><span class="hs-identifier">Labs2025</span></a></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="annot"><span class="hs-comment">-- | Retorna a quantidade de muni&#231;&#245;es dispon&#237;veis de uma minhoca para uma dada arma.</span></span><span>
+</span><span id="line-16"></span><span class="annot"><a href="Tarefa0_2025.html#encontraQuantidadeArmaMinhoca"><span class="hs-identifier hs-type">encontraQuantidadeArmaMinhoca</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#TipoArma"><span class="hs-identifier hs-type">TipoArma</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-17"></span><span id="encontraQuantidadeArmaMinhoca"><span class="annot"><span class="annottext">encontraQuantidadeArmaMinhoca :: TipoArma -&gt; Minhoca -&gt; Int
+</span><a href="Tarefa0_2025.html#encontraQuantidadeArmaMinhoca"><span class="hs-identifier hs-var hs-var">encontraQuantidadeArmaMinhoca</span></a></span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Jetpack"><span class="hs-identifier hs-var">Jetpack</span></a></span><span> </span><span id="local-6989586621679037759"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037759"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Int
+</span><a href="Labs2025.html#jetpackMinhoca"><span class="hs-identifier hs-var">jetpackMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037759"><span class="hs-identifier hs-var">minhoca</span></a></span><span>
+</span><span id="line-18"></span><span class="annot"><a href="Tarefa0_2025.html#encontraQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">encontraQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Escavadora"><span class="hs-identifier hs-var">Escavadora</span></a></span><span> </span><span id="local-6989586621679037762"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037762"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Int
+</span><a href="Labs2025.html#escavadoraMinhoca"><span class="hs-identifier hs-var">escavadoraMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037762"><span class="hs-identifier hs-var">minhoca</span></a></span><span>
+</span><span id="line-19"></span><span class="annot"><a href="Tarefa0_2025.html#encontraQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">encontraQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span id="local-6989586621679037765"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037765"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Int
+</span><a href="Labs2025.html#bazucaMinhoca"><span class="hs-identifier hs-var">bazucaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037765"><span class="hs-identifier hs-var">minhoca</span></a></span><span>
+</span><span id="line-20"></span><span class="annot"><a href="Tarefa0_2025.html#encontraQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">encontraQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span id="local-6989586621679037768"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037768"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Int
+</span><a href="Labs2025.html#minaMinhoca"><span class="hs-identifier hs-var">minaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037768"><span class="hs-identifier hs-var">minhoca</span></a></span><span>
+</span><span id="line-21"></span><span class="annot"><a href="Tarefa0_2025.html#encontraQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">encontraQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span id="local-6989586621679037771"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037771"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Int
+</span><a href="Labs2025.html#dinamiteMinhoca"><span class="hs-identifier hs-var">dinamiteMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037771"><span class="hs-identifier hs-var">minhoca</span></a></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="annot"><span class="hs-comment">-- | Atualia a quantidade de muni&#231;&#245;es dispon&#237;veis de uma minhoca para uma dada arma.</span></span><span>
+</span><span id="line-24"></span><span class="annot"><a href="Tarefa0_2025.html#atualizaQuantidadeArmaMinhoca"><span class="hs-identifier hs-type">atualizaQuantidadeArmaMinhoca</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#TipoArma"><span class="hs-identifier hs-type">TipoArma</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-25"></span><span id="atualizaQuantidadeArmaMinhoca"><span class="annot"><span class="annottext">atualizaQuantidadeArmaMinhoca :: TipoArma -&gt; Minhoca -&gt; Int -&gt; Minhoca
+</span><a href="Tarefa0_2025.html#atualizaQuantidadeArmaMinhoca"><span class="hs-identifier hs-var hs-var">atualizaQuantidadeArmaMinhoca</span></a></span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Jetpack"><span class="hs-identifier hs-var">Jetpack</span></a></span><span> </span><span id="local-6989586621679037774"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037774"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span id="local-6989586621679037775"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037775"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037774"><span class="hs-identifier hs-var">minhoca</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="Labs2025.html#jetpackMinhoca"><span class="hs-identifier hs-var">jetpackMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679037775"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-26"></span><span class="annot"><a href="Tarefa0_2025.html#atualizaQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">atualizaQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Escavadora"><span class="hs-identifier hs-var">Escavadora</span></a></span><span> </span><span id="local-6989586621679037776"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037776"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span id="local-6989586621679037777"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037777"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037776"><span class="hs-identifier hs-var">minhoca</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="Labs2025.html#escavadoraMinhoca"><span class="hs-identifier hs-var">escavadoraMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679037777"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-27"></span><span class="annot"><a href="Tarefa0_2025.html#atualizaQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">atualizaQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span id="local-6989586621679037778"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037778"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span id="local-6989586621679037779"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037779"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037778"><span class="hs-identifier hs-var">minhoca</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="Labs2025.html#bazucaMinhoca"><span class="hs-identifier hs-var">bazucaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679037779"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">}</span><span> </span><span>
+</span><span id="line-28"></span><span class="annot"><a href="Tarefa0_2025.html#atualizaQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">atualizaQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span id="local-6989586621679037780"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037780"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span id="local-6989586621679037781"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037781"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037780"><span class="hs-identifier hs-var">minhoca</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="Labs2025.html#minaMinhoca"><span class="hs-identifier hs-var">minaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679037781"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-29"></span><span class="annot"><a href="Tarefa0_2025.html#atualizaQuantidadeArmaMinhoca"><span class="hs-identifier hs-var">atualizaQuantidadeArmaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span id="local-6989586621679037782"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037782"><span class="hs-identifier hs-var">minhoca</span></a></span></span><span> </span><span id="local-6989586621679037783"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037783"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037782"><span class="hs-identifier hs-var">minhoca</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><a href="Labs2025.html#dinamiteMinhoca"><span class="hs-identifier hs-var">dinamiteMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679037783"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- | Verifica se um tipo de terreno &#233; destrut&#237;vel, i.e., pode ser destru&#237;do por explos&#245;es.</span><span>
+</span><span id="line-32"></span><span class="hs-comment">--</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- __NB:__ Apenas @Terra@ &#233; destrut&#237;vel.</span><span>
+</span><span id="line-34"></span><span class="annot"><a href="Tarefa0_2025.html#eTerrenoDestrutivel"><span class="hs-identifier hs-type">eTerrenoDestrutivel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Terreno"><span class="hs-identifier hs-type">Terreno</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-35"></span><span id="eTerrenoDestrutivel"><span class="annot"><span class="annottext">eTerrenoDestrutivel :: Terreno -&gt; Bool
+</span><a href="Tarefa0_2025.html#eTerrenoDestrutivel"><span class="hs-identifier hs-var hs-var">eTerrenoDestrutivel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Terreno -&gt; Terreno -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-comment">-- | Verifica se um tipo de terreno &#233; opaco, i.e., n&#227;o permite que objetos ou minhocas se encontrem por cima dele.</span><span>
+</span><span id="line-39"></span><span class="hs-comment">--</span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- __NB:__ Apenas @Terra@ ou @Pedra@ s&#227;o opacos.</span><span>
+</span><span id="line-41"></span><span class="annot"><a href="Tarefa0_2025.html#eTerrenoOpaco"><span class="hs-identifier hs-type">eTerrenoOpaco</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Terreno"><span class="hs-identifier hs-type">Terreno</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-42"></span><span id="eTerrenoOpaco"><span class="annot"><span class="annottext">eTerrenoOpaco :: Terreno -&gt; Bool
+</span><a href="Tarefa0_2025.html#eTerrenoOpaco"><span class="hs-identifier hs-var hs-var">eTerrenoOpaco</span></a></span></span><span> </span><span id="local-6989586621679037787"><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037787"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037787"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Terreno -&gt; Terreno -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037787"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Terreno -&gt; Terreno -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-comment">-- | Verifica se uma posi&#231;&#227;o do mapa est&#225; livre, i.e., pode ser ocupada por um objeto ou minhoca.</span><span>
+</span><span id="line-45"></span><span class="hs-comment">--</span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- __NB:__ Uma posi&#231;&#227;o est&#225; livre se n&#227;o contiver um terreno opaco.</span><span>
+</span><span id="line-47"></span><span class="annot"><a href="Tarefa0_2025.html#ePosicaoMapaLivre"><span class="hs-identifier hs-type">ePosicaoMapaLivre</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-48"></span><span id="ePosicaoMapaLivre"><span class="annot"><span class="annottext">ePosicaoMapaLivre :: Posicao -&gt; Mapa -&gt; Bool
+</span><a href="Tarefa0_2025.html#ePosicaoMapaLivre"><span class="hs-identifier hs-var hs-var">ePosicaoMapaLivre</span></a></span></span><span> </span><span id="local-6989586621679037791"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037791"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621679037792"><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037792"><span class="hs-identifier hs-var">mapa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Mapa -&gt; Maybe Terreno
+forall a. Posicao -&gt; Matriz a -&gt; Maybe a
+</span><a href="Tarefa0_geral.html#encontraPosicaoMatriz"><span class="hs-identifier hs-var">encontraPosicaoMatriz</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037791"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037792"><span class="hs-identifier hs-var">mapa</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-50"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679037794"><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037794"><span class="hs-identifier hs-var">terreno</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Terreno -&gt; Bool
+</span><a href="Tarefa0_2025.html#eTerrenoOpaco"><span class="hs-identifier hs-var">eTerrenoOpaco</span></a></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037794"><span class="hs-identifier hs-var">terreno</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>        </span><span class="annot"><span class="annottext">Maybe Terreno
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>  </span><span class="hs-comment">-- se a pos n&#227;o existe no mapa, n&#227;o est&#225; livre!</span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-comment">-- | Verifica se uma posi&#231;&#227;o do estado est&#225; livre, i.e., pode ser ocupada por um objeto ou minhoca.</span><span>
+</span><span id="line-54"></span><span class="hs-comment">--</span><span>
+</span><span id="line-55"></span><span class="hs-comment">-- __NB:__ Uma posi&#231;&#227;o est&#225; livre se o mapa estiver livre e se n&#227;o estiver j&#225; uma minhoca ou um barril nessa posi&#231;&#227;o.</span><span>
+</span><span id="line-56"></span><span class="annot"><a href="Tarefa0_2025.html#ePosicaoEstadoLivre"><span class="hs-identifier hs-type">ePosicaoEstadoLivre</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-57"></span><span id="ePosicaoEstadoLivre"><span class="annot"><span class="annottext">ePosicaoEstadoLivre :: Posicao -&gt; Estado -&gt; Bool
+</span><a href="Tarefa0_2025.html#ePosicaoEstadoLivre"><span class="hs-identifier hs-var hs-var">ePosicaoEstadoLivre</span></a></span></span><span> </span><span id="local-6989586621679037797"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037797"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621679037798"><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679037798"><span class="hs-identifier hs-var">estado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">Posicao -&gt; Mapa -&gt; Bool
+</span><a href="Tarefa0_2025.html#ePosicaoMapaLivre"><span class="hs-identifier hs-var">ePosicaoMapaLivre</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037797"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Estado -&gt; Mapa
+</span><a href="Labs2025.html#mapaEstado"><span class="hs-identifier hs-var">mapaEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679037798"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span>
+</span><span id="line-59"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Posicao -&gt; [Minhoca] -&gt; Bool
+</span><a href="#local-6989586621679037801"><span class="hs-identifier hs-var">posicaoTemMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037797"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679037798"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Posicao -&gt; [Objeto] -&gt; Bool
+</span><a href="#local-6989586621679037803"><span class="hs-identifier hs-var">posicaoTemBarril</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037797"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Estado -&gt; [Objeto]
+</span><a href="Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679037798"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-comment">-- verificar se h&#225; uma minhoca na posi&#231;&#227;o:posicaoTemMinhoca</span><span>
+</span><span id="line-63"></span><span>    </span><span class="annot"><a href="#local-6989586621679037801"><span class="hs-identifier hs-type">posicaoTemMinhoca</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-64"></span><span>    </span><span id="local-6989586621679037801"><span class="annot"><span class="annottext">posicaoTemMinhoca :: Posicao -&gt; [Minhoca] -&gt; Bool
+</span><a href="#local-6989586621679037801"><span class="hs-identifier hs-var hs-var">posicaoTemMinhoca</span></a></span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-65"></span><span>    </span><span class="annot"><a href="#local-6989586621679037801"><span class="hs-identifier hs-var">posicaoTemMinhoca</span></a></span><span> </span><span id="local-6989586621679037805"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037805"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037806"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037806"><span class="hs-identifier hs-var">m</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037807"><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679037807"><span class="hs-identifier hs-var">ms</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-66"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Maybe Posicao
+</span><a href="Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679037806"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-67"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679037809"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037809"><span class="hs-identifier hs-var">posMinhoca</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037805"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Posicao -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037809"><span class="hs-identifier hs-var">posMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; [Minhoca] -&gt; Bool
+</span><a href="#local-6989586621679037801"><span class="hs-identifier hs-var">posicaoTemMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037805"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679037807"><span class="hs-identifier hs-var">ms</span></a></span><span>
+</span><span id="line-68"></span><span>            </span><span class="annot"><span class="annottext">Maybe Posicao
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; [Minhoca] -&gt; Bool
+</span><a href="#local-6989586621679037801"><span class="hs-identifier hs-var">posicaoTemMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037805"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679037807"><span class="hs-identifier hs-var">ms</span></a></span><span>
+</span><span id="line-69"></span><span>    </span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-comment">-- verifica se h&#225; um barril na posi&#231;&#227;o: posicaoTemBarril</span><span>
+</span><span id="line-71"></span><span>    </span><span class="annot"><a href="#local-6989586621679037803"><span class="hs-identifier hs-type">posicaoTemBarril</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679037803"><span class="annot"><span class="annottext">posicaoTemBarril :: Posicao -&gt; [Objeto] -&gt; Bool
+</span><a href="#local-6989586621679037803"><span class="hs-identifier hs-var hs-var">posicaoTemBarril</span></a></span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-73"></span><span>    </span><span class="annot"><a href="#local-6989586621679037803"><span class="hs-identifier hs-var">posicaoTemBarril</span></a></span><span> </span><span id="local-6989586621679037810"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037810"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037811"><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679037811"><span class="hs-identifier hs-var">obj</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037812"><span class="annot"><span class="annottext">[Objeto]
+</span><a href="#local-6989586621679037812"><span class="hs-identifier hs-var">objs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-74"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679037811"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-75"></span><span>            </span><span class="annot"><a href="Labs2025.html#Barril"><span class="hs-identifier hs-type">Barril</span></a></span><span> </span><span id="local-6989586621679037814"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037814"><span class="hs-identifier hs-var">posBarril</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037810"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Posicao -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037814"><span class="hs-identifier hs-var">posBarril</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; [Objeto] -&gt; Bool
+</span><a href="#local-6989586621679037803"><span class="hs-identifier hs-var">posicaoTemBarril</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037810"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Objeto]
+</span><a href="#local-6989586621679037812"><span class="hs-identifier hs-var">objs</span></a></span><span>
+</span><span id="line-76"></span><span>            </span><span class="annot"><span class="annottext">Objeto
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; [Objeto] -&gt; Bool
+</span><a href="#local-6989586621679037803"><span class="hs-identifier hs-var">posicaoTemBarril</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037810"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Objeto]
+</span><a href="#local-6989586621679037812"><span class="hs-identifier hs-var">objs</span></a></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="annot"><span class="hs-comment">-- | Verifica se numa lista de objetos j&#225; existe um disparo feito para uma dada arma por uma dada minhoca.</span></span><span>
+</span><span id="line-79"></span><span class="annot"><a href="Tarefa0_2025.html#minhocaTemDisparo"><span class="hs-identifier hs-type">minhocaTemDisparo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#TipoArma"><span class="hs-identifier hs-type">TipoArma</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#NumMinhoca"><span class="hs-identifier hs-type">NumMinhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-80"></span><span id="minhocaTemDisparo"><span class="annot"><span class="annottext">minhocaTemDisparo :: TipoArma -&gt; Int -&gt; [Objeto] -&gt; Bool
+</span><a href="Tarefa0_2025.html#minhocaTemDisparo"><span class="hs-identifier hs-var hs-var">minhocaTemDisparo</span></a></span></span><span> </span><span id="local-6989586621679037817"><span class="annot"><span class="annottext">TipoArma
+</span><a href="#local-6989586621679037817"><span class="hs-identifier hs-var">arma</span></a></span></span><span> </span><span id="local-6989586621679037818"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037818"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Objeto -&gt; Bool) -&gt; [Objeto] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">any</span></span><span> </span><span class="annot"><span class="annottext">Objeto -&gt; Bool
+</span><a href="#local-6989586621679037820"><span class="hs-identifier hs-var">match</span></a></span><span>
+</span><span id="line-81"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679037820"><span class="annot"><span class="annottext">match :: Objeto -&gt; Bool
+</span><a href="#local-6989586621679037820"><span class="hs-identifier hs-var hs-var">match</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Labs2025.html#Disparo"><span class="hs-identifier hs-type">Disparo</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679037825"><span class="annot"><span class="annottext">TipoArma
+</span><a href="#local-6989586621679037825"><span class="hs-identifier hs-var">tipo</span></a></span></span><span> </span><span class="annot"><span class="annottext">Maybe Int
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679037826"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037826"><span class="hs-identifier hs-var">dono</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="#local-6989586621679037825"><span class="hs-identifier hs-var">tipo</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma -&gt; TipoArma -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="#local-6989586621679037817"><span class="hs-identifier hs-var">arma</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037826"><span class="hs-identifier hs-var">dono</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037818"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-83"></span><span>    </span><span class="annot"><a href="#local-6989586621679037820"><span class="hs-identifier hs-var">match</span></a></span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="hs-comment">-- | Destr&#243;i uma dada posi&#231;&#227;o no mapa (tipicamente como consequ&#234;ncia de uma explos&#227;o).</span><span>
+</span><span id="line-87"></span><span class="hs-comment">--</span><span>
+</span><span id="line-88"></span><span class="hs-comment">-- __NB__: S&#243; terrenos @Terra@ pode ser destru&#237;dos.</span><span>
+</span><span id="line-89"></span><span class="annot"><a href="Tarefa0_2025.html#destroiPosicao"><span class="hs-identifier hs-type">destroiPosicao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span>
+</span><span id="line-90"></span><span id="destroiPosicao"><span class="annot"><span class="annottext">destroiPosicao :: Posicao -&gt; Mapa -&gt; Mapa
+</span><a href="Tarefa0_2025.html#destroiPosicao"><span class="hs-identifier hs-var hs-var">destroiPosicao</span></a></span></span><span> </span><span id="local-6989586621679037828"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037828"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621679037829"><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Mapa -&gt; Maybe Terreno
+forall a. Posicao -&gt; Matriz a -&gt; Maybe a
+</span><a href="Tarefa0_geral.html#encontraPosicaoMatriz"><span class="hs-identifier hs-var">encontraPosicaoMatriz</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037828"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-92"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679037830"><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037830"><span class="hs-identifier hs-var">terreno</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span>
+</span><span id="line-93"></span><span>            </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Terreno -&gt; Bool
+</span><a href="Tarefa0_2025.html#eTerrenoDestrutivel"><span class="hs-identifier hs-var">eTerrenoDestrutivel</span></a></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="#local-6989586621679037830"><span class="hs-identifier hs-var">terreno</span></a></span><span>
+</span><span id="line-94"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Terreno -&gt; Mapa -&gt; Mapa
+forall a. Posicao -&gt; a -&gt; Matriz a -&gt; Matriz a
+</span><a href="Tarefa0_geral.html#atualizaPosicaoMatriz"><span class="hs-identifier hs-var">atualizaPosicaoMatriz</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679037828"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span>
+</span><span id="line-95"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span>
+</span><span id="line-96"></span><span>        </span><span class="annot"><span class="annottext">Maybe Terreno
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span>  </span><span class="hs-comment">-- se a posi&#231;&#227;o n&#227;o existe, retorna o mapa n&#227;o alterado</span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- Adiciona um novo objeto a um estado.</span><span>
+</span><span id="line-99"></span><span class="hs-comment">--</span><span>
+</span><span id="line-100"></span><span class="hs-comment">-- __NB__: A posi&#231;&#227;o onde &#233; inserido n&#227;o &#233; relevante.</span><span>
+</span><span id="line-101"></span><span class="annot"><a href="Tarefa0_2025.html#adicionaObjeto"><span class="hs-identifier hs-type">adicionaObjeto</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span>
+</span><span id="line-102"></span><span id="adicionaObjeto"><span class="annot"><span class="annottext">adicionaObjeto :: Objeto -&gt; Estado -&gt; Estado
+</span><a href="Tarefa0_2025.html#adicionaObjeto"><span class="hs-identifier hs-var hs-var">adicionaObjeto</span></a></span></span><span> </span><span id="local-6989586621679037834"><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679037834"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span id="local-6989586621679037835"><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679037835"><span class="hs-identifier hs-var">estado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679037835"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679037834"><span class="hs-identifier hs-type">obj</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span class="annot"><a href="Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037835"><span class="hs-identifier hs-type">estado</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span></pre></body></html>

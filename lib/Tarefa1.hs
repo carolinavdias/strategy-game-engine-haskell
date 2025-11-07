@@ -13,12 +13,12 @@ validaEstado estado =
     validaObjetos (objetosEstado estado) (mapaEstado estado) (minhocasEstado estado) &&
     validaMinhocas (minhocasEstado estado) (mapaEstado estado) (objetosEstado estado)
 
--- ========== VALIDAÇÃO DE MAPA ==========
+-- * VALIDAÇÃO DE MAPA 
 
 -- | O mapa é válido quando:
--- 1. Não vazio
--- 2. Denota corretamente uma grelha (mesmo número de colunas em todas as linhas)
--- 3. Contém terrenos válidos (Ar/Agua/Terra/Pedra)
+-- __1.__ Não vazio
+-- __2.__ Denota corretamente uma grelha (mesmo número de colunas em todas as linhas)
+-- __3.__ Contém terrenos válidos (Ar/Agua/Terra/Pedra)
 
 validaMapa :: Mapa -> Bool
 validaMapa mapa =
@@ -32,7 +32,7 @@ validaMapa mapa =
     validaTerreno Terra = True
     validaTerreno Pedra = True
 
--- ========== VALIDAÇÃO DE OBJETOS ==========
+-- * VALIDAÇÃO DE OBJETOS 
 
 -- | Valida todos os objetos do estado.
 validaObjetos :: [Objeto] -> Mapa -> [Minhoca] -> Bool
@@ -143,9 +143,9 @@ removerDuplicados :: Eq a => [a] -> [a]
 removerDuplicados [] = []
 removerDuplicados (x:xs) = x : removerDuplicados (filter (/= x) xs)
 
--- ========== VALIDAÇÃO DE MINHOCAS ==========
+-- *  VALIDAÇÃO DE MINHOCAS 
 
---Cada minhoca é válida, o que se verifica quando:
+-- | Cada minhoca é válida, o que se verifica quando:
 --Tem uma posição válida e livre, ou opcionalmente nenhuma posição.
 --A sua posição não se encontra ocupada por um objeto de barril ou por outra minhoca.
 --Quando não tem posição ou se encontra numa posição em que o terreno é água, a minhoca tem que estar obrigatoriamente morta.
