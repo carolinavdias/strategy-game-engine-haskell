@@ -72,7 +72,7 @@ M&#243;dulo que define fun&#231;&#245;es auxiliares que ser&#227;o &#250;teis na
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="hs-comment">-- | Verifica se um tipo de terreno &#233; destrut&#237;vel, i.e., pode ser destru&#237;do por explos&#245;es.</span><span>
 </span><span id="line-32"></span><span class="hs-comment">--</span><span>
-</span><span id="line-33"></span><span class="hs-comment">-- __NB:__ Apenas @Terra@ &#233; destrut&#237;vel.</span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- __N:__ Apenas @Terra@ &#233; destrut&#237;vel.</span><span>
 </span><span id="line-34"></span><span class="annot"><a href="Tarefa0_2025.html#eTerrenoDestrutivel"><span class="hs-identifier hs-type">eTerrenoDestrutivel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Terreno"><span class="hs-identifier hs-type">Terreno</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-35"></span><span id="eTerrenoDestrutivel"><span class="annot"><span class="annottext">eTerrenoDestrutivel :: Terreno -&gt; Bool
 </span><a href="Tarefa0_2025.html#eTerrenoDestrutivel"><span class="hs-identifier hs-var hs-var">eTerrenoDestrutivel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Terreno -&gt; Terreno -&gt; Bool
@@ -83,7 +83,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-37"></span><span>
 </span><span id="line-38"></span><span class="hs-comment">-- | Verifica se um tipo de terreno &#233; opaco, i.e., n&#227;o permite que objetos ou minhocas se encontrem por cima dele.</span><span>
 </span><span id="line-39"></span><span class="hs-comment">--</span><span>
-</span><span id="line-40"></span><span class="hs-comment">-- __NB:__ Apenas @Terra@ ou @Pedra@ s&#227;o opacos.</span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- __N:__ Apenas @Terra@ ou @Pedra@ s&#227;o opacos.</span><span>
 </span><span id="line-41"></span><span class="annot"><a href="Tarefa0_2025.html#eTerrenoOpaco"><span class="hs-identifier hs-type">eTerrenoOpaco</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Terreno"><span class="hs-identifier hs-type">Terreno</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-42"></span><span id="eTerrenoOpaco"><span class="annot"><span class="annottext">eTerrenoOpaco :: Terreno -&gt; Bool
 </span><a href="Tarefa0_2025.html#eTerrenoOpaco"><span class="hs-identifier hs-var hs-var">eTerrenoOpaco</span></a></span></span><span> </span><span id="local-6989586621679037787"><span class="annot"><span class="annottext">Terreno
@@ -100,7 +100,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-43"></span><span>
 </span><span id="line-44"></span><span class="hs-comment">-- | Verifica se uma posi&#231;&#227;o do mapa est&#225; livre, i.e., pode ser ocupada por um objeto ou minhoca.</span><span>
 </span><span id="line-45"></span><span class="hs-comment">--</span><span>
-</span><span id="line-46"></span><span class="hs-comment">-- __NB:__ Uma posi&#231;&#227;o est&#225; livre se n&#227;o contiver um terreno opaco.</span><span>
+</span><span id="line-46"></span><span class="hs-comment">-- __N:__ Uma posi&#231;&#227;o est&#225; livre se n&#227;o contiver um terreno opaco.</span><span>
 </span><span id="line-47"></span><span class="annot"><a href="Tarefa0_2025.html#ePosicaoMapaLivre"><span class="hs-identifier hs-type">ePosicaoMapaLivre</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-48"></span><span id="ePosicaoMapaLivre"><span class="annot"><span class="annottext">ePosicaoMapaLivre :: Posicao -&gt; Mapa -&gt; Bool
 </span><a href="Tarefa0_2025.html#ePosicaoMapaLivre"><span class="hs-identifier hs-var hs-var">ePosicaoMapaLivre</span></a></span></span><span> </span><span id="local-6989586621679037791"><span class="annot"><span class="annottext">Posicao
@@ -118,11 +118,11 @@ forall a. Posicao -&gt; Matriz a -&gt; Maybe a
 </span><a href="#local-6989586621679037794"><span class="hs-identifier hs-var">terreno</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span>        </span><span class="annot"><span class="annottext">Maybe Terreno
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><span class="hs-identifier hs-var">False</span></span><span>  </span><span class="hs-comment">-- se a pos n&#227;o existe no mapa, n&#227;o est&#225; livre!</span><span>
+</span><span class="hs-identifier hs-var">False</span></span><span>  </span><span class="hs-comment">-- ^ se a pos n&#227;o existe no mapa, n&#227;o est&#225; livre!</span><span>
 </span><span id="line-52"></span><span>
 </span><span id="line-53"></span><span class="hs-comment">-- | Verifica se uma posi&#231;&#227;o do estado est&#225; livre, i.e., pode ser ocupada por um objeto ou minhoca.</span><span>
 </span><span id="line-54"></span><span class="hs-comment">--</span><span>
-</span><span id="line-55"></span><span class="hs-comment">-- __NB:__ Uma posi&#231;&#227;o est&#225; livre se o mapa estiver livre e se n&#227;o estiver j&#225; uma minhoca ou um barril nessa posi&#231;&#227;o.</span><span>
+</span><span id="line-55"></span><span class="hs-comment">-- __N:__ Uma posi&#231;&#227;o est&#225; livre se o mapa estiver livre e se n&#227;o estiver j&#225; uma minhoca ou um barril nessa posi&#231;&#227;o.</span><span>
 </span><span id="line-56"></span><span class="annot"><a href="Tarefa0_2025.html#ePosicaoEstadoLivre"><span class="hs-identifier hs-type">ePosicaoEstadoLivre</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-57"></span><span id="ePosicaoEstadoLivre"><span class="annot"><span class="annottext">ePosicaoEstadoLivre :: Posicao -&gt; Estado -&gt; Bool
 </span><a href="Tarefa0_2025.html#ePosicaoEstadoLivre"><span class="hs-identifier hs-var hs-var">ePosicaoEstadoLivre</span></a></span></span><span> </span><span id="local-6989586621679037797"><span class="annot"><span class="annottext">Posicao
@@ -148,7 +148,7 @@ forall a. Posicao -&gt; Matriz a -&gt; Maybe a
 </span><a href="Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
 </span><a href="#local-6989586621679037798"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-61"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-62"></span><span>    </span><span class="hs-comment">-- verificar se h&#225; uma minhoca na posi&#231;&#227;o:posicaoTemMinhoca</span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-comment">-- ^ verificar se h&#225; uma minhoca na posi&#231;&#227;o:posicaoTemMinhoca</span><span>
 </span><span id="line-63"></span><span>    </span><span class="annot"><a href="#local-6989586621679037801"><span class="hs-identifier hs-type">posicaoTemMinhoca</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-64"></span><span>    </span><span id="local-6989586621679037801"><span class="annot"><span class="annottext">posicaoTemMinhoca :: Posicao -&gt; [Minhoca] -&gt; Bool
 </span><a href="#local-6989586621679037801"><span class="hs-identifier hs-var hs-var">posicaoTemMinhoca</span></a></span></span><span> </span><span class="annot"><span class="annottext">Posicao
@@ -177,7 +177,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="#local-6989586621679037805"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
 </span><a href="#local-6989586621679037807"><span class="hs-identifier hs-var">ms</span></a></span><span>
 </span><span id="line-69"></span><span>    </span><span>
-</span><span id="line-70"></span><span>    </span><span class="hs-comment">-- verifica se h&#225; um barril na posi&#231;&#227;o: posicaoTemBarril</span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-comment">-- ^ verifica se h&#225; um barril na posi&#231;&#227;o: posicaoTemBarril</span><span>
 </span><span id="line-71"></span><span>    </span><span class="annot"><a href="#local-6989586621679037803"><span class="hs-identifier hs-type">posicaoTemBarril</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-72"></span><span>    </span><span id="local-6989586621679037803"><span class="annot"><span class="annottext">posicaoTemBarril :: Posicao -&gt; [Objeto] -&gt; Bool
 </span><a href="#local-6989586621679037803"><span class="hs-identifier hs-var hs-var">posicaoTemBarril</span></a></span></span><span> </span><span class="annot"><span class="annottext">Posicao
@@ -239,7 +239,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-85"></span><span>
 </span><span id="line-86"></span><span class="hs-comment">-- | Destr&#243;i uma dada posi&#231;&#227;o no mapa (tipicamente como consequ&#234;ncia de uma explos&#227;o).</span><span>
 </span><span id="line-87"></span><span class="hs-comment">--</span><span>
-</span><span id="line-88"></span><span class="hs-comment">-- __NB__: S&#243; terrenos @Terra@ pode ser destru&#237;dos.</span><span>
+</span><span id="line-88"></span><span class="hs-comment">-- __N__: S&#243; terrenos @Terra@ pode ser destru&#237;dos.</span><span>
 </span><span id="line-89"></span><span class="annot"><a href="Tarefa0_2025.html#destroiPosicao"><span class="hs-identifier hs-type">destroiPosicao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span>
 </span><span id="line-90"></span><span id="destroiPosicao"><span class="annot"><span class="annottext">destroiPosicao :: Posicao -&gt; Mapa -&gt; Mapa
 </span><a href="Tarefa0_2025.html#destroiPosicao"><span class="hs-identifier hs-var hs-var">destroiPosicao</span></a></span></span><span> </span><span id="local-6989586621679037828"><span class="annot"><span class="annottext">Posicao
@@ -265,11 +265,11 @@ forall a. Posicao -&gt; a -&gt; Matriz a -&gt; Matriz a
 </span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span>
 </span><span id="line-96"></span><span>        </span><span class="annot"><span class="annottext">Maybe Terreno
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Mapa
-</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span>  </span><span class="hs-comment">-- se a posi&#231;&#227;o n&#227;o existe, retorna o mapa n&#227;o alterado</span><span>
+</span><a href="#local-6989586621679037829"><span class="hs-identifier hs-var">mapa</span></a></span><span>  </span><span class="hs-comment">-- ^ se a posi&#231;&#227;o n&#227;o existe, retorna o mapa n&#227;o alterado</span><span>
 </span><span id="line-97"></span><span>
-</span><span id="line-98"></span><span class="hs-comment">-- Adiciona um novo objeto a um estado.</span><span>
+</span><span id="line-98"></span><span class="hs-comment">-- | Adiciona um novo objeto a um estado.</span><span>
 </span><span id="line-99"></span><span class="hs-comment">--</span><span>
-</span><span id="line-100"></span><span class="hs-comment">-- __NB__: A posi&#231;&#227;o onde &#233; inserido n&#227;o &#233; relevante.</span><span>
+</span><span id="line-100"></span><span class="hs-comment">-- __N__: A posi&#231;&#227;o onde &#233; inserido n&#227;o &#233; relevante.</span><span>
 </span><span id="line-101"></span><span class="annot"><a href="Tarefa0_2025.html#adicionaObjeto"><span class="hs-identifier hs-type">adicionaObjeto</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span>
 </span><span id="line-102"></span><span id="adicionaObjeto"><span class="annot"><span class="annottext">adicionaObjeto :: Objeto -&gt; Estado -&gt; Estado
 </span><a href="Tarefa0_2025.html#adicionaObjeto"><span class="hs-identifier hs-var hs-var">adicionaObjeto</span></a></span></span><span> </span><span id="local-6989586621679037834"><span class="annot"><span class="annottext">Objeto

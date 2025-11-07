@@ -506,14 +506,14 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="Tarefa2.html#posicaoValidaLivre"><span class="hs-identifier hs-var">posicaoValidaLivre</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
 </span><a href="#local-6989586621679038389"><span class="hs-identifier hs-var">novaPos</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
 </span><a href="#local-6989586621679038388"><span class="hs-identifier hs-var">estado</span></a></span><span>
-</span><span id="line-124"></span><span>       </span><span class="hs-comment">-- destino livre: gasta muni&#231;&#227;o e move</span><span>
+</span><span id="line-124"></span><span>       </span><span class="hs-comment">-- ^ destino livre: gasta muni&#231;&#227;o e move</span><span>
 </span><span id="line-125"></span><span>       </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int -&gt; TipoArma -&gt; Posicao -&gt; Estado -&gt; Estado
 </span><a href="Tarefa2.html#gastaMunicaoEMove"><span class="hs-identifier hs-var">gastaMunicaoEMove</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="#local-6989586621679038385"><span class="hs-identifier hs-var">numMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
 </span><a href="Labs2025.html#Jetpack"><span class="hs-identifier hs-var">Jetpack</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
 </span><a href="#local-6989586621679038389"><span class="hs-identifier hs-var">novaPos</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
 </span><a href="#local-6989586621679038388"><span class="hs-identifier hs-var">estado</span></a></span><span>
-</span><span id="line-126"></span><span>       </span><span class="hs-comment">-- destino bloqueado: gasta muni&#231;&#227;o mas fica no s&#237;tio</span><span>
+</span><span id="line-126"></span><span>       </span><span class="hs-comment">-- ^ destino bloqueado: gasta muni&#231;&#227;o mas fica no s&#237;tio</span><span>
 </span><span id="line-127"></span><span>       </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Int -&gt; TipoArma -&gt; Estado -&gt; Estado
 </span><a href="Tarefa2.html#gastaMunicao"><span class="hs-identifier hs-var">gastaMunicao</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="#local-6989586621679038385"><span class="hs-identifier hs-var">numMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
@@ -554,7 +554,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Terreno
 </span><a href="Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span>
-</span><span id="line-138"></span><span>               </span><span class="hs-keyword">then</span><span> </span><span class="hs-comment">-- Destr&#243;i terra e move</span><span>
+</span><span id="line-138"></span><span>               </span><span class="hs-keyword">then</span><span> </span><span class="hs-comment">-- ^ Destr&#243;i terra e move</span><span>
 </span><span id="line-139"></span><span>                    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679038401"><span class="annot"><span class="annottext">novoMapa :: Mapa
 </span><a href="#local-6989586621679038401"><span class="hs-identifier hs-var hs-var">novoMapa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Mapa -&gt; Mapa
 </span><a href="Tarefa2.html#destroiTerra"><span class="hs-identifier hs-var">destroiTerra</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
@@ -594,7 +594,7 @@ forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
 </span><a href="#local-6989586621679038392"><span class="hs-identifier hs-var">numMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
 </span><a href="#local-6989586621679038396"><span class="hs-identifier hs-var">novaPos</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
 </span><a href="#local-6989586621679038395"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-146"></span><span>                      </span><span class="hs-keyword">then</span><span> </span><span class="hs-comment">-- Move sem destruir (posi&#231;&#227;o j&#225; livre)</span><span>
+</span><span id="line-146"></span><span>                      </span><span class="hs-keyword">then</span><span> </span><span class="hs-comment">-- ^ Move sem destruir (posi&#231;&#227;o j&#225; livre)</span><span>
 </span><span id="line-147"></span><span>                           </span><span class="annot"><span class="annottext">Int -&gt; TipoArma -&gt; Posicao -&gt; Estado -&gt; Estado
 </span><a href="Tarefa2.html#gastaMunicaoEMove"><span class="hs-identifier hs-var">gastaMunicaoEMove</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="#local-6989586621679038392"><span class="hs-identifier hs-var">numMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma

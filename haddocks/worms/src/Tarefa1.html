@@ -34,12 +34,12 @@ Description : Valida&#231;&#227;o de estados do jogo.
 </span><a href="Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
 </span><a href="#local-6989586621679037934"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-15"></span><span>
-</span><span id="line-16"></span><span class="hs-comment">-- ========== VALIDA&#199;&#195;O DE MAPA ==========</span><span>
+</span><span id="line-16"></span><span class="annot"><span class="hs-comment">-- * VALIDA&#199;&#195;O DE MAPA </span></span><span>
 </span><span id="line-17"></span><span>
 </span><span id="line-18"></span><span class="hs-comment">-- | O mapa &#233; v&#225;lido quando:</span><span>
-</span><span id="line-19"></span><span class="hs-comment">-- 1. N&#227;o vazio</span><span>
-</span><span id="line-20"></span><span class="hs-comment">-- 2. Denota corretamente uma grelha (mesmo n&#250;mero de colunas em todas as linhas)</span><span>
-</span><span id="line-21"></span><span class="hs-comment">-- 3. Cont&#233;m terrenos v&#225;lidos (Ar/Agua/Terra/Pedra)</span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- __1.__ N&#227;o vazio</span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- __2.__ Denota corretamente uma grelha (mesmo n&#250;mero de colunas em todas as linhas)</span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- __3.__ Cont&#233;m terrenos v&#225;lidos (Ar/Agua/Terra/Pedra)</span><span>
 </span><span id="line-22"></span><span>
 </span><span id="line-23"></span><span class="annot"><a href="Tarefa1.html#validaMapa"><span class="hs-identifier hs-type">validaMapa</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-24"></span><span id="validaMapa"><span class="annot"><span class="annottext">validaMapa :: Mapa -&gt; Bool
@@ -80,7 +80,7 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><a href="Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span>
 </span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span class="hs-comment">-- ========== VALIDA&#199;&#195;O DE OBJETOS ==========</span><span>
+</span><span id="line-35"></span><span class="annot"><span class="hs-comment">-- * VALIDA&#199;&#195;O DE OBJETOS </span></span><span>
 </span><span id="line-36"></span><span>
 </span><span id="line-37"></span><span class="annot"><span class="hs-comment">-- | Valida todos os objetos do estado.</span></span><span>
 </span><span id="line-38"></span><span class="annot"><a href="Tarefa1.html#validaObjetos"><span class="hs-identifier hs-type">validaObjetos</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
@@ -512,9 +512,9 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="#local-6989586621679038051"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
 </span><a href="#local-6989586621679038052"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-145"></span><span>
-</span><span id="line-146"></span><span class="hs-comment">-- ========== VALIDA&#199;&#195;O DE MINHOCAS ==========</span><span>
+</span><span id="line-146"></span><span class="annot"><span class="hs-comment">-- *  VALIDA&#199;&#195;O DE MINHOCAS </span></span><span>
 </span><span id="line-147"></span><span>
-</span><span id="line-148"></span><span class="hs-comment">--Cada minhoca &#233; v&#225;lida, o que se verifica quando:</span><span>
+</span><span id="line-148"></span><span class="hs-comment">-- | Cada minhoca &#233; v&#225;lida, o que se verifica quando:</span><span>
 </span><span id="line-149"></span><span class="hs-comment">--Tem uma posi&#231;&#227;o v&#225;lida e livre, ou opcionalmente nenhuma posi&#231;&#227;o.</span><span>
 </span><span id="line-150"></span><span class="hs-comment">--A sua posi&#231;&#227;o n&#227;o se encontra ocupada por um objeto de barril ou por outra minhoca.</span><span>
 </span><span id="line-151"></span><span class="hs-comment">--Quando n&#227;o tem posi&#231;&#227;o ou se encontra numa posi&#231;&#227;o em que o terreno &#233; &#225;gua, a minhoca tem que estar obrigatoriamente morta.</span><span>

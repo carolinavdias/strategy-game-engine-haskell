@@ -97,7 +97,7 @@ destroiPosicao pos mapa =
 
 -- | Adiciona um novo objeto a um estado.
 --
--- __N__: A posição onde é inserido não é relevante.
+-- __N __: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto obj estado = estado { objetosEstado = obj : objetosEstado estado }
 
