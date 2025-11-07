@@ -100,7 +100,7 @@ barrilDeveCair pos mapa = not (ePosicaoMapaLivre pos mapa) || estaNoArOuAgua pos
 
 -- | Verifica se posição está no ar ou em água 
 estaNoArOuAgua :: Posicao -> Mapa -> Bool
-estaNoAr pos mapa = 
+estaNoArOuAgua pos mapa = 
     case encontraPosicaoMatriz pos mapa of
         Just Ar -> True
         Just Agua -> True
