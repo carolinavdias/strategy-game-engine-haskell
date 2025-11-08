@@ -111,6 +111,8 @@ posicaoNaoOcupadaPorOutroBarril pos objs objAtual =
 -- | Verifica se dois objetos são o mesmo (para evitar auto-comparação).
 objetosIguais :: Objeto -> Objeto -> Bool
 objetosIguais (Barril p1 e1) (Barril p2 e2) = p1 == p2 && e1 == e2
+objetosIguais (Disparo pos1 dir1 tipo1 tempo1 dono1) (Disparo pos2 dir2 tipo2 tempo2 dono2) = 
+    pos1 == pos2 && dir1 == dir2 && tipo1 == tipo2 && tempo1 == tempo2 && dono1 == dono2
 objetosIguais _ _ = False
 
 -- | Verifica se a posição não está ocupada por uma minhoca.

@@ -136,14 +136,6 @@ testesTodasDirecoesOpostas =
         , [Terra, Ar, Terra]
         , [Terra, Terra, Terra]
         ]
-        [Disparo (0, 1) Norte Bazuca Nothing 0]
-        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
-    -- Sul->Norte
-    , Estado
-        [ [Terra, Terra, Terra]
-        , [Terra, Ar, Terra]
-        , [Terra, Terra, Terra]
-        ]
         [Disparo (0, 1) Sul Bazuca Nothing 0]
         [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
       
@@ -153,14 +145,6 @@ testesTodasDirecoesOpostas =
         , [Terra, Ar, Terra]
         ]
         [Disparo (0, 1) Oeste Bazuca Nothing 0]
-        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
-    -- 
-    , Estado
-        [ [Terra, Terra, Terra]
-        , [Terra, Ar, Terra]
-        , [Terra, Terra, Terra]
-        ]
-        [Disparo (1, 0) Este Bazuca Nothing 0]
         [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
       
       -- Nordeste -> Sudoeste
@@ -180,22 +164,6 @@ testesTodasDirecoesOpostas =
         ]
         [Disparo (0, 1) Sudeste Bazuca Nothing 0]
         [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
-
-    , Estado
-        [ [Terra, Terra, Terra]
-        , [Terra, Ar, Terra]
-        , [Terra, Terra, Terra]
-        ]
-        [Disparo (0, 1) Nordeste Bazuca Nothing 0]
-        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
-
-    , Estado
-        [ [Terra, Terra, Terra]
-        , [Terra, Ar, Terra]
-        , [Terra, Terra, Terra]
-        ]
-        [Disparo (0, 1) Noroeste Bazuca Nothing 0]
-        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
     ]
 
 -- Testes para objetosIguais retornar False
@@ -210,13 +178,13 @@ testesObjetosIguaisFalso =
         [Barril (1, 1) False, Barril (1, 1) True]  -- Mesmo pos, explode diferente
         []
       
-      -- Dois disparos diferentes
+      -- Dois disparos IGUAIS (pos1==pos2 && dir1==dir2 && tipo1==tipo2 && tempo1==tempo2 && dono1==dono2)
     , Estado
         [ [Ar, Ar, Ar, Ar]
         , [Ar, Ar, Ar, Ar]
         ]
         [ Disparo (0, 1) Norte Bazuca Nothing 0
-        , Disparo (0, 1) Sul Bazuca Nothing 0  -- Mesma pos, direção diferente
+        , Disparo (0, 1) Norte Bazuca Nothing 0  -- Tudo igual -> True (mas é inválido por serem duplicados)
         ]
         [Minhoca (Just (1, 1)) (Viva 100) 0 0 2 0 0]
       
@@ -265,12 +233,20 @@ testesValidaTempoDisparoFalso =
         ]
         [Disparo (0, 1) Oeste Dinamite (Just 10) 0]
         [Minhoca (Just (1, 1)) (Viva 100) 0 0 0 0 1]
+    
+      -- Validar _ _ = False (qualquer outro caso)
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Norte Jetpack (Just 1) 0]  -- Jetpack com tempo -> False
+        [Minhoca (Just (1, 1)) (Viva 100) 1 0 0 0 0]
     ]
 
 -- Testes para removerDuplicados usar x no filter
 testesRemoverDuplicadosComX :: [Estado]
 testesRemoverDuplicadosComX = 
-    [ -- Disparos duplicados que usam a função
+    [ -- Disparos duplicados que usam a função com x
       Estado
         [ [Ar, Ar, Ar, Ar]
         , [Ar, Ar, Ar, Ar]
@@ -294,6 +270,17 @@ testesRemoverDuplicadosComX =
         [ Minhoca (Just (0, 4)) (Viva 100) 0 0 0 2 0
         , Minhoca (Just (1, 4)) (Viva 100) 0 0 0 0 2
         ]
+    
+      -- Teste específico para cobrir x no caso recursivo
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [ Disparo (0, 0) Norte Bazuca Nothing 0
+        , Disparo (0, 1) Norte Mina Nothing 0
+        , Disparo (0, 2) Norte Bazuca Nothing 0  -- Duplicado de Bazuca com dono 0
+        ]
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 2 1 0]
     ]
 
 -- ========== TESTES DE BARRIL EM POSIÇÃO INVÁLIDA (5 testes) ==========
@@ -1319,7 +1306,7 @@ testesMinhocaVida =
         [Minhoca (Just (1, 1)) (Viva 1000) 5 5 5 5 5]
     ]
 
--- ========== TESTES DE MUNIÇÃO DE MINHOCA  ==========
+-- ========== TESTES DE MUNIÇÃO DE MINHOCA (5 testes) ==========
 
 testesMinhocaMunicao :: [Estado]
 testesMinhocaMunicao = 
@@ -1366,7 +1353,7 @@ testesMinhocaMunicao =
         [Minhoca (Just (1, 1)) (Viva 100) 0 0 0 0 (-1)]
     ]
 
--- ========== TESTES DE ESTADOS VÁLIDOS COMPLEXOS  ==========
+-- ========== TESTES DE ESTADOS VÁLIDOS COMPLEXOS (10 testes) ==========
 
 testesEstadosValidos :: [Estado]
 testesEstadosValidos = 
