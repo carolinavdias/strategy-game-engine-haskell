@@ -81,8 +81,6 @@ avancaObjeto estado _ (Barril pos explode)
 
 avancaObjeto estado _ (Disparo pos dir tipo tempo dono) = 
     case tipo of
-        Jetpack -> avancaJetpack estado pos dir dono
-        Escavadora -> avancaEscavadora estado pos dir dono
         Dinamite -> avancaDinamite estado pos dir tempo dono
         Mina -> avancaMina estado pos dir tempo dono
         Bazuca -> 
@@ -97,47 +95,8 @@ avancaObjeto estado _ (Disparo pos dir tipo tempo dono) =
                     else if not (ePosicaoEstadoLivre novaPos estado)
                         then Right (calculaDanosExplosao novaPos 5 (mapaEstado estado))
                         else Left (Disparo novaPos dir Bazuca tempo dono)
+        _ -> Left (Disparo pos dir tipo tempo dono)
         
-
--- * JETPACK
-
--- | Avança estado do jetpack
-avancaJetpack :: Estado -> Posicao -> Direcao -> NumMinhoca -> Either Objeto Danos
-avancaJetpack estado pos dir dono =
-    let mapa = mapaEstado estado
-        novaPos = movePosicao dir pos
-    in if not (ePosicaoMatrizValida novaPos mapa)
-        then Right []  -- Sai do mapa
-        else if not (ePosicaoEstadoLivre novaPos estado)
-            then Right []  -- Bate em algo e para
-            else Left (Disparo novaPos dir Jetpack Nothing dono)
-
--- * ESCAVADORA
-
--- | Avança estado da escavadora
-avancaEscavadora :: Estado -> Posicao -> Direcao -> NumMinhoca -> Either Objeto Danos
-avancaEscavadora estado pos dir dono =
-    let mapa = mapaEstado estado
-        novaPos = movePosicao dir pos
-    in if not (ePosicaoMatrizValida novaPos mapa)
-        then Right []  -- Sai do mapa
-        else case encontraPosicaoMatriz novaPos mapa of
-            Just Terra -> 
-                -- Destrói Terra e avança
-                let mapaAtualizado = destroiPosicao novaPos mapa
-                    estadoAtualizado = estado { mapaEstado = mapaAtualizado }
-                in if ePosicaoEstadoLivre novaPos estadoAtualizado
-                    then Left (Disparo novaPos dir Escavadora Nothing dono)
-                    else Right []
-            Just Pedra -> Right []  -- Para em Pedra
-            Just Agua -> Right []   -- Para em Água
-            Just Ar -> 
-                -- Continua em Ar
-                if ePosicaoEstadoLivre novaPos estado
-                    then Left (Disparo novaPos dir Escavadora Nothing dono)
-                    else Right []
-            Nothing -> Right []
-
 
 -- * MINA 
 
