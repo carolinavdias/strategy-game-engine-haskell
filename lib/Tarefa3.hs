@@ -1,8 +1,25 @@
-{-|
+-- tarefa3 ;)
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use section" #-}
+{-
 Module      : Tarefa3
 Description : Avançar tempo do jogo.
+Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
+License     : GPL-3
+Maintainer  : l1g053@l1g053.2025@l1
+Stability   : experimental
+Portability : portable
 
 Módulo para a realização da Tarefa 3 de LI1/LP1 em 2025/26.
+------- . -------
+Aqui é tratada a **evolução do estado do jogo ao longo do tempo** — isto é, o que acontece a cada “tick” (instante de tempo).
+
+A função principal, `avancaEstado`, atualiza o jogo considerando:
+  * o movimento natural das minhocas (gravidade e quedas);
+  * o comportamento dos objetos (barris, minas, dinamites, bazucas);
+  * as explosões e os seus efeitos sobre o mapa, minhocas e objetos.
+
+O objetivo é simular o desenrolar automático do jogo, mesmo sem intervenção do jogador.
 -}
 
 module Tarefa3 where
@@ -15,7 +32,8 @@ import Tarefa0_2025
 type Dano = Int
 type Danos = [(Posicao,Dano)]
 
--- * Avança Estado
+--------------------------------------------------------------------------------
+-- * AVANÇAR ESTADO DO JOGO
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
@@ -25,8 +43,8 @@ avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
     (objetos',danoss) = partitionEithers $ map (uncurry $ avancaObjeto e) (zip [0..] objetos)
     e' = Estado mapa objetos' minhocas'
 
-
--- * AVANÇO DE MINHOCAS 
+--------------------------------------------------------------------------------
+-- *AVANÇO DE MINHOCAS 
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, 
 -- retorna o novo estado da minhoca no próximo tick.
@@ -67,11 +85,10 @@ minhocaCaiPara novaPos minhoca mapa =
 minhocaSaiDoMapa :: Minhoca -> Minhoca
 minhocaSaiDoMapa minhoca = minhoca { posicaoMinhoca = Nothing, vidaMinhoca = Morta }
 
--- * AVANÇO DE OBJETOS 
+--------------------------------------------------------------------------------
+-- *AVANÇO DE OBJETOS 
 
--- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, 
--- retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, 
--- uma lista de posições afetadas com o dano associado.
+-- >> Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda,uma lista de posições afetadas com o dano associado.
 
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
 avancaObjeto estado _ (Barril pos explode) 
@@ -98,7 +115,8 @@ avancaObjeto estado _ (Disparo pos dir tipo tempo dono) =
         _ -> Left (Disparo pos dir tipo tempo dono)
         
 
--- * MINA 
+--------------------------------------------------------------------------------
+-- * COMPORTAMENTO DAS MINAS
 
 -- | Avança estado da mina
 avancaMina :: Estado -> Posicao -> Direcao -> Maybe Ticks -> NumMinhoca -> Either Objeto Danos
@@ -153,7 +171,8 @@ estaNoArOuAgua pos mapa =
         Just Agua -> True
         _ -> False
 
--- * DINAMITE 
+--------------------------------------------------------------------------------
+-- * COMPORTAMENTO DA DINAMITE
 
 -- | Avança estado da dinamite
 avancaDinamite :: Estado -> Posicao -> Direcao -> Maybe Ticks -> NumMinhoca -> Either Objeto Danos
@@ -189,7 +208,8 @@ calculaMovimentoDinamite pos dir =
         Noroeste -> (movePosicao Oeste pos, Oeste)
         Sudoeste -> (movePosicao Oeste pos, Sul)
 
--- * EXPLOSÕES 
+--------------------------------------------------------------------------------
+-- * EXPLOSÕES E DANOS
 
 -- | Calcula área de explosão (todas as posições num quadrado)
 calculaAreaExplosao :: Posicao -> Int -> [Posicao]
@@ -220,7 +240,8 @@ calculaDanoPosicao (lc, cc) (lp, cp) diametro =
             then max 0 ((diametro - 2 * distMax) * 10)
             else max 0 ((diametro - 2 * distMax - 1) * 10)
 
--- * APLICAÇÃO DE DANOS 
+--------------------------------------------------------------------------------
+-- * APLICAÇÃO DE DANOS AO ESTADO
 
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
@@ -270,3 +291,12 @@ reduzVidaMinhoca danos minhoca =
                         in if novaVida <= 0
                             then minhoca { vidaMinhoca = Morta }
                             else minhoca { vidaMinhoca = Viva novaVida }
+
+
+{-
+-- <<< RESUMO DA TAREFA 3 >>>
+A Tarefa 3 trata da evolução automática do estado do jogo a cada instante de tempo (“tick”).
+Foram implementadas as regras que fazem as minhocas caírem, os objetos (barris, minas, dinamites e disparos) avançarem ou explodirem, e os respetivos danos serem aplicados ao mapa e às entidades envolvidas.
+O objetivo é simular o desenrolar natural do jogo sem intervenção do jogador, garantindo coerência física e lógica em todas as interações.
+;)
+-}
