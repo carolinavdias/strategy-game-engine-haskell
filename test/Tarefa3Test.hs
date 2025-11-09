@@ -1,555 +1,391 @@
-module Main where
-
 import Labs2025
 import Tarefa3
 import Magic
 
---------------------------------------------------------------------------------
--- Mapas de apoio (médios, estilo do enunciado)
---------------------------------------------------------------------------------
+-- * MAPAS AUXILIARES
 
--- | Mapa 6x10 do enunciado.
-mapaEnunciado :: Mapa
-mapaEnunciado =
-  [ [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Terra,Terra,Terra,Terra,Terra,Ar,Ar,Ar,Ar,Ar]
-  , [Terra,Terra,Terra,Terra,Terra,Pedra,Pedra,Agua,Agua,Agua]
-  ]
-
--- | Mapa 6x10 com chão ao centro e poça à direita.
-mapaChaoCentroAgua :: Mapa
-mapaChaoCentroAgua =
-  [ [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Terra,Terra,Terra,Terra,Terra,Ar,Ar,Ar,Agua,Agua]
-  , [Terra,Terra,Terra,Terra,Terra,Terra,Terra,Pedra,Agua,Agua]
-  ]
-
--- | Mapa 7x9 com “mesa” e um bloco de pedra no meio.
-mapaMesa :: Mapa
-mapaMesa =
-  [ [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Terra,Terra,Terra,Ar,Ar,Ar]
-  , [Ar,Ar,Ar,Terra,Pedra,Terra,Ar,Ar,Ar]
-  , [Terra,Terra,Terra,Terra,Terra,Terra,Terra,Terra,Terra]
-  , [Terra,Terra,Terra,Terra,Terra,Terra,Terra,Terra,Terra]
-  ]
-
---------------------------------------------------------------------------------
--- Helpers
---------------------------------------------------------------------------------
-
--- | Minhoca viva a 100 de vida, sem munições (não interessam na T3).
-mkViva :: Posicao -> Minhoca
-mkViva p = Minhoca (Just p) (Viva 100) 0 0 0 0 0
-
---------------------------------------------------------------------------------
--- Exemplos do enunciado
---------------------------------------------------------------------------------
-
--- | Exemplo 'e' do enunciado (não entra na lista de testes).
-exemplo_e :: Estado
-exemplo_e =
-  let o1 = Barril (3,0) False
-      o2 = Disparo (3,3) Oeste Bazuca Nothing 0
-      m1 = mkViva (3,4)
-      m2 = mkViva (2,0)
-  in Estado mapaEnunciado [o1,o2] [m1,m2]
-
--- | Exemplo 'e'' (input correto para o teste 0): inclui o barril.
-exemplo_e' :: Estado
-exemplo_e' =
-  let o1 = Barril (3,0) False
-      o2 = Disparo (3,3) Oeste Bazuca Nothing 0
-      m1 = mkViva (3,4)
-      m2' = mkViva (1,1)
-  in Estado mapaEnunciado [o1,o2] [m1,m2']
-
---------------------------------------------------------------------------------
--- Testes (cada um é um Estado de entrada)
---------------------------------------------------------------------------------
-
--- | Teste 1: Minhoca sobre Ar cai 1 bloco (gravidade simples).
-testeQuedaSimples :: Estado
-testeQuedaSimples =
-  Estado mapaChaoCentroAgua [] [ mkViva (2,5) ]
-
-testeSemQueda :: Estado
-testeSemQueda =
-  Estado mapaChaoCentroAgua [] [ mkViva (4,1) ]
-
-testeMinhocaSemPosicao :: Estado
-testeMinhocaSemPosicao =
-  Estado mapaChaoCentroAgua [] [ Minhoca Nothing (Viva 100) 0 0 0 0 0 ]
-
-testeMinhocaMorta :: Estado
-testeMinhocaMorta =
-  Estado mapaChaoCentroAgua [] [ Minhoca (Just (4,8)) Morta 0 0 0 0 0 ]
-
-
--- | Teste 2: Minhoca cai na Água → morre mas fica com a posição nova.
-testeQuedaParaAgua :: Estado
-testeQuedaParaAgua =
-  Estado mapaChaoCentroAgua [] [ mkViva (3,8) ]
-
-
--- | Teste: Minhoca morta cai na água (deve manter posição e continuar morta)
-testeMinhocaMortaCaiAgua :: Estado
-testeMinhocaMortaCaiAgua =
-  Estado mapaChaoCentroAgua 
-    [] 
-    [ Minhoca (Just (3,8)) Morta 0 0 0 0 0 ]
-
-
--- | Teste: Minhoca morta na água não morre de novo
-testeMinhocaMortaNaAgua :: Estado
-testeMinhocaMortaNaAgua =
-  Estado mapaChaoCentroAgua
-    []
-    [ Minhoca (Just (4,8)) Morta 0 0 0 0 0 ]
-
--- | Teste: Minhoca viva com posição Nothing
-testeMinhocaVivaPosiçãoNada :: Estado
-testeMinhocaVivaPosiçãoNada =
-  Estado mapaChaoCentroAgua
-    []
-    [ Minhoca Nothing (Viva 50) 0 0 0 0 0 ]
-
--- | Teste 3: Minhoca cai fora do mapa → perde posição e morre.
-testeQuedaForaMapa :: Estado
-testeQuedaForaMapa =
-  let m = [ [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
-          , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar] ]
-  in Estado m [] [ mkViva (1,5) ]
-
--- | Teste 4 (corrigido): Barril suspenso no ar explode neste tick.
-testeBarrilSuspensoNaoExplode :: Estado
-testeBarrilSuspensoNaoExplode =
-  Estado mapaChaoCentroAgua
-    [ Barril (1,1) True ]
-    [ mkViva (4,0) ]
-
--- | Teste 5: Barril já prestes a explodir → aplica danos (mapa e minhoca).
-testeBarrilDanoTerrenoMinhoca :: Estado
-testeBarrilDanoTerrenoMinhoca =
-  Estado mapaEnunciado
-    [ Barril (3,5) True ]
-    [ mkViva (3,7) ]
-
--- | Teste: Barril em posição válida mas não deve cair (não está no ar/água)
-testeBarrilNaoDeveCair :: Estado
-testeBarrilNaoDeveCair =
-  Estado mapaEnunciado
-    [ Barril (4,1) False ]
-    [ mkViva (3,3) ]
-
--- | Teste: Barril em posição não livre no mapa (deve explodir)
-testeBarrilPosicaoNaoLivre :: Estado
-testeBarrilPosicaoNaoLivre =
-  Estado mapaEnunciado
-    [ Barril (4,0) False ]  -- Barril sobre Terra
-    []
-
--- | Teste 6 (corrigido): Bazuca parada; minhoca cai 1 bloco.
-testeBazucaParadaMinhocaCai :: Estado
-testeBazucaParadaMinhocaCai =
-  Estado mapaEnunciado
-    [ Disparo (2,7) Oeste Bazuca Nothing 0 ]
-    [ mkViva (4,4) ]
-
--- | Teste 7: Bazuca bate em Terra e explode.
-testeBazucaBateExplode :: Estado
-testeBazucaBateExplode =
-  Estado mapaMesa
-    [ Disparo (3,6) Oeste Bazuca Nothing 0 ]
-    [ mkViva (2,6) ]
-
--- | Teste: Bazuca sai do mapa (retorna lista vazia de danos)
-testeBazucaSaiMapa :: Estado
-testeBazucaSaiMapa =
-  let m = [ [Ar,Ar,Ar]
-          , [Ar,Ar,Ar] ]
-  in Estado m
-    [ Disparo (0,2) Este Bazuca Nothing 0 ]
-    [ mkViva (1,0) ]
-
-testeBazucaNumaBazuca :: Estado
-testeBazucaNumaBazuca = 
-  Estado mapaMesa
-    [ Disparo (3,6) Oeste Bazuca Nothing 0 
-    , Disparo (3,6) Oeste Bazuca Nothing 0
-    ]
-    [ mkViva (2,6) ]
-
--- | Teste 8 (corrigido): Mina ativa por inimigo na área.
-testeMinaAtivaPorInimigo :: Estado
-testeMinaAtivaPorInimigo =
-  Estado mapaChaoCentroAgua
-    [ Disparo (2,7) Norte Mina Nothing 0 ]
-    [ mkViva (3,4)   -- dono
-    , mkViva (3,6)   -- inimiga
+-- | Mapa simples 5x5
+mapaSimples :: Mapa
+mapaSimples = 
+    [ [Pedra, Pedra, Pedra, Pedra, Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Ar,    Terra, Ar,    Pedra]
+    , [Pedra, Terra, Terra, Terra, Pedra]
+    , [Pedra, Pedra, Pedra, Pedra, Pedra]
     ]
 
--- | Teste 9 (corrigido): Mina em queda (tempo Just 2) desce e vira Norte; tempo-1.
-testeMinaCaiEContinuaDesativada :: Estado
-testeMinaCaiEContinuaDesativada =
-  Estado mapaChaoCentroAgua
-    [ Disparo (2,5) Sul Mina (Just 2) 0 ]
-    [ mkViva (5,0) ]
-
--- | Teste 10: Mina com tempo 0 explode (diâmetro 3).
-testeMinaTempo0Explode :: Estado
-testeMinaTempo0Explode =
-  Estado mapaChaoCentroAgua
-    [ Disparo (4,2) Norte Mina (Just 0) 0 ]
-    [ mkViva (4,3) ]
-
--- | Teste: Mina sem tempo (Nothing) mas sem inimigos próximos - não ativa
-testeMinaSemInimigosPerto :: Estado
-testeMinaSemInimigosPerto =
-  Estado mapaChaoCentroAgua
-    [ Disparo (4,2) Norte Mina Nothing 0 ]
-    [ mkViva (4,2)   -- dono na mesma posição
-    , mkViva (1,1)   -- longe
+-- | Mapa com água
+mapaComAgua :: Mapa
+mapaComAgua = 
+    [ [Pedra, Pedra, Pedra, Pedra, Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Agua,  Terra, Ar,    Pedra]
+    , [Pedra, Agua,  Terra, Terra, Pedra]
+    , [Pedra, Pedra, Pedra, Pedra, Pedra]
     ]
 
--- | Teste: Mina nova posição inválida - mantém posição anterior
-testeMinaPosicaoInvalida :: Estado
-testeMinaPosicaoInvalida =
-  let m = [ [Ar,Ar]
-          , [Terra,Terra] ]
-  in Estado m
-    [ Disparo (1,1) Sul Mina (Just 1) 0 ]
-    [ mkViva (0,0) ]
-
--- | Teste 11: Dinamite em parábola (no ar) – movimento Este → Sudeste.
-testeDinamiteParabola :: Estado
-testeDinamiteParabola =
-  Estado mapaMesa
-    [ Disparo (1,7) Este Dinamite (Just 3) 0 ]
-    [ mkViva (2,7) ]
-
--- | Teste 12 : Dinamite no chão com tempo 1.
-testeDinamiteNoChaoFicaNorte :: Estado
-testeDinamiteNoChaoFicaNorte =
-  Estado mapaChaoCentroAgua
-    [ Disparo (6,3) Norte Dinamite (Just 1) 0 ]
-    [ mkViva (3,3) ]
-
--- | Teste: Dinamite no chão (Terra) - deve parar e apontar Norte
-testeDinamiteParaNoChaoTerra :: Estado
-testeDinamiteParaNoChaoTerra =
-  Estado mapaEnunciado
-    [ Disparo (4,0) Sul Dinamite (Just 2) 0 ]
-    [ mkViva (2,2) ]
-
--- | Teste: Dinamite no chão (Pedra) - deve parar e apontar Norte
-testeDinamiteParaNoChaoPedra :: Estado
-testeDinamiteParaNoChaoPedra =
-  Estado mapaEnunciado
-    [ Disparo (5,5) Oeste Dinamite (Just 1) 0 ]
-    [ mkViva (3,3) ]
-
-
-
--- | Teste: Dinamite direção Sudeste
-testeDinamiteDirecaoSudeste :: Estado
-testeDinamiteDirecaoSudeste =
-  Estado mapaMesa
-    [ Disparo (2,5) Sudeste Dinamite (Just 3) 0 ]
-    [ mkViva (5,5) ]
-
--- | Teste: Dinamite direção Sudoeste
-testeDinamiteDirecaoSudoeste :: Estado
-testeDinamiteDirecaoSudoeste =
-  Estado mapaMesa
-    [ Disparo (2,3) Sudoeste Dinamite (Just 3) 0 ]
-    [ mkViva (5,1) ]
-
--- | Teste: Dinamite direção Norte (gravidade aplica)
-testeDinamiteDirecaoNorte :: Estado
-testeDinamiteDirecaoNorte =
-  Estado mapaMesa
-    [ Disparo (2,4) Norte Dinamite (Just 2) 0 ]
-    [ mkViva (5,4) ]
-
-
--- | Teste: Dinamite direção Sul 
-testeDinamiteDirecaoSul :: Estado
-testeDinamiteDirecaoSul =
-  Estado mapaMesa
-    [ Disparo (2,4) Sul Dinamite (Just 2) 0 ]
-    [ mkViva (5,7) ]
-
--- | Teste: Dinamite direção Nordeste
-testeDinamiteDirecaoNordeste :: Estado
-testeDinamiteDirecaoNordeste =
-  Estado mapaMesa
-    [ Disparo (2,3) Nordeste Dinamite (Just 2) 0 ]
-    [ mkViva (5,6) ]
-
-
-
--- | Teste: Dinamite direção Noroeste
-testeDinamiteDirecaoNoroeste :: Estado
-testeDinamiteDirecaoNoroeste =
-  Estado mapaMesa
-    [ Disparo (2,5) Noroeste Dinamite (Just 2) 0 ]
-    [ mkViva (5,2) ]
-
--- | Teste: Dinamite sai do mapa (retorna lista vazia)
-testeDinamiteSaiMapa :: Estado
-testeDinamiteSaiMapa =
-  let m = [ [Ar,Ar,Ar]
-          , [Ar,Ar,Ar] ]
-  in Estado m
-    [ Disparo (0,2) Este Dinamite (Just 1) 0 ]
-    [ mkViva (1,0) ]
-
-testeDinamiteRecenteLancada :: Estado
-testeDinamiteRecenteLancada =
-  Estado mapaMesa
-    [ Disparo (2,4) Este Dinamite Nothing 0 ]
-    [ mkViva (5,4) ]
-
--- | Teste 13 (corrigido): Explosão de bazuca afeta duas minhocas.
-testeBazucaExplodeAfetaMinhocas :: Estado
-testeBazucaExplodeAfetaMinhocas =
-  Estado mapaChaoCentroAgua
-    [ Disparo (5,6) Norte Bazuca Nothing 0 ]
-    [ mkViva (3,6)
-    , mkViva (4,6)
+-- | Mapa pequeno para teste de saída
+mapaPequeno :: Mapa
+mapaPequeno = 
+    [ [Ar, Ar, Ar]
+    , [Ar, Ar, Ar]
     ]
 
--- | Teste 14: Explosão de dinamite (diâmetro 9) grande área.
-testeDinamiteExplodeGrandeArea :: Estado
-testeDinamiteExplodeGrandeArea =
-  Estado mapaChaoCentroAgua
-    [ Disparo (5,8) Norte Dinamite (Just 0) 0 ]
-    [ mkViva (3,7)
-    , mkViva (4,8)
-    ]
 
--- | Teste 16: Nada muda – minhocas estáveis em chão, sem objetos.
-testeNadaMuda :: Estado
-testeNadaMuda =
-  Estado mapaMesa
-    []
-    [ mkViva (5,1), mkViva (5,7) ]
+-- * HELPERS
 
--- | Teste 17 (corrigido): Mina no chão; minhoca na posição correta.
-testeMinaNoChaoApontaNorteCorrigido :: Estado
-testeMinaNoChaoApontaNorteCorrigido =
-  Estado mapaMesa
-    [ Disparo (5,5) Norte Mina Nothing 0 ]
-    [ mkViva (2,3) ]
+-- | Minhoca viva padrão
+minhocaViva :: Posicao -> Minhoca
+minhocaViva pos = Minhoca
+    { posicaoMinhoca = Just pos
+    , vidaMinhoca = Viva 100
+    , jetpackMinhoca = 1
+    , escavadoraMinhoca = 1
+    , bazucaMinhoca = 1
+    , minaMinhoca = 1
+    , dinamiteMinhoca = 1
+    }
 
--- | Teste 18: Sem “minhoca extra” – cenário simples com 1 minhoca.
-testeSemExtraMinhoca :: Estado
-testeSemExtraMinhoca =
-  Estado mapaChaoCentroAgua
-    []
-    [ mkViva (3,5) ]
+-- | Minhoca com vida específica
+minhocaComVida :: Posicao -> Int -> Minhoca
+minhocaComVida pos vida = Minhoca
+    { posicaoMinhoca = Just pos
+    , vidaMinhoca = Viva vida
+    , jetpackMinhoca = 1
+    , escavadoraMinhoca = 1
+    , bazucaMinhoca = 1
+    , minaMinhoca = 1
+    , dinamiteMinhoca = 1
+    }
 
+-- | Minhoca morta
+minhocaMorta :: Maybe Posicao -> Minhoca
+minhocaMorta pos = Minhoca
+    { posicaoMinhoca = pos
+    , vidaMinhoca = Morta
+    , jetpackMinhoca = 0
+    , escavadoraMinhoca = 0
+    , bazucaMinhoca = 0
+    , minaMinhoca = 0
+    , dinamiteMinhoca = 0
+    }
 
--- | Teste: Minhoca com dano zero ou negativo - não deve alterar
-testeMinhocaDanoZero :: Estado
-testeMinhocaDanoZero =
-  Estado mapaEnunciado
-    [ Disparo (5,9) Norte Bazuca Nothing 0 ]
-    [ mkViva (3,3) ]  -- longe da explosão
-
--- | Teste: Objeto que não é Barril/Disparo (deve retornar Left obj)
-testeOutroObjeto :: Estado
-testeOutroObjeto =
-  Estado mapaChaoCentroAgua
-    []
-    [ mkViva (4,4) ]
-
--- | Teste: Explosão com raio ímpar para testar cálculo de dano
-testeExplosaoRaioImpar :: Estado
-testeExplosaoRaioImpar =
-  Estado mapaEnunciado
-    [ Disparo (4,5) Norte Mina (Just 0) 0 ]  -- Mina raio 3
-    [ mkViva (4,6)   -- cardeal
-    , mkViva (5,6)   -- diagonal
-    ]
-
--- | Teste: Minhoca recebe dano mas não morre
-testeMinhocaRecebeManoDanoNaoMorre :: Estado
-testeMinhocaRecebeManoDanoNaoMorre =
-  Estado mapaEnunciado
-    [ Disparo (3,3) Norte Bazuca Nothing 0 ]
-    [ Minhoca (Just (3,5)) (Viva 100) 0 0 0 0 0 ]  -- Longe, dano pequeno
-
--- | Teste: Posição diagonal na explosão
-testeExplosaoDiagonal :: Estado
-testeExplosaoDiagonal =
-  Estado mapaEnunciado
-    [ Barril (4,4) True ]
-    [ mkViva (5,5)   -- diagonal ao barril
-    , mkViva (4,5)   -- cardeal ao barril
-    ]
-
--- | Teste: Minhoca exatamente no centro da explosão
-testeMinhocaCentroExplosao :: Estado
-testeMinhocaCentroExplosao =
-  Estado mapaEnunciado
-    [ Barril (4,3) True ]
-    [ mkViva (4,3) ]  -- mesma posição
-
--- | Teste: Barril atingido por explosão deve ativar
-testeBarrilAtingidoPorExplosao :: Estado
-testeBarrilAtingidoPorExplosao =
-  Estado mapaEnunciado
-    [ Barril (4,3) False
-    , Disparo (4,5) Oeste Bazuca Nothing 0
-    ]
-    [ mkViva (2,2) ]
-
--- | Teste: Múltiplos barris em cascata
-testeBarrisCascata :: Estado
-testeBarrisCascata =
-  Estado mapaEnunciado
-    [ Barril (4,2) True
-    , Barril (4,4) False
-    ]
-    [ mkViva (5,0) ]
-
--- | Teste: Mina caindo para posição com Pedra (chão)
-testeMinaCaiParaPedra :: Estado
-testeMinaCaiParaPedra =
-  Estado mapaEnunciado
-    [ Disparo (4,5) Sul Mina (Just 2) 0 ]
-    [ mkViva (3,3) ]
-
--- | Teste: Mina já no chão de Terra
-testeMinaNoChaoTerra :: Estado
-testeMinaNoChaoTerra =
-  Estado mapaEnunciado
-    [ Disparo (4,0) Norte Mina Nothing 0 ]
-    [ mkViva (2,2) ]
-
--- | Teste: Minhoca com vida exatamente zero após dano
-testeMinhocaVidaExatamenteZero :: Estado
-testeMinhocaVidaExatamenteZero =
-  Estado mapaEnunciado
-    [ Barril (4,2) True ]
-    [ Minhoca (Just (4,2)) (Viva 50) 0 0 0 0 0 ]  -- vai receber 50 de dano
-
--- | Teste: Objeto genérico (não Barril/Disparo) - testando o catch-all
-testeObjetoGenerico :: Estado
-testeObjetoGenerico =
-  Estado mapaChaoCentroAgua
-    []
-    [ mkViva (4,4) ]
-
--- | Teste: Dano zero em minhoca (explosão muito longe)
-testeDanoZeroMinhoca :: Estado
-testeDanoZeroMinhoca =
-  Estado mapaEnunciado
-    [ Disparo (0,0) Norte Bazuca Nothing 0 ]  -- muito longe
-    [ mkViva (5,9) ]
-
--- | Teste: Barril na água (deve cair/explodir)
-testeBarrilNaAgua :: Estado
-testeBarrilNaAgua =
-  Estado mapaChaoCentroAgua
-    [ Barril (4,8) False ]  -- posição com água
-    [ mkViva (3,3) ]
-
--- | Teste: Minhoca morta sem posição
-testeMinhocaMortaSemPosicao :: Estado
-testeMinhocaMortaSemPosicao =
-  Estado mapaChaoCentroAgua
-    []
-    [ Minhoca Nothing Morta 0 0 0 0 0 ]
-
--- | Teste: Explosão afeta apenas terreno (sem minhocas)
-testeExplosaoApenasTerreno :: Estado
-testeExplosaoApenasTerreno =
-  Estado mapaEnunciado
-    [ Barril (4,2) True ]
-    []  -- sem minhocas
-
-
---------------------------------------------------------------------------------
--- Lista para o feedback automático
---------------------------------------------------------------------------------
+-- * TESTES DA TAREFA 3
 
 testesTarefa3 :: [Estado]
-testesTarefa3 =
-  [ -- 0
-    exemplo_e'
-  , exemplo_e
-  , -- 1..18
-    testeQuedaSimples
-  , testeQuedaParaAgua
-  , testeQuedaForaMapa
-  , testeBarrilSuspensoNaoExplode
-  , testeBarrilDanoTerrenoMinhoca
-  , testeBazucaParadaMinhocaCai
-  , testeBazucaBateExplode
-  , testeMinaAtivaPorInimigo
-  , testeMinaCaiEContinuaDesativada
-  , testeMinaTempo0Explode
-  , testeDinamiteParabola
-  , testeDinamiteNoChaoFicaNorte
-  , testeBazucaExplodeAfetaMinhocas
-  , testeDinamiteExplodeGrandeArea
-  , testeNadaMuda
-  , testeMinaNoChaoApontaNorteCorrigido
-  , testeSemExtraMinhoca
-  , testeSemQueda
-  , testeMinhocaSemPosicao
-  , testeMinhocaMorta
-  , testeMinhocaMortaCaiAgua
-  , testeBarrilNaoDeveCair
-  , testeBazucaSaiMapa
-  , testeMinaSemInimigosPerto
-  , testeMinaPosicaoInvalida
-  , testeDinamiteParaNoChaoTerra
-  , testeDinamiteParaNoChaoPedra
-  , testeDinamiteDirecaoSudeste
-  , testeDinamiteDirecaoSudoeste
-  , testeDinamiteDirecaoNorte
-  , testeDinamiteDirecaoSul
-  , testeDinamiteDirecaoNordeste
-  , testeDinamiteDirecaoNoroeste
-  , testeDinamiteSaiMapa
-  , testeMinhocaDanoZero
-  , testeOutroObjeto
-  , testeBarrilPosicaoNaoLivre
-  , testeMinhocaMortaNaAgua
-  , testeMinhocaVivaPosiçãoNada
-  , testeDinamiteRecenteLancada
-  , testeExplosaoRaioImpar
-  , testeMinhocaRecebeManoDanoNaoMorre
-  , testeExplosaoDiagonal
-  , testeMinhocaCentroExplosao
-  , testeBarrilAtingidoPorExplosao
-  , testeBarrisCascata
-  , testeMinaCaiParaPedra
-  , testeMinaNoChaoTerra
-  , testeMinhocaVidaExatamenteZero
-  , testeObjetoGenerico
-  , testeDanoZeroMinhoca
-  , testeBarrilNaAgua
-  , testeMinhocaMortaSemPosicao
-  , testeExplosaoApenasTerreno
-  , testeBazucaNumaBazuca
-  ]
+testesTarefa3 = 
+    [
+    -- ============================================
+    -- TESTES DE MINHOCAS (10 testes)
+    -- ============================================
+    
+    -- Teste 1: Minhoca no ar cai uma posição
+      Estado mapaSimples [] [minhocaViva (1, 1)]
+    
+    -- Teste 2: Minhoca no chão não cai
+    , Estado mapaSimples [] [minhocaViva (3, 1)]
+    
+    -- Teste 3: Minhoca viva cai na água e morre
+    , Estado mapaComAgua [] [minhocaViva (1, 1)]
+    
+    -- Teste 4: Minhoca morta cai na água (mantém posição e estado)
+    , Estado mapaComAgua [] [minhocaMorta (Just (1, 1))]
+    
+    -- Teste 5: Minhoca sem posição não é afetada
+    , Estado mapaSimples [] [minhocaMorta Nothing]
+    
+    -- Teste 6: Minhoca cai fora do mapa (perde posição e morre)
+    , Estado mapaPequeno [] [minhocaViva (1, 1)]
+    
+    -- Teste 7: Minhoca morta na água não morre novamente
+    , Estado mapaComAgua [] [minhocaMorta (Just (2, 1))]
+    
+    -- Teste 8: Minhoca viva sem posição não é afetada
+    , Estado mapaSimples [] [Minhoca Nothing (Viva 50) 0 0 0 0 0]
+    
+    -- Teste 9: Múltiplas minhocas com comportamentos diferentes
+    , Estado mapaComAgua [] 
+        [ minhocaViva (1, 1)      -- cai no ar
+        , minhocaViva (3, 2)      -- no chão
+        , minhocaMorta (Just (1, 2)) -- morta no ar
+        ]
+    
+    -- Teste 10: Minhoca cai múltiplas posições até água
+    , Estado mapaComAgua [] [minhocaViva (0, 1)]
+    
+    -- ============================================
+    -- TESTES DE BARRIL (10 testes)
+    -- ============================================
+    
+    -- Teste 11: Barril no chão mantém-se estável
+    , Estado mapaSimples [Barril (3, 2) False] []
+    
+    -- Teste 12: Barril no ar ativa-se
+    , Estado mapaSimples [Barril (1, 1) False] []
+    
+    -- Teste 13: Barril na água ativa-se
+    , Estado mapaComAgua [Barril (2, 1) False] []
+    
+    -- Teste 14: Barril ativado explode
+    , Estado mapaSimples [Barril (2, 2) True] []
+    
+    -- Teste 15: Barril explode e ativa outro barril próximo
+    , Estado mapaSimples 
+        [ Barril (2, 2) True
+        , Barril (2, 3) False
+        ] []
+    
+    -- Teste 16: Barril explode e mata minhoca no centro
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaViva (2, 2)]
+    
+    -- Teste 17: Barril explode e reduz vida de minhoca próxima
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaViva (2, 3)]
+    
+    -- Teste 18: Barril não afeta minhoca morta
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaMorta (Just (2, 2))]
+    
+    -- Teste 19: Múltiplos barris em cascata
+    , Estado mapaSimples
+        [ Barril (2, 2) True
+        , Barril (2, 4) False
+        , Barril (3, 3) False
+        ] [minhocaViva (1, 1)]
+    
+    -- Teste 20: Barril atingido por explosão ativa
+    , Estado mapaSimples
+        [ Barril (2, 2) False
+        , Disparo (2, 4) Oeste Bazuca (Just 0) 0
+        ] []
+    
+    -- ============================================
+    -- TESTES DE BAZUCA (10 testes)
+    -- ============================================
+    
+    -- Teste 21: Bazuca avança uma posição
+    , Estado mapaSimples [Disparo (1, 1) Este Bazuca (Just 5) 0] []
+    
+    -- Teste 22: Bazuca com tempo 0 explode
+    , Estado mapaSimples [Disparo (2, 2) Este Bazuca (Just 0) 0] []
+    
+    -- Teste 23: Bazuca bate em terra e explode
+    , Estado mapaSimples [Disparo (2, 2) Este Bazuca (Just 3) 0] []
+    
+    -- Teste 24: Bazuca decrementa tempo (mantém o mesmo)
+    , Estado mapaSimples [Disparo (1, 1) Este Bazuca (Just 3) 0] []
+    
+    -- Teste 25: Bazuca sem tempo continua avançando
+    , Estado mapaSimples [Disparo (1, 1) Este Bazuca Nothing 0] []
+    
+    -- Teste 26: Bazuca sai do mapa (retorna danos vazios)
+    , Estado mapaPequeno [Disparo (0, 2) Este Bazuca (Just 2) 0] []
+    
+    -- Teste 27: Bazuca explode e afeta múltiplas minhocas
+    , Estado mapaSimples 
+        [Disparo (2, 2) Norte Bazuca (Just 0) 0] 
+        [ minhocaViva (2, 2)
+        , minhocaViva (2, 3)
+        , minhocaViva (3, 2)
+        ]
+    
+    -- Teste 28: Bazuca avança Oeste
+    , Estado mapaSimples [Disparo (1, 3) Oeste Bazuca (Just 4) 0] []
+    
+    -- Teste 29: Bazuca avança Sul
+    , Estado mapaSimples [Disparo (1, 2) Sul Bazuca (Just 3) 0] []
+    
+    -- Teste 30: Bazuca avança Norte
+    , Estado mapaSimples [Disparo (3, 2) Norte Bazuca (Just 2) 0] []
+    
+    -- ============================================
+    -- TESTES DE MINA (15 testes)
+    -- ============================================
+    
+    -- Teste 31: Mina sem tempo, sem inimigos próximos
+    , Estado mapaSimples 
+        [Disparo (3, 2) Norte Mina Nothing 0] 
+        [minhocaViva (1, 1)]
+    
+    -- Teste 32: Mina sem tempo, com inimigo próximo ativa
+    , Estado mapaSimples 
+        [Disparo (3, 2) Norte Mina Nothing 0] 
+        [ minhocaViva (1, 1)
+        , minhocaViva (3, 3)
+        ]
+    
+    -- Teste 33: Mina com tempo decrementa
+    , Estado mapaSimples [Disparo (3, 2) Norte Mina (Just 2) 0] []
+    
+    -- Teste 34: Mina com tempo 0 explode
+    , Estado mapaSimples [Disparo (3, 2) Norte Mina (Just 0) 0] []
+    
+    -- Teste 35: Mina no ar com Sul cai
+    , Estado mapaSimples [Disparo (1, 1) Sul Mina Nothing 0] []
+    
+    -- Teste 36: Mina no chão aponta Norte
+    , Estado mapaSimples [Disparo (3, 2) Sul Mina (Just 3) 0] []
+    
+    -- Teste 37: Mina explode e mata minhoca no centro (diâmetro 3)
+    , Estado mapaSimples 
+        [Disparo (2, 2) Norte Mina (Just 0) 0] 
+        [minhocaViva (2, 2)]
+    
+    -- Teste 38: Mina explode com múltiplas minhocas
+    , Estado mapaSimples 
+        [Disparo (2, 2) Norte Mina (Just 0) 0] 
+        [ minhocaViva (2, 2)
+        , minhocaViva (2, 3)
+        , minhocaViva (3, 3)
+        ]
+    
+    -- Teste 39: Mina não ativa se inimigo longe
+    , Estado mapaSimples 
+        [Disparo (3, 2) Norte Mina Nothing 0] 
+        [ minhocaViva (3, 2)  -- dono
+        , minhocaViva (0, 0)  -- longe
+        ]
+    
+    -- Teste 40: Mina cai sobre Terra
+    , Estado mapaSimples [Disparo (2, 1) Sul Mina (Just 2) 0] []
+    
+    -- Teste 41: Mina cai sobre Pedra
+    , Estado mapaSimples [Disparo (0, 0) Sul Mina Nothing 0] []
+    
+    -- Teste 42: Mina sai do mapa
+    , Estado mapaPequeno [Disparo (1, 1) Sul Mina (Just 1) 0] []
+    
+    -- Teste 43: Mina ativa e depois explode
+    , Estado mapaSimples 
+        [Disparo (3, 2) Norte Mina Nothing 0] 
+        [ minhocaViva (1, 1)
+        , minhocaViva (4, 2)
+        ]
+    
+    -- Teste 44: Mina com tempo 1
+    , Estado mapaSimples [Disparo (3, 2) Norte Mina (Just 1) 0] []
+    
+    -- Teste 45: Mina no ar caindo
+    , Estado mapaSimples [Disparo (1, 2) Sul Mina (Just 3) 0] []
+    
+    -- ============================================
+    -- TESTES DE DINAMITE (15 testes)
+    -- ============================================
+    
+    -- Teste 46: Dinamite com tempo 0 explode
+    , Estado mapaSimples [Disparo (2, 2) Este Dinamite (Just 0) 0] []
+    
+    -- Teste 47: Dinamite sem tempo mantém-se
+    , Estado mapaSimples [Disparo (1, 1) Este Dinamite Nothing 0] []
+    
+    -- Teste 48: Dinamite no chão para (aponta Norte)
+    , Estado mapaSimples [Disparo (3, 2) Este Dinamite (Just 3) 0] []
+    
+    -- Teste 49: Dinamite parábola Este -> Sudeste
+    , Estado mapaSimples [Disparo (1, 1) Este Dinamite (Just 5) 0] []
+    
+    -- Teste 50: Dinamite Norte cai vertical
+    , Estado mapaSimples [Disparo (1, 2) Norte Dinamite (Just 5) 0] []
+    
+    -- Teste 51: Dinamite Sul cai vertical
+    , Estado mapaSimples [Disparo (1, 2) Sul Dinamite (Just 4) 0] []
+    
+    -- Teste 52: Dinamite Oeste -> Sudoeste
+    , Estado mapaSimples [Disparo (1, 3) Oeste Dinamite (Just 3) 0] []
+    
+    -- Teste 53: Dinamite Nordeste -> Este
+    , Estado mapaSimples [Disparo (1, 1) Nordeste Dinamite (Just 4) 0] []
+    
+    -- Teste 54: Dinamite Sudeste -> Este -> Sul
+    , Estado mapaSimples [Disparo (1, 1) Sudeste Dinamite (Just 3) 0] []
+    
+    -- Teste 55: Dinamite Noroeste -> Oeste
+    , Estado mapaSimples [Disparo (1, 3) Noroeste Dinamite (Just 2) 0] []
+    
+    -- Teste 56: Dinamite Sudoeste -> Oeste -> Sul
+    , Estado mapaSimples [Disparo (1, 3) Sudoeste Dinamite (Just 3) 0] []
+    
+    -- Teste 57: Dinamite explode (diâmetro 7) grande área
+    , Estado mapaSimples 
+        [Disparo (2, 2) Norte Dinamite (Just 0) 0] 
+        [ minhocaViva (2, 2)
+        , minhocaViva (3, 3)
+        , minhocaViva (1, 1)
+        ]
+    
+    -- Teste 58: Dinamite sai do mapa
+    , Estado mapaPequeno [Disparo (0, 2) Este Dinamite (Just 1) 0] []
+    
+    -- Teste 59: Dinamite no chão sobre Terra
+    , Estado mapaSimples [Disparo (3, 1) Sul Dinamite (Just 2) 0] []
+    
+    -- Teste 60: Dinamite no chão sobre Pedra
+    , Estado mapaSimples [Disparo (4, 2) Este Dinamite (Just 1) 0] []
+    
+    -- ============================================
+    -- TESTES DE EXPLOSÕES E DANOS (10 testes)
+    -- ============================================
+    
+    -- Teste 61: Explosão mata minhoca no centro
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaViva (2, 2)]
+    
+    -- Teste 62: Explosão reduz vida (não mata)
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaViva (2, 4)]
+    
+    -- Teste 63: Explosão afeta múltiplas minhocas
+    , Estado mapaSimples 
+        [Disparo (2, 2) Este Bazuca (Just 0) 0] 
+        [ minhocaViva (2, 2)
+        , minhocaViva (2, 3)
+        , minhocaViva (3, 2)
+        ]
+    
+    -- Teste 64: Explosão não afeta minhoca morta
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaMorta (Just (2, 2))]
+    
+    -- Teste 65: Explosão afeta terreno (destrói Terra)
+    , Estado mapaSimples [Barril (2, 2) True] []
+    
+    -- Teste 66: Explosão em posição cardeal
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [ minhocaViva (2, 3)  -- cardeal
+        , minhocaViva (3, 3)  -- diagonal
+        ]
+    
+    -- Teste 67: Explosão em posição diagonal
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaViva (3, 3)]
+    
+    -- Teste 68: Minhoca com vida reduzida a exatamente 0
+    , Estado mapaSimples 
+        [Barril (2, 2) True] 
+        [minhocaComVida (2, 2) 50]
+    
+    -- Teste 69: Dano zero não afeta minhoca
+    , Estado mapaSimples 
+        [Disparo (0, 0) Norte Bazuca (Just 0) 0] 
+        [minhocaViva (4, 4)]
+    
+    -- Teste 70: Explosão afeta apenas objetos próximos
+    , Estado mapaSimples
+        [ Barril (2, 2) True
+        , Barril (4, 4) False  -- longe
+        ] []
+    ]
 
---------------------------------------------------------------------------------
--- Harness de feedback (não mexer)
---------------------------------------------------------------------------------
+-- * MAIN
 
 dataTarefa3 :: IO TaskData
 dataTarefa3 = do
