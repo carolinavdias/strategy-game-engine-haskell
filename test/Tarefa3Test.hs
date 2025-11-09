@@ -31,6 +31,18 @@ mapaPequeno =
     , [Ar, Ar, Ar]
     ]
 
+-- | Mapa alto para testar jetpack
+mapaAlto :: Mapa
+mapaAlto =
+    [ [Pedra, Pedra, Pedra, Pedra, Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Terra, Terra, Terra, Pedra]
+    , [Pedra, Pedra, Pedra, Pedra, Pedra]
+    ]
 
 -- * HELPERS
 
@@ -162,6 +174,120 @@ testesTarefa3 =
         [ Barril (2, 2) False
         , Disparo (2, 4) Oeste Bazuca (Just 0) 0
         ] []
+
+
+    -- ============================================
+    -- TESTES DE ESCAVADORA (10 testes)
+    -- ============================================
+
+-- Teste : Escavadora avança em Ar
+    , Estado mapaSimples 
+        [Disparo (1, 1) Este Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora destrói Terra e avança
+    , Estado mapaSimples 
+        [Disparo (2, 1) Este Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora para em Pedra
+    , Estado mapaSimples 
+        [Disparo (1, 1) Norte Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora para em Água
+    , Estado mapaComAgua 
+        [Disparo (1, 1) Sul Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora sai do mapa
+    , Estado mapaPequeno 
+        [Disparo (0, 2) Este Escavadora Nothing 0] 
+        [minhocaViva (1, 0)]
+
+-- Teste : Escavadora direção Oeste
+    , Estado mapaSimples 
+        [Disparo (1, 3) Oeste Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora direção Sul
+    , Estado mapaSimples 
+        [Disparo (1, 2) Sul Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora direção Norte
+    , Estado mapaSimples 
+        [Disparo (2, 2) Norte Escavadora Nothing 0] 
+        [minhocaViva (3, 3)]
+
+-- Teste : Escavadora com minhoca no caminho (para)
+    , Estado mapaSimples 
+        [Disparo (1, 1) Este Escavadora Nothing 0] 
+        [ minhocaViva (1, 2)
+        , minhocaViva (3, 3)
+        ]
+
+-- Teste : Escavadora destrói múltiplas Terras em sequência
+    , Estado mapaSimples 
+        [Disparo (3, 1) Este Escavadora Nothing 0] 
+        [minhocaViva (1, 1)]
+
+
+    -- ============================================
+    -- TESTES DE JETPACK (10 testes)
+    -- ============================================
+
+    -- Teste 11: Jetpack ativo no ar (direção Este)
+    , Estado mapaAlto 
+        [Disparo (2, 2) Este Jetpack Nothing 0] 
+        [minhocaViva (2, 2)]
+
+    -- Teste 12: Jetpack ativo no ar (direção Oeste)
+    , Estado mapaAlto 
+        [Disparo (2, 2) Oeste Jetpack Nothing 0] 
+        [minhocaViva (2, 2)]
+
+-- Teste 13: Jetpack ativo no ar (direção Norte)
+    , Estado mapaAlto 
+        [Disparo (3, 2) Norte Jetpack Nothing 0] 
+        [minhocaViva (3, 2)]
+
+-- Teste 14: Jetpack ativo no ar (direção Sul)
+    , Estado mapaAlto 
+        [Disparo (2, 2) Sul Jetpack Nothing 0] 
+        [minhocaViva (2, 2)]
+
+-- Teste 15: Jetpack bate em Terra e para
+    , Estado mapaSimples 
+        [Disparo (2, 2) Este Jetpack Nothing 0] 
+        [minhocaViva (2, 2)]
+
+-- Teste 16: Jetpack bate em Pedra e para
+    , Estado mapaSimples 
+        [Disparo (1, 1) Norte Jetpack Nothing 0] 
+        [minhocaViva (1, 1)]
+
+-- Teste 17: Jetpack sai do mapa
+    , Estado mapaPequeno 
+        [Disparo (0, 2) Este Jetpack Nothing 0] 
+        [minhocaViva (0, 2)]
+
+-- Teste 18: Jetpack com minhoca no caminho
+    , Estado mapaAlto 
+        [Disparo (2, 2) Este Jetpack Nothing 0] 
+        [ minhocaViva (2, 2)
+        , minhocaViva (2, 3)
+        ]
+
+-- Teste 19: Jetpack em água para
+    , Estado mapaComAgua 
+        [Disparo (1, 1) Este Jetpack Nothing 0] 
+        [minhocaViva (1, 1)]
+
+-- Teste 20: Jetpack movimento diagonal (Nordeste)
+    , Estado mapaAlto 
+        [Disparo (3, 2) Nordeste Jetpack Nothing 0] 
+        [minhocaViva (3, 2)]
     
     -- ============================================
     -- TESTES DE BAZUCA (10 testes)

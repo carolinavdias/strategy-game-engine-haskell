@@ -81,6 +81,8 @@ avancaObjeto estado _ (Barril pos explode)
 
 avancaObjeto estado _ (Disparo pos dir tipo tempo dono) = 
     case tipo of
+        Jetpack -> avancaJetpack estado pos dir dono
+        Escavadora -> avancaEscavadora estado pos dir dono
         Dinamite -> avancaDinamite estado pos dir tempo dono
         Mina -> avancaMina estado pos dir tempo dono
         Bazuca -> 
@@ -95,17 +97,47 @@ avancaObjeto estado _ (Disparo pos dir tipo tempo dono) =
                     else if not (ePosicaoEstadoLivre novaPos estado)
                         then Right (calculaDanosExplosao novaPos 5 (mapaEstado estado))
                         else Left (Disparo novaPos dir Bazuca tempo dono)
-        _ -> Left (Disparo pos dir tipo tempo dono)
+        
 
--- * FUNÇÕES AUXILIARES GERAIS
+-- * JETPACK
 
--- | Verifica se posição está no ar ou em água 
-estaNoArOuAgua :: Posicao -> Mapa -> Bool
-estaNoArOuAgua pos mapa = 
-    case encontraPosicaoMatriz pos mapa of
-        Just Ar -> True
-        Just Agua -> True
-        _ -> False
+-- | Avança estado do jetpack
+avancaJetpack :: Estado -> Posicao -> Direcao -> NumMinhoca -> Either Objeto Danos
+avancaJetpack estado pos dir dono =
+    let mapa = mapaEstado estado
+        novaPos = movePosicao dir pos
+    in if not (ePosicaoMatrizValida novaPos mapa)
+        then Right []  -- Sai do mapa
+        else if not (ePosicaoEstadoLivre novaPos estado)
+            then Right []  -- Bate em algo e para
+            else Left (Disparo novaPos dir Jetpack Nothing dono)
+
+-- * ESCAVADORA
+
+-- | Avança estado da escavadora
+avancaEscavadora :: Estado -> Posicao -> Direcao -> NumMinhoca -> Either Objeto Danos
+avancaEscavadora estado pos dir dono =
+    let mapa = mapaEstado estado
+        novaPos = movePosicao dir pos
+    in if not (ePosicaoMatrizValida novaPos mapa)
+        then Right []  -- Sai do mapa
+        else case encontraPosicaoMatriz novaPos mapa of
+            Just Terra -> 
+                -- Destrói Terra e avança
+                let mapaAtualizado = destroiPosicao novaPos mapa
+                    estadoAtualizado = estado { mapaEstado = mapaAtualizado }
+                in if ePosicaoEstadoLivre novaPos estadoAtualizado
+                    then Left (Disparo novaPos dir Escavadora Nothing dono)
+                    else Right []
+            Just Pedra -> Right []  -- Para em Pedra
+            Just Agua -> Right []   -- Para em Água
+            Just Ar -> 
+                -- Continua em Ar
+                if ePosicaoEstadoLivre novaPos estado
+                    then Left (Disparo novaPos dir Escavadora Nothing dono)
+                    else Right []
+            Nothing -> Right []
+
 
 -- * MINA 
 
@@ -153,6 +185,14 @@ minaDeveAtivar pos dono estado =
                                   Just p -> p `elem` area
                                   Nothing -> False]
     in not (null minhocasInimigas)
+
+-- | Verifica se posição está no ar ou em água 
+estaNoArOuAgua :: Posicao -> Mapa -> Bool
+estaNoArOuAgua pos mapa = 
+    case encontraPosicaoMatriz pos mapa of
+        Just Ar -> True
+        Just Agua -> True
+        _ -> False
 
 -- * DINAMITE 
 
@@ -271,4 +311,3 @@ reduzVidaMinhoca danos minhoca =
                         in if novaVida <= 0
                             then minhoca { vidaMinhoca = Morta }
                             else minhoca { vidaMinhoca = Viva novaVida }
-                            
