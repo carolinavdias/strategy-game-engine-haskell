@@ -8,6 +8,7 @@ import Magic
 
 testesTarefa1 :: [Estado]
 testesTarefa1 = 
+    testesCoberturaTotalAdicional ++
     testesPosiçãoValidaComNothing ++
     testesDisparoPosiçãoNothing ++
     testesTodasDirecoesOpostas ++
@@ -1481,6 +1482,217 @@ testesEstadosValidos =
         , Minhoca Nothing Morta 0 0 0 0 0
         ]
     ]
+
+
+
+testesPosicaoNothingFalse :: [Estado]
+testesPosicaoNothingFalse = 
+    [ -- Barril em posição COMPLETAMENTE inválida (fora dos limites)
+      Estado
+        [ [Ar, Ar]
+        , [Ar, Ar]
+        ]
+        [Barril (1, 1) False]  -- Muito fora -> Nothing em encontraPosicaoMatriz
+        []
+    ]
+
+-- Imagem 1: validaPosicaoDisparo Bazuca - linha "Nothing -> False"  
+testesBazucaPosicaoNothing :: [Estado]
+testesBazucaPosicaoNothing = 
+    [ -- Disparo Bazuca completamente fora do mapa
+      Estado
+        [ [Ar, Ar]
+        , [Ar, Ar]
+        ]
+        [Disparo (1, 1) Norte Bazuca Nothing 0]  -- Fora -> Nothing
+        [Minhoca (Just (0, 0)) (Viva 100) 0 0 1 0 0]
+    ]
+
+testesDirecaoOpostaCompleta :: [Estado]
+testesDirecaoOpostaCompleta = 
+    [ -- Forçar Norte -> Sul (bazuca perfurando de Norte, verifica Sul)
+      Estado
+        [ [Terra, Terra, Terra]
+        , [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Sul Bazuca Nothing 0]  -- Em Terra, vem de Norte
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+
+    , Estado
+        [ [Terra, Terra, Terra]
+        , [Ar, Ar, Ar]
+        , [Ar, Terra, Ar]
+        ]
+        [Disparo (2, 1) Norte Bazuca Nothing 0]  
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+      
+      -- Forçar Este -> Oeste
+    , Estado
+        [ [Terra, Ar, Ar]
+        , [Terra, Ar, Ar]
+        ]
+        [Disparo (0, 0) Oeste Bazuca Nothing 0]  -- Em Terra, vem de Este
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+      
+      -- Forçar Nordeste -> Sudoeste
+    , Estado
+        [ [Ar, Ar, Terra]
+        , [Ar, Ar, Ar]
+        , [Terra, Ar, Ar]
+        ]
+        [Disparo (0, 2) Sudoeste Bazuca Nothing 0]  -- Em Terra, vem de Nordeste
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+      
+      -- Forçar Noroeste -> Sudeste
+    , Estado
+        [ [Terra, Ar, Ar]
+        , [Ar, Ar, Ar]
+        , [Ar, Ar, Terra]
+        ]
+        [Disparo (0, 0) Sudeste Bazuca Nothing 0]  -- Em Terra, vem de Noroeste
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+      
+      -- Forçar Sudoeste -> Nordeste
+    , Estado
+        [ [Ar, Ar, Terra]
+        , [Ar, Ar, Ar]
+        , [Terra, Ar, Ar]
+        ]
+        [Disparo (0, 2) Noroeste Bazuca Nothing 0]  
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+
+    , Estado
+        [ [Ar, Ar, Terra]
+        , [Ar, Ar, Ar]
+        , [Terra, Ar, Ar]
+        ]
+        [Disparo (2, 0) Nordeste Bazuca Nothing 0]  -- Em Terra, vem de Sudoeste
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+
+    ]
+
+-- IMAGEM 2: objetosIguais - forçar os ramos True e False específicos
+testesObjetosIguaisRamos :: [Estado]
+testesObjetosIguaisRamos = 
+    [ -- Dois Barris EXATAMENTE iguais: pos1 == pos2 && e1 == e2 -> True
+      Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [ Barril (1, 1) True
+        , Barril (1, 1) True  -- Mesma posição, mesmo explode -> True
+        ]
+        []
+      
+      -- Dois Disparos EXATAMENTE iguais (todas as condições True)
+    , Estado
+        [ [Ar, Ar, Ar, Ar]
+        , [Ar, Ar, Ar, Ar]
+        ]
+        [ Disparo (0, 1) Norte Bazuca Nothing 0
+        , Disparo (0, 1) Norte Bazuca Nothing 0  -- Tudo igual -> True
+        ]
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 2 0 0]
+      
+      -- Diferentes tipos de objetos: _ _ = False
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [ Barril (0, 0) False
+        , Disparo (1, 1) Norte Mina Nothing 0  -- Barril vs Disparo -> False
+        ]
+        [Minhoca (Just (0, 1)) (Viva 100) 0 0 0 1 0]
+    ]
+
+-- IMAGEM 2: validaTempoDisparo - cobrir TODAS as linhas amarelas
+testesValidaTempoDisparoCompleto :: [Estado]
+testesValidaTempoDisparoCompleto = 
+    [ -- Bazuca (Just _) = False
+      Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Norte Bazuca (Just 1) 0]
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 1 0 0]
+      
+      -- Mina (Just t) com t válido (>= 0 && <= 2) -> True
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Este Mina (Just 1) 0]  -- 1 está no intervalo -> True
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 0 1 0]
+      
+      -- Dinamite (Just t) com t válido (>= 0 && <= 4) -> True
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Sul Dinamite (Just 2) 0]  -- 2 está no intervalo -> True
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 0 0 1]
+      
+      -- Dinamite Nothing = False
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Oeste Dinamite Nothing 0]  -- Sem tempo -> False
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 0 0 1]
+      
+      -- _ _ = False (outro tipo com tempo)
+    , Estado
+        [ [Ar, Ar, Ar]
+        , [Ar, Ar, Ar]
+        ]
+        [Disparo (0, 1) Norte Jetpack Nothing 0]  -- Jetpack não deve ter tempo -> False
+        [Minhoca (Just (1, 1)) (Viva 100) 1 0 0 0 0]
+    ]
+
+-- IMAGEM 2: removerDuplicados - forçar o caso recursivo com 'x'
+-- removerDuplicados (x:xs) = x : removerDuplicados (filter (/= x) xs)
+testesRemoverDuplicadosRecursivo :: [Estado]
+testesRemoverDuplicadosRecursivo = 
+    [ -- Lista com duplicados que força o filter (/= x)
+      Estado
+        [ [Ar, Ar, Ar, Ar, Ar]
+        , [Ar, Ar, Ar, Ar, Ar]
+        ]
+        [ Disparo (0, 0) Norte Bazuca Nothing 0      -- x (mantido)
+        , Disparo (0, 0) Norte Bazuca Nothing 0      -- duplicado (removido por filter)
+        , Disparo (0, 2) Sul Mina (Just 1) 0        -- diferente (mantido)
+        , Disparo (0, 0) Norte Bazuca Nothing 0      -- duplicado (removido)
+        , Disparo (0, 4) Este Dinamite (Just 3) 0   -- diferente (mantido)
+        ]
+        [Minhoca (Just (1, 1)) (Viva 100) 0 0 3 1 1]
+      
+      -- Outro caso forçando múltiplas chamadas recursivas
+    , Estado
+        [ [Ar, Ar, Ar, Ar, Ar, Ar]
+        , [Ar, Ar, Ar, Ar, Ar, Ar]
+        ]
+        [ Disparo (0, 0) Norte Mina Nothing 0        -- x1
+        , Disparo (0, 1) Norte Mina (Just 2) 0       -- dup x1
+        , Disparo (0, 2) Sul Dinamite (Just 1) 1     -- x2 (diferente)
+        , Disparo (0, 3) Norte Mina Nothing 0        -- dup x1
+        , Disparo (0, 4) Sul Dinamite (Just 2) 1     -- dup x2
+        , Disparo (0, 5) Oeste Bazuca Nothing 0      -- x3 (diferente)
+        ]
+        [ Minhoca (Just (1, 0)) (Viva 100) 0 0 1 3 0
+        , Minhoca (Just (1, 5)) (Viva 100) 0 0 0 0 2
+        ]
+    ]
+
+-- Lista completa de testes adicionais para cobertura
+testesCoberturaTotalAdicional :: [Estado]
+testesCoberturaTotalAdicional = 
+    testesPosicaoNothingFalse ++
+    testesBazucaPosicaoNothing ++
+    testesDirecaoOpostaCompleta ++
+    testesObjetosIguaisRamos ++
+    testesValidaTempoDisparoCompleto ++
+    testesRemoverDuplicadosRecursivo
 
 -- ========== MAIN ==========
 
