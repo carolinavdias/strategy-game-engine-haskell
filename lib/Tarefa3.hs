@@ -4,15 +4,14 @@
 {-
 Module      : Tarefa3
 Description : Avançar tempo do jogo.
-Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
+Copyright   :  Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 Maintainer  : l1g053@l1g053.2025@l1
-Stability   : experimental
-Portability : portable
+
 
 Módulo para a realização da Tarefa 3 de LI1/LP1 em 2025/26.
 ------- . -------
-Aqui é tratada a **evolução do estado do jogo ao longo do tempo** — isto é, o que acontece a cada “tick” (instante de tempo).
+Aqui é tratada a **evolução do estado do jogo ao longo do tempo** – isto é, o que acontece a cada "tick" (instante de tempo).
 
 A função principal, `avancaEstado`, atualiza o jogo considerando:
   * o movimento natural das minhocas (gravidade e quedas);
@@ -25,7 +24,7 @@ O objetivo é simular o desenrolar automático do jogo, mesmo sem intervenção 
 module Tarefa3 where
 
 import Data.Either
-
+import Data.Maybe (isNothing)
 import Labs2025
 import Tarefa0_2025
 
@@ -35,268 +34,332 @@ type Danos = [(Posicao,Dano)]
 --------------------------------------------------------------------------------
 -- * AVANÇAR ESTADO DO JOGO
 
--- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
 avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
     where
-    minhocas' = map (uncurry $ avancaMinhoca e) (zip [0..] minhocas)
-    (objetos',danoss) = partitionEithers $ map (uncurry $ avancaObjeto e) (zip [0..] objetos)
+    minhocas' = zipWith (avancaMinhoca e) [0..] minhocas
+    (objetos',danoss) = partitionEithers $ zipWith (avancaObjeto $ e {minhocasEstado = minhocas'}) [0..] objetos
     e' = Estado mapa objetos' minhocas'
 
 --------------------------------------------------------------------------------
--- *AVANÇO DE MINHOCAS 
+-- * AVANÇO DE MINHOCAS 
 
--- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, 
--- retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
-avancaMinhoca estado _ minhoca = 
-    case posicaoMinhoca minhoca of
-        Nothing -> minhoca
-        Just pos -> aplicaGravidadeMinhoca pos minhoca (mapaEstado estado)
-
--- | Aplica gravidade a uma minhoca (faz cair se estiver no ar/água)
-aplicaGravidadeMinhoca :: Posicao -> Minhoca -> Mapa -> Minhoca
-aplicaGravidadeMinhoca pos minhoca mapa 
-    | not (minhocaDeveCair pos mapa) = minhoca
+avancaMinhoca estado _ minhoca
+    | not (minhocaValidaGlobal estado minhoca) = minhoca {vidaMinhoca = Morta, posicaoMinhoca = Nothing}
+    | isNothing (posicaoMinhoca minhoca) = minhoca
     | otherwise = 
-        let posInferior = movePosicao Sul pos
-        in if ePosicaoMatrizValida posInferior mapa
-            then minhocaCaiPara posInferior minhoca mapa
-            else minhocaSaiDoMapa minhoca
-
--- | Verifica se minhoca deve cair (está no ar ou água)
-minhocaDeveCair :: Posicao -> Mapa -> Bool
-minhocaDeveCair pos mapa = 
-    case encontraPosicaoMatriz pos mapa of
-        Just terreno -> terreno == Ar || terreno == Agua
-        Nothing -> False
-
--- | Minhoca cai para nova posição
-minhocaCaiPara :: Posicao -> Minhoca -> Mapa -> Minhoca
-minhocaCaiPara novaPos minhoca mapa = 
-    case encontraPosicaoMatriz novaPos mapa of
-        Just Agua -> 
-            if vidaMinhoca minhoca == Morta
-                then minhoca { posicaoMinhoca = Just novaPos }
-                else minhoca { posicaoMinhoca = Just novaPos, vidaMinhoca = Morta }
-        _ -> minhoca { posicaoMinhoca = Just novaPos }
-
--- | Minhoca sai do mapa (perde posição e morre)
-minhocaSaiDoMapa :: Minhoca -> Minhoca
-minhocaSaiDoMapa minhoca = minhoca { posicaoMinhoca = Nothing, vidaMinhoca = Morta }
+        case posicaoMinhoca minhoca of
+            Just (x, y) ->
+                let mapa = mapaEstado estado
+                    temJetpack = minhocaTemDisparoAtivo Jetpack estado minhoca
+                    novaPos = if temJetpack
+                                 then (x, y)
+                                 else (x + 1, y)  -- gravidade normal para baixo
+                in if not (ePosicaoMatrizValida novaPos mapa)
+                      then minhoca {vidaMinhoca = Morta, posicaoMinhoca = Nothing}
+                      else case encontraPosicaoMatriz novaPos mapa of
+                        Just Ar -> minhoca {posicaoMinhoca = Just novaPos}
+                        Just Agua -> minhoca {vidaMinhoca = Morta, posicaoMinhoca = Just novaPos}
+                        _ -> minhoca
+            Nothing -> minhoca
 
 --------------------------------------------------------------------------------
--- *AVANÇO DE OBJETOS 
+-- * FUNÇÕES AUXILIARES PARA MINHOCAS
 
--- >> Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda,uma lista de posições afetadas com o dano associado.
+-- | Verifica se a minhoca é válida no contexto global do estado
+minhocaValidaGlobal :: Estado -> Minhoca -> Bool
+minhocaValidaGlobal estado minhoca =
+    case posicaoMinhoca minhoca of
+        Nothing -> True
+        Just pos -> ePosicaoMatrizValida pos (mapaEstado estado)
+
+-- | Verifica se a minhoca tem um disparo ativo de um dado tipo de arma
+minhocaTemDisparoAtivo :: TipoArma -> Estado -> Minhoca -> Bool
+minhocaTemDisparoAtivo arma estado minhoca =
+    case posicaoMinhoca minhoca of
+        Nothing -> False
+        Just posMinhoca ->
+            let objetos = objetosEstado estado
+                minhocaNum = encontraIndiceMinhoca minhoca (minhocasEstado estado)
+            in any (disparoAtivoNaMinhoca posMinhoca minhocaNum arma) objetos
+  where
+    disparoAtivoNaMinhoca :: Posicao -> Maybe Int -> TipoArma -> Objeto -> Bool
+    disparoAtivoNaMinhoca pos (Just n) tipoArma (Disparo posDisparo _ tipoDisparo _ dono) =
+        tipoDisparo == tipoArma && dono == n && posDisparo == pos
+    disparoAtivoNaMinhoca _ _ _ _ = False
+
+-- | Encontra o índice de uma minhoca na lista de minhocas
+encontraIndiceMinhoca :: Minhoca -> [Minhoca] -> Maybe Int
+encontraIndiceMinhoca m ms = encontraIndice 0 ms
+  where
+    encontraIndice _ [] = Nothing
+    encontraIndice i (x:xs)
+        | posicaoMinhoca x == posicaoMinhoca m && vidaMinhoca x == vidaMinhoca m = Just i
+        | otherwise = encontraIndice (i+1) xs
+
+-- | Verifica se a minhoca está viva
+minhocaEstaViva :: Minhoca -> Bool
+minhocaEstaViva minhoca = 
+    case vidaMinhoca minhoca of
+        Viva _ -> True
+        Morta -> False
+
+-- | Verifica se a minhoca está morta
+minhocaEstaMorta :: Minhoca -> Bool
+minhocaEstaMorta = not . minhocaEstaViva
+
+-- | Verifica se a posição está abaixo de outra posição
+posicaoAbaixoDe :: Posicao -> Posicao
+posicaoAbaixoDe (x, y) = (x + 1, y)
+
+--------------------------------------------------------------------------------
+-- * FUNÇÕES AUXILIARES PARA OBJETOS
+
+-- | Extrai a posição de um objeto
+posicaoDoObjeto :: Objeto -> Posicao
+posicaoDoObjeto (Barril pos _) = pos
+posicaoDoObjeto (Disparo pos _ _ _ _) = pos
+
+-- | Extrai o tipo de arma de um disparo
+tipoDeArmaDoDisparo :: Objeto -> Maybe TipoArma
+tipoDeArmaDoDisparo (Disparo _ _ tipo _ _) = Just tipo
+tipoDeArmaDoDisparo _ = Nothing
+
+-- | Verifica se um objeto é um barril
+eBarril :: Objeto -> Bool
+eBarril (Barril _ _) = True
+eBarril _ = False
+
+-- | Verifica se um objeto é um disparo
+eDisparo :: Objeto -> Bool
+eDisparo (Disparo _ _ _ _ _) = True
+eDisparo _ = False
+
+-- | Verifica se um objeto é um disparo de um tipo específico
+eDisparoDeTipo :: TipoArma -> Objeto -> Bool
+eDisparoDeTipo tipo (Disparo _ _ tipoDisparo _ _) = tipo == tipoDisparo
+eDisparoDeTipo _ _ = False
+
+-- | Conta quantos objetos de um tipo específico existem no estado
+contaObjetosTipo :: (Objeto -> Bool) -> Estado -> Int
+contaObjetosTipo predicado estado = length $ filter predicado (objetosEstado estado)
+
+explodeObject :: Objeto -> Danos
+explodeObject object = 
+    [ (addToPosition (originOfExplosion object) (dx, dy), (diameter - cost) * 10)
+      | dx <- [-radius .. radius],
+        dy <- [-radius .. radius],
+        let cost = weightedCost (dx, dy),
+        (diameter - cost) > 0
+    ]
+    where
+    originOfExplosion :: Objeto -> Posicao
+    originOfExplosion (Disparo position _ _ _ _) = position
+    originOfExplosion (Barril position _) = position
+
+    diameter = case object of
+        (Disparo _ _ Dinamite _ _) -> 7
+        (Barril _ _) -> 5
+        (Disparo _ _ Bazuca _ _) -> 5
+        (Disparo _ _ Mina _ _) -> 3
+        (Disparo {}) -> 0
+
+    radius = diameter `div` 2
+
+    weightedCost :: Posicao -> Int
+    weightedCost (dx, dy) =
+        let ax = abs dx; ay = abs dy
+        in 2 * max ax ay + min ax ay
+
+    addToPosition :: Posicao -> Posicao -> Posicao
+    addToPosition (x, y) (dx, dy) = (x + dx, y + dy)
+
+-- | Obtém o diâmetro de explosão para um tipo de objeto
+diametroExplosao :: Objeto -> Int
+diametroExplosao (Disparo _ _ Dinamite _ _) = 7
+diametroExplosao (Barril _ _) = 5
+diametroExplosao (Disparo _ _ Bazuca _ _) = 5
+diametroExplosao (Disparo _ _ Mina _ _) = 3
+diametroExplosao (Disparo {}) = 0
+
+-- | Calcula o raio de explosão a partir do diâmetro
+raioExplosao :: Int -> Int
+raioExplosao diametro = diametro `div` 2
+
+-- | Calcula o custo ponderado de uma posição relativa ao centro da explosão
+custoPonderado :: Posicao -> Int
+custoPonderado (dx, dy) =
+    let ax = abs dx; ay = abs dy
+    in 2 * max ax ay + min ax ay
+
+-- | Verifica se uma posição sofre dano de uma explosão
+posicaoSofreDano :: Posicao -> Posicao -> Int -> Bool
+posicaoSofreDano centroExplosao posicao diametro =
+    let (cx, cy) = centroExplosao
+        (px, py) = posicao
+        (dx, dy) = (px - cx, py - cy)
+        custo = custoPonderado (dx, dy)
+    in (diametro - custo) > 0
+
+-- | Calcula o dano em uma posição específica dado o centro e diâmetro
+calculaDanoNaPosicao :: Posicao -> Posicao -> Int -> Dano
+calculaDanoNaPosicao centro posicao diametro =
+    let (cx, cy) = centro
+        (px, py) = posicao
+        (dx, dy) = (px - cx, py - cy)
+        custo = custoPonderado (dx, dy)
+    in max 0 ((diametro - custo) * 10)
+
+shouldExplode :: Estado -> Objeto -> Bool
+shouldExplode _ (Barril _ aboutToExplode) = aboutToExplode
+shouldExplode _ (Disparo _ _ _ (Just 0) _) = True
+shouldExplode state (Disparo position _ Bazuca _ _) = not (ePosicaoEstadoLivre position state)
+shouldExplode _ _ = False
+
+--------------------------------------------------------------------------------
+-- * AVANÇO DE OBJETOS 
 
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
-avancaObjeto estado _ (Barril pos explode) 
-    | explode = Right (calculaDanosExplosao pos 5 (mapaEstado estado))
-    | estaNoArOuAgua pos (mapaEstado estado) = Left (Barril pos True)
-    | otherwise = Left (Barril pos False)
-
-avancaObjeto estado _ (Disparo pos dir tipo tempo dono) = 
-    case tipo of
-        Dinamite -> avancaDinamite estado pos dir tempo dono
-        Mina -> avancaMina estado pos dir tempo dono
-        Bazuca -> 
-            if tempo == Just 0 
-                then Right (calculaDanosExplosao pos 5 (mapaEstado estado))
-            else if not (ePosicaoEstadoLivre pos estado)
-                then Right (calculaDanosExplosao pos 5 (mapaEstado estado))
-            else 
-                let novaPos = movePosicao dir pos
-                in if not (ePosicaoMatrizValida novaPos (mapaEstado estado))
-                    then Right []
-                    else if not (ePosicaoEstadoLivre novaPos estado)
-                        then Right (calculaDanosExplosao novaPos 5 (mapaEstado estado))
-                        else Left (Disparo novaPos dir Bazuca tempo dono)
-        _ -> Left (Disparo pos dir tipo tempo dono)
+avancaObjeto state _ object
+    | shouldExplode state object = Right (explodeObject object)
+    | otherwise = case object of
+        (Barril (x, y) _) ->
+            if ePosicaoMapaLivre (x + 1, y) (mapaEstado state)
+                then Left Barril {posicaoBarril = (x, y), explodeBarril = True}
+                else Left object
         
+        gunshot@(Disparo position direction typeOfGunshot timeUntilExplosion _) ->
+            case typeOfGunshot of
+                Bazuca ->
+                    let (px, py) = position
+                        (dx, dy) = delta direction
+                        newPos = (px + dx, py + dy)
+                    in if ePosicaoMatrizValida newPos (mapaEstado state)
+                          then Left gunshot {posicaoDisparo = newPos}
+                          else Right []
+                
+                Dinamite ->
+                    let (px, py) = position
+                        posBelow = (px + 1, py)
+                        onFloor = not (ePosicaoMapaLivre posBelow (mapaEstado state)) && direction == Norte
+                        newTempo = case timeUntilExplosion of
+                            Just n | n > 0 -> Just (n - 1)
+                            _ -> timeUntilExplosion
+                    in if not onFloor
+                          then
+                            let nextDir
+                                  | (direction == Norte) || (direction == Sul) = (Sul, Norte)
+                                  | direction == Nordeste = (Nordeste, Este)
+                                  | direction == Este = (Sudeste, Sudeste)
+                                  | direction == Sudeste = (Sul, Sul)
+                                  | direction == Noroeste = (Oeste, Oeste)
+                                  | direction == Oeste = (Sudoeste, Sudoeste)
+                                  | direction == Sudoeste = (Sul, Sul)
+                                  | otherwise = (Sul, Norte)
+                                (moveDir, newDir) = nextDir
+                                (dx, dy) = delta moveDir
+                                newPos = (px + dx, py + dy)
+                            in if ePosicaoMapaLivre newPos (mapaEstado state)
+                                  then Left gunshot {posicaoDisparo = newPos, direcaoDisparo = newDir, tempoDisparo = newTempo}
+                                  else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
+                          else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
+                
+                Mina ->
+                    let (px, py) = position
+                        (dx, dy) = delta Sul
+                        newPos = (px + dx, py + dy)
+                        newTempo = case timeUntilExplosion of
+                            Just n | n > 0 -> Just (n - 1)
+                            _ -> Just 2
+                    in if ePosicaoMapaLivre newPos (mapaEstado state)
+                          then
+                            ( if ePosicaoMatrizValida newPos (mapaEstado state)
+                                then Left gunshot {posicaoDisparo = newPos, direcaoDisparo = Norte, tempoDisparo = newTempo}
+                                else Right []
+                            )
+                          else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
+                
+                Jetpack -> Left gunshot
+                Escavadora -> Left gunshot
 
---------------------------------------------------------------------------------
--- * COMPORTAMENTO DAS MINAS
+-- | Calcula o deslocamento (dx, dy) para uma dada direção
+delta :: Direcao -> (Int, Int)
+delta Norte = (-1, 0)
+delta Sul = (1, 0)
+delta Este = (0, 1)
+delta Oeste = (0, -1)
+delta Nordeste = (-1, 1)
+delta Sudeste = (1, 1)
+delta Noroeste = (-1, -1)
+delta Sudoeste = (1, -1)
 
--- | Avança estado da mina
-avancaMina :: Estado -> Posicao -> Direcao -> Maybe Ticks -> NumMinhoca -> Either Objeto Danos
-avancaMina estado pos dir tempo dono =
-    case tempo of
-        Just 0 -> Right (calculaDanosExplosao pos 3 (mapaEstado estado))
-        Just n -> 
-            let (novaPos, novaDir) = atualizaFisicaMina estado pos dir
-            in if not (ePosicaoMatrizValida novaPos (mapaEstado estado))
-                  then Right []
-                  else Left (Disparo novaPos novaDir Mina (Just (n - 1)) dono)
-        Nothing -> 
-            if minaDeveAtivar pos dono estado
-                then Left (Disparo pos dir Mina (Just 2) dono)
-                else 
-                    let (novaPos, novaDir) = atualizaFisicaMina estado pos dir
-                    in if not (ePosicaoMatrizValida novaPos (mapaEstado estado))
-                          then Right []
-                          else Left (Disparo novaPos novaDir Mina Nothing dono)
+-- | Soma dois deslocamentos (vetores)
+somaDeslocamento :: (Int, Int) -> (Int, Int) -> (Int, Int)
+somaDeslocamento (dx1, dy1) (dx2, dy2) = (dx1 + dx2, dy1 + dy2)
 
--- | Atualiza física da mina (posição e direção)
-atualizaFisicaMina :: Estado -> Posicao -> Direcao -> (Posicao, Direcao)
-atualizaFisicaMina estado pos dir =
-    let mapa = mapaEstado estado
-        posAbaixo = movePosicao Sul pos
-        estaNoChao = case encontraPosicaoMatriz posAbaixo mapa of
-                        Just Terra -> True
-                        Just Pedra -> True
-                        _ -> False
-    in if estaNoChao
-        then (pos, Norte)
-        else if dir == Sul && estaNoArOuAgua pos mapa
-              then (movePosicao Sul pos, Norte)
-              else (pos, dir)
+-- | Aplica um deslocamento a uma posição
+aplicaDeslocamento :: Posicao -> (Int, Int) -> Posicao
+aplicaDeslocamento (x, y) (dx, dy) = (x + dx, y + dy)
 
--- | Verifica se mina deve ativar (minhoca inimiga na área)
-minaDeveAtivar :: Posicao -> NumMinhoca -> Estado -> Bool
-minaDeveAtivar pos dono estado = 
-    let area = calculaAreaExplosao pos 3
-        minhocasInimigas = [i | (i, m) <- zip [0..] (minhocasEstado estado), 
-                               i /= dono, 
-                               case posicaoMinhoca m of
-                                  Just p -> p `elem` area
-                                  Nothing -> False]
-    in not (null minhocasInimigas)
-
--- | Verifica se posição está no ar ou em água 
-estaNoArOuAgua :: Posicao -> Mapa -> Bool
-estaNoArOuAgua pos mapa = 
-    case encontraPosicaoMatriz pos mapa of
-        Just Ar -> True
-        Just Agua -> True
-        _ -> False
-
---------------------------------------------------------------------------------
--- * COMPORTAMENTO DA DINAMITE
-
--- | Avança estado da dinamite
-avancaDinamite :: Estado -> Posicao -> Direcao -> Maybe Ticks -> NumMinhoca -> Either Objeto Danos
-avancaDinamite estado pos dir tempo dono =
-    case tempo of
-        Just 0 -> Right (calculaDanosExplosao pos 7 (mapaEstado estado))
-        Just n -> 
-            let mapa = mapaEstado estado
-                posAbaixo = movePosicao Sul pos
-                estaNoChao = case encontraPosicaoMatriz posAbaixo mapa of
-                                Just Terra -> True
-                                Just Pedra -> True
-                                _ -> False
-            in if estaNoChao
-                then Left (Disparo pos Norte Dinamite (Just (n - 1)) dono)
-                else 
-                    let (novaPos, novaDir) = calculaMovimentoDinamite pos dir
-                    in if not (ePosicaoMatrizValida novaPos mapa)
-                        then Right []
-                        else Left (Disparo novaPos novaDir Dinamite (Just n) dono)
-        Nothing -> Left (Disparo pos dir Dinamite tempo dono)
-
--- | Calcula movimento da dinamite (parábola)
-calculaMovimentoDinamite :: Posicao -> Direcao -> (Posicao, Direcao)
-calculaMovimentoDinamite pos dir = 
-    case dir of
-        Norte -> (movePosicao Sul pos, Norte)
-        Sul -> (movePosicao Sul pos, Norte)
-        Este -> (movePosicao Este pos, Sudeste)
-        Nordeste -> (movePosicao Este pos, Este)
-        Sudeste -> (movePosicao Este pos, Sul)
-        Oeste -> (movePosicao Oeste pos, Sudoeste)
-        Noroeste -> (movePosicao Oeste pos, Oeste)
-        Sudoeste -> (movePosicao Oeste pos, Sul)
-
---------------------------------------------------------------------------------
--- * EXPLOSÕES E DANOS
-
--- | Calcula área de explosão (todas as posições num quadrado)
-calculaAreaExplosao :: Posicao -> Int -> [Posicao]
-calculaAreaExplosao (l, c) diametro = 
-    let raio = diametro `div` 2
-    in [(l + dl, c + dc) | dl <- [-raio..raio], dc <- [-raio..raio]]
-
--- | Calcula danos de uma explosão
-calculaDanosExplosao :: Posicao -> Int -> Mapa -> Danos
-calculaDanosExplosao centro diametro mapa = 
-    let raio = diametro `div` 2
-        posicoesValidas = [(l, c) | l <- [fst centro - raio .. fst centro + raio],
-                                    c <- [snd centro - raio .. snd centro + raio],
-                                    ePosicaoMatrizValida (l, c) mapa]
-        danosComPos = [(pos, calculaDanoPosicao centro pos diametro) | pos <- posicoesValidas]
-    in filter (\(_, dano) -> dano > 0) danosComPos
-
--- | Calcula dano numa posição específica baseado na distância ao centro
-calculaDanoPosicao :: Posicao -> Posicao -> Int -> Dano
-calculaDanoPosicao (lc, cc) (lp, cp) diametro = 
-    let distL = abs (lc - lp)
-        distC = abs (cc - cp)
-        distMax = max distL distC
-        eCardeal = (distL == 0 || distC == 0) && distMax > 0
-    in if distL == 0 && distC == 0
-        then diametro * 10
-        else if eCardeal
-            then max 0 ((diametro - 2 * distMax) * 10)
-            else max 0 ((diametro - 2 * distMax - 1) * 10)
+-- | Calcula a próxima posição dada uma direção
+proximaPosicao :: Posicao -> Direcao -> Posicao
+proximaPosicao pos dir = aplicaDeslocamento pos (delta dir)
 
 --------------------------------------------------------------------------------
 -- * APLICAÇÃO DE DANOS AO ESTADO
 
--- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
+-- | Aplica dano a uma minhoca individual
+aplicaDanoMinhoca :: Dano -> Minhoca -> Minhoca
+aplicaDanoMinhoca damage worm =
+    let health = vidaMinhoca worm
+    in worm
+        { vidaMinhoca = case health of
+            Morta -> Morta
+            Viva h -> if h <= damage then Morta else Viva (h - damage)
+        }
+
+-- | Calcula o dano total em uma posição
+danoTotalNaPosicao :: Posicao -> Danos -> Dano
+danoTotalNaPosicao pos danos = sum [dano | (p, dano) <- danos, p == pos]
+
+-- | Verifica se uma posição tem dano
+posicaoTemDano :: Posicao -> Danos -> Bool
+posicaoTemDano pos danos = any (\(p, _) -> p == pos) danos
+
+-- | Filtra danos que afetam uma posição específica
+danosNaPosicao :: Posicao -> Danos -> Danos
+danosNaPosicao pos danos = filter (\(p, _) -> p == pos) danos
+
+-- | Aplica danos a uma lista de minhocas
+aplicaDanosAsMinhocas :: Danos -> [Minhoca] -> [Minhoca]
+aplicaDanosAsMinhocas danos = map (aplicaDanosAUmaMinhoca danos)
+  where
+    aplicaDanosAUmaMinhoca :: Danos -> Minhoca -> Minhoca
+    aplicaDanosAUmaMinhoca ds minhoca =
+        let pos = posicaoMinhoca minhoca
+            relevantDamages = [dano | (p, dano) <- ds, Just p == pos]
+            totalDamage = sum relevantDamages
+        in if totalDamage > 0
+              then aplicaDanoMinhoca totalDamage minhoca
+              else minhoca
+
+-- | Destrói terreno em uma posição se for destrutível
+destruirTerrenoNaPosicao :: Posicao -> Dano -> Mapa -> Mapa
+destruirTerrenoNaPosicao pos dano mapa
+    | dano > 0 && ePosicaoMatrizValida pos mapa =
+        case encontraPosicaoMatriz pos mapa of
+            Just Terra -> atualizaPosicaoMatriz pos Ar mapa
+            _ -> mapa
+    | otherwise = mapa
+
 aplicaDanos :: Danos -> Estado -> Estado
-aplicaDanos danos estado = 
-    let mapaAtualizado = aplicaDanosMapa danos (mapaEstado estado)
-        objetosAtualizados = aplicaDanosObjetos danos (objetosEstado estado)
-        minhocasAtualizadas = aplicaDanosMinhocas danos (minhocasEstado estado)
-    in Estado mapaAtualizado objetosAtualizados minhocasAtualizadas
+aplicaDanos damages state = 
+    state {minhocasEstado = updatedWorms, mapaEstado = updatedMap}
+    where
+    worms = minhocasEstado state
+    mapa = mapaEstado state
 
--- | Aplica danos ao mapa (destrói terra nas posições afetadas)
-aplicaDanosMapa :: Danos -> Mapa -> Mapa
-aplicaDanosMapa [] mapa = mapa
-aplicaDanosMapa ((pos, _):ds) mapa = 
-    let mapaAtualizado = destroiPosicao pos mapa
-    in aplicaDanosMapa ds mapaAtualizado
+    updatedWorms = aplicaDanosAsMinhocas damages worms
+    updatedMap = foldr (uncurry destruirTerrenoNaPosicao) mapa damages
 
--- | Aplica danos aos objetos (barris atingidos explodem)
-aplicaDanosObjetos :: Danos -> [Objeto] -> [Objeto]
-aplicaDanosObjetos danos objetos = 
-    map (ativaBarrilSeDanificado danos) objetos
-
--- | Ativa barril para explodir se for danificado
-ativaBarrilSeDanificado :: Danos -> Objeto -> Objeto
-ativaBarrilSeDanificado danos (Barril pos explode) 
-    | explode = Barril pos explode
-    | any (\(p, _) -> p == pos) danos = Barril pos True
-    | otherwise = Barril pos False
-ativaBarrilSeDanificado _ obj = obj
-
--- | Aplica danos às minhocas
-aplicaDanosMinhocas :: Danos -> [Minhoca] -> [Minhoca]
-aplicaDanosMinhocas danos = map (reduzVidaMinhoca danos)
-
--- | Reduz vida de uma minhoca baseado nos danos
-reduzVidaMinhoca :: Danos -> Minhoca -> Minhoca
-reduzVidaMinhoca danos minhoca = 
-    case posicaoMinhoca minhoca of
-        Nothing -> minhoca
-        Just pos -> 
-            let danoTotal = sum [dano | (p, dano) <- danos, p == pos]
-            in if danoTotal <= 0
-                then minhoca
-                else case vidaMinhoca minhoca of
-                    Morta -> minhoca
-                    Viva vidaAtual -> 
-                        let novaVida = vidaAtual - danoTotal
-                        in if novaVida <= 0
-                            then minhoca { vidaMinhoca = Morta }
-                            else minhoca { vidaMinhoca = Viva novaVida }
-
-
-{-
--- <<< RESUMO DA TAREFA 3 >>>
-A Tarefa 3 trata da evolução automática do estado do jogo a cada instante de tempo (“tick”).
-Foram implementadas as regras que fazem as minhocas caírem, os objetos (barris, minas, dinamites e disparos) avançarem ou explodirem, e os respetivos danos serem aplicados ao mapa e às entidades envolvidas.
-O objetivo é simular o desenrolar natural do jogo sem intervenção do jogador, garantindo coerência física e lógica em todas as interações.
-;)
--}
