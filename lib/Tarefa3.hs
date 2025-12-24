@@ -52,10 +52,7 @@ avancaMinhoca estado _ minhoca
         case posicaoMinhoca minhoca of
             Just (x, y) ->
                 let mapa = mapaEstado estado
-                    temJetpack = minhocaTemDisparoAtivo Jetpack estado minhoca
-                    novaPos = if temJetpack
-                                 then (x, y)
-                                 else (x + 1, y)  -- gravidade normal para baixo
+                    novaPos = (x + 1, y)  -- gravidade normal para baixo
                 in if not (ePosicaoMatrizValida novaPos mapa)
                       then minhoca {vidaMinhoca = Morta, posicaoMinhoca = Nothing}
                       else case encontraPosicaoMatriz novaPos mapa of
@@ -217,6 +214,19 @@ shouldExplode _ (Disparo _ _ _ (Just 0) _) = True
 shouldExplode state (Disparo position _ Bazuca _ _) = not (ePosicaoEstadoLivre position state)
 shouldExplode _ _ = False
 
+-- | Verifica se existe minhoca inimiga na área de explosão de uma mina
+existeMinhocaInimiganAreaExplosao :: Posicao -> NumMinhoca -> Int -> Estado -> Bool
+existeMinhocaInimiganAreaExplosao centro dono diametro estado =
+    any (minhocaNaArea centro diametro dono) (zip [0..] (minhocasEstado estado))
+  where
+    minhocaNaArea :: Posicao -> Int -> NumMinhoca -> (Int, Minhoca) -> Bool
+    minhocaNaArea centroExp diam donoDaMina (idx, minhoca) =
+        idx /= donoDaMina &&
+        minhocaEstaViva minhoca &&
+        case posicaoMinhoca minhoca of
+            Just posMinhoca -> posicaoSofreDano centroExp posMinhoca diam
+            Nothing -> False
+
 --------------------------------------------------------------------------------
 -- * AVANÇO DE OBJETOS 
 
@@ -224,10 +234,11 @@ avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
 avancaObjeto state _ object
     | shouldExplode state object = Right (explodeObject object)
     | otherwise = case object of
-        (Barril (x, y) _) ->
-            if ePosicaoMapaLivre (x + 1, y) (mapaEstado state)
-                then Left Barril {posicaoBarril = (x, y), explodeBarril = True}
-                else Left object
+        (Barril pos _) ->
+            let posAbaixo = posicaoAbaixoDe pos
+            in if ePosicaoMapaLivre posAbaixo (mapaEstado state)
+                then Left (Barril pos True)
+                else Left (Barril pos False)
         
         gunshot@(Disparo position direction typeOfGunshot timeUntilExplosion _) ->
             case typeOfGunshot of
@@ -242,36 +253,41 @@ avancaObjeto state _ object
                 Dinamite ->
                     let (px, py) = position
                         posBelow = (px + 1, py)
-                        onFloor = not (ePosicaoMapaLivre posBelow (mapaEstado state)) && direction == Norte
+                        onFloor = not (ePosicaoMapaLivre posBelow (mapaEstado state))
                         newTempo = case timeUntilExplosion of
                             Just n | n > 0 -> Just (n - 1)
                             _ -> timeUntilExplosion
                     in if not onFloor
                           then
-                            let nextDir
-                                  | (direction == Norte) || (direction == Sul) = (Sul, Norte)
-                                  | direction == Nordeste = (Nordeste, Este)
-                                  | direction == Este = (Sudeste, Sudeste)
-                                  | direction == Sudeste = (Sul, Sul)
-                                  | direction == Noroeste = (Oeste, Oeste)
-                                  | direction == Oeste = (Sudoeste, Sudoeste)
-                                  | direction == Sudoeste = (Sul, Sul)
-                                  | otherwise = (Sul, Norte)
-                                (moveDir, newDir) = nextDir
-                                (dx, dy) = delta moveDir
-                                newPos = (px + dx, py + dy)
-                            in if ePosicaoMapaLivre newPos (mapaEstado state)
-                                  then Left gunshot {posicaoDisparo = newPos, direcaoDisparo = newDir, tempoDisparo = newTempo}
-                                  else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
+                            -- No ar: move em diagonal (horizontal + cair)
+                            let (moveDir, novaDirecao) = case direction of
+                                  Norte -> (Sul, Norte)        -- Cai vertical
+                                  Sul -> (Sul, Norte)          -- Cai vertical  
+                                  Nordeste -> (Este, Este)     -- Move Este, depois Sudeste
+                                  Este -> (Sudeste, Sudeste)   -- Move SE
+                                  Sudeste -> (Sul, Sul)        -- Cai, mantém Sul
+                                  Noroeste -> (Oeste, Oeste)   -- Move Oeste, depois Sudoeste
+                                  Oeste -> (Sudoeste, Sudoeste) -- Move SO
+                                  Sudoeste -> (Sul, Sul)       -- Cai, mantém Sul
+                                novaPos = proximaPosicao position moveDir
+                            in if ePosicaoMapaLivre novaPos (mapaEstado state) && ePosicaoMatrizValida novaPos (mapaEstado state)
+                                  then Left gunshot {posicaoDisparo = novaPos, direcaoDisparo = novaDirecao, tempoDisparo = newTempo}
+                                  else if ePosicaoMatrizValida posBelow (mapaEstado state)
+                                      then Left gunshot {posicaoDisparo = posBelow, direcaoDisparo = Norte, tempoDisparo = newTempo}
+                                      else Right []
                           else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
                 
                 Mina ->
                     let (px, py) = position
                         (dx, dy) = delta Sul
                         newPos = (px + dx, py + dy)
+                        deveAtivar = case timeUntilExplosion of
+                            Nothing -> existeMinhocaInimiganAreaExplosao position (donoDisparo gunshot) 3 state
+                            Just _ -> False
                         newTempo = case timeUntilExplosion of
                             Just n | n > 0 -> Just (n - 1)
-                            _ -> Just 2
+                            Nothing | deveAtivar -> Just 2
+                            _ -> timeUntilExplosion
                     in if ePosicaoMapaLivre newPos (mapaEstado state)
                           then
                             ( if ePosicaoMatrizValida newPos (mapaEstado state)
@@ -362,4 +378,3 @@ aplicaDanos damages state =
 
     updatedWorms = aplicaDanosAsMinhocas damages worms
     updatedMap = foldr (uncurry destruirTerrenoNaPosicao) mapa damages
-
