@@ -98,7 +98,7 @@ carregarAssets = do
   exp3 <- carregarImagem "assets/objetos/explosao3.png" "Explosão 3"
   jetpack <- carregarImagem "assets/objetos/jetpack.png" "Jetpack"
   escavadora <- carregarImagem "assets/objetos/escavadora.png" "Escavadora"
-  bazuca <- carregarImagem "assets/objetos/bazuca.png" "Bazuca"
+  bazuca <- carregarImagem "assets/objetos/bazuka.png" "Bazuca"
   mina <- carregarImagem "assets/objetos/mina.png" "Mina"
   dinamite <- carregarImagem "assets/objetos/dinamite.png" "Dinamite"
   

@@ -38,13 +38,35 @@ atualizarPartida dt partida
       let -- Atualiza animações (sempre, independente de ticks)
           partidaComAnimacoes = partida { animacoes = atualizarAnimacoes dt (animacoes partida) }
           
+          -- Atualiza animação de walk
+          partidaComWalk = atualizarAnimacaoWalk dt partidaComAnimacoes
+          
           -- Avança física do jogo (gravidade, projéteis, explosões)
-          partidaComFisica = avancarFisica dt partidaComAnimacoes
+          partidaComFisica = avancarFisica dt partidaComWalk
           
           -- Verifica fim de jogo
           partidaFinal = verificarCondicaoVitoria partidaComFisica
           
       in partidaFinal
+
+--------------------------------------------------------------------------------
+-- * ANIMAÇÃO DE WALK
+
+-- | Atualiza animação de andar (alterna entre idle, walk1, walk2)
+atualizarAnimacaoWalk :: Segundos -> EstadoPartida -> EstadoPartida
+atualizarAnimacaoWalk dt partida =
+  let novoTempo = tempoAnimacao partida + dt
+      -- Alterna frame a cada 0.15 segundos
+      (novoFrame, tempoReset) = if novoTempo > 0.15
+                                then case frameAnimacao partida of
+                                  0 -> (1, 0.0)  -- idle -> walk1
+                                  1 -> (2, 0.0)  -- walk1 -> walk2
+                                  _ -> (0, 0.0)  -- walk2 -> idle
+                                else (frameAnimacao partida, novoTempo)
+  in partida
+       { tempoAnimacao = tempoReset
+       , frameAnimacao = novoFrame
+       }
 
 --------------------------------------------------------------------------------
 -- * FÍSICA DO JOGO (TAREFA 3)
@@ -167,24 +189,11 @@ minhocaViva m = case vidaMinhoca m of
   Morta -> False
 
 --------------------------------------------------------------------------------
--- * CÂMERA AUTOMÁTICA
+-- * CÂMERA FIXA (NÃO FAZ NADA AGORA)
 
--- | Atualiza câmera para seguir a minhoca atual
+-- | Câmera é fixa, não precisa atualizar
 atualizarCamera :: EstadoPartida -> EstadoPartida
-atualizarCamera partida =
-  let numMinhoca = jogadorAtual partida
-      minhocas = minhocasEstado (estadoWorms partida)
-  in if numMinhoca < length minhocas
-       then case posicaoMinhoca (minhocas !! numMinhoca) of
-         Just (l, c) ->
-           let tamanhoBloco = 32.0
-               x = -(fromIntegral c * tamanhoBloco - 480)
-               y = -(-fromIntegral l * tamanhoBloco + 300)
-               cameraAtual = camera partida
-               novaCamera = cameraAtual { posCamera = (x, y) }
-           in partida { camera = novaCamera }
-         Nothing -> partida
-       else partida
+atualizarCamera = id  -- Retorna estado inalterado
 
 --------------------------------------------------------------------------------
 -- * SISTEMA DE TURNOS AUTOMÁTICO

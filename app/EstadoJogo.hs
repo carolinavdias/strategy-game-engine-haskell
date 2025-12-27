@@ -45,7 +45,7 @@ data ModoJogo
   = DoisJogadores    -- Humano vs Humano
   | VsBot            -- Humano vs IA (usa Tarefa4)
   | Treino           -- Modo livre, sem limite de jogadas
-  | Voltar          -- Voltar ao menu principal
+  | Voltar           -- Voltar ao menu principal
   deriving (Show, Eq)
 
 -- | Estado durante uma partida
@@ -54,10 +54,14 @@ data EstadoPartida = EstadoPartida
   , modoPartida :: ModoJogo          -- Que modo está a jogar
   , turnoAtual :: Int                -- Número do turno
   , jogadorAtual :: NumMinhoca       -- Qual minhoca está a jogar
-  , armaSelecionada :: Maybe TipoArma  -- Arma atualmente selecionada
-  , ultimaDirecao :: Direcao         -- Última direção movida (para disparos)
+  , armaSelecionadaP1 :: Maybe TipoArma  -- NOVO! Arma jogador 1 (verde)
+  , armaSelecionadaP2 :: Maybe TipoArma  -- NOVO! Arma jogador 2 (azul)
+  , ultimaDirecaoP1 :: Direcao       -- NOVO! Última direção P1
+  , ultimaDirecaoP2 :: Direcao       -- NOVO! Última direção P2
+  , tempoAnimacao :: Float           -- NOVO! Tempo para animar walk
+  , frameAnimacao :: Int             -- NOVO! Frame atual (0=idle, 1=walk1, 2=walk2)
   , animacoes :: [AnimacaoAtiva]     -- Animações ativas
-  , camera :: Camera                 -- Posição da câmera
+  , camera :: Camera                 -- Posição da câmera (FIXA agora)
   , pausado :: Bool                  -- Jogo pausado?
   } deriving (Show)
 
@@ -104,8 +108,12 @@ criarPartida modo estadoWorms = EstadoPartida
   , modoPartida = modo
   , turnoAtual = 0
   , jogadorAtual = 0
-  , armaSelecionada = Nothing      -- Começa sem arma selecionada
-  , ultimaDirecao = Este           -- Direção padrão
+  , armaSelecionadaP1 = Nothing    -- Começa sem arma P1
+  , armaSelecionadaP2 = Nothing    -- Começa sem arma P2
+  , ultimaDirecaoP1 = Este         -- Direção padrão P1
+  , ultimaDirecaoP2 = Oeste        -- Direção padrão P2
+  , tempoAnimacao = 0.0            -- Tempo animação
+  , frameAnimacao = 0              -- Frame inicial (idle)
   , animacoes = []
   , camera = cameraInicial
   , pausado = False

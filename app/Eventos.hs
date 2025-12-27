@@ -1,12 +1,3 @@
-module Eventos where
-
-import Graphics.Gloss.Interface.Pure.Game
-import EstadoJogo
-import Labs2025
-import Tarefa2
-import Tarefa1
-
--- | Função que altera o estado do jogo no Gloss.
 {-|
 Module      : Eventos
 Description : Processamento de eventos durante o jogo.
@@ -16,6 +7,14 @@ License     : GPL-3
 Processa input do jogador durante uma partida:
 movimento, seleção de armas, disparos, pausa, etc.
 -}
+
+module Eventos where
+
+import Graphics.Gloss.Interface.Pure.Game
+import EstadoJogo
+import Labs2025
+import Tarefa2
+import Tarefa1
 
 --------------------------------------------------------------------------------
 -- * EVENTO PRINCIPAL DO JOGO
@@ -62,70 +61,117 @@ eventoJogoAtivo evento partida = case evento of
   EventKey (SpecialKey KeyEsc) Down _ _ ->
     Menu (EstadoMenu OpcaoPlay 0.0)
   
-  -- Movimento com WASD
-  EventKey (Char 'w') Down _ _ -> moverMinhocaAtual Norte partida
-  EventKey (Char 'W') Down _ _ -> moverMinhocaAtual Norte partida
-  EventKey (Char 's') Down _ _ -> moverMinhocaAtual Sul partida
-  EventKey (Char 'S') Down _ _ -> moverMinhocaAtual Sul partida
-  EventKey (Char 'a') Down _ _ -> moverMinhocaAtual Oeste partida
-  EventKey (Char 'A') Down _ _ -> moverMinhocaAtual Oeste partida
-  EventKey (Char 'd') Down _ _ -> moverMinhocaAtual Este partida
-  EventKey (Char 'D') Down _ _ -> moverMinhocaAtual Este partida
+  -- ====== JOGADOR 1 (VERDE) - WASD + 12345 + C ======
+  -- Movimento WASD (sempre pode mover)
+  EventKey (Char 'w') Down _ _ -> moverJogador 0 Norte partida
+  EventKey (Char 'W') Down _ _ -> moverJogador 0 Norte partida
+  EventKey (Char 's') Down _ _ -> moverJogador 0 Sul partida
+  EventKey (Char 'S') Down _ _ -> moverJogador 0 Sul partida
+  EventKey (Char 'a') Down _ _ -> moverJogador 0 Oeste partida
+  EventKey (Char 'A') Down _ _ -> moverJogador 0 Oeste partida
+  EventKey (Char 'd') Down _ _ -> moverJogador 0 Este partida
+  EventKey (Char 'D') Down _ _ -> moverJogador 0 Este partida
   
-  -- Movimento com setas
-  EventKey (SpecialKey KeyUp) Down _ _ -> moverMinhocaAtual Norte partida
-  EventKey (SpecialKey KeyDown) Down _ _ -> moverMinhocaAtual Sul partida
-  EventKey (SpecialKey KeyLeft) Down _ _ -> moverMinhocaAtual Oeste partida
-  EventKey (SpecialKey KeyRight) Down _ _ -> moverMinhocaAtual Este partida
+  -- Seleção de armas Jogador 1
+  EventKey (Char '1') Down _ _ -> selecionarArmaJogador 0 Bazuca partida
+  EventKey (Char '2') Down _ _ -> selecionarArmaJogador 0 Dinamite partida
+  EventKey (Char '3') Down _ _ -> selecionarArmaJogador 0 Mina partida
+  EventKey (Char '4') Down _ _ -> selecionarArmaJogador 0 Escavadora partida
+  EventKey (Char '5') Down _ _ -> selecionarArmaJogador 0 Jetpack partida
   
-  -- Seleção de armas (1-5)
-  EventKey (Char '1') Down _ _ -> selecionarArma Bazuca partida
-  EventKey (Char '2') Down _ _ -> selecionarArma Dinamite partida
-  EventKey (Char '3') Down _ _ -> selecionarArma Mina partida
-  EventKey (Char '4') Down _ _ -> selecionarArma Escavadora partida
-  EventKey (Char '5') Down _ _ -> selecionarArma Jetpack partida
+  -- Disparar Jogador 1 (C)
+  EventKey (Char 'c') Down _ _ -> dispararJogador 0 partida
+  EventKey (Char 'C') Down _ _ -> dispararJogador 0 partida
   
-  -- Espaço - Disparar (na última direção movida ou padrão)
-  EventKey (SpecialKey KeySpace) Down _ _ -> dispararArmaAtual partida
+  -- ====== JOGADOR 2 (AZUL) - SETAS + 67890 + Ç ======
+  -- Movimento com setas (sempre pode mover)
+  EventKey (SpecialKey KeyUp) Down _ _ -> moverJogador 1 Norte partida
+  EventKey (SpecialKey KeyDown) Down _ _ -> moverJogador 1 Sul partida
+  EventKey (SpecialKey KeyLeft) Down _ _ -> moverJogador 1 Oeste partida
+  EventKey (SpecialKey KeyRight) Down _ _ -> moverJogador 1 Este partida
   
-  -- Enter - Passar turno
-  EventKey (SpecialKey KeyEnter) Down _ _ -> passarTurno partida
+  -- Seleção de armas Jogador 2 (6-0)
+  EventKey (Char '6') Down _ _ -> selecionarArmaJogador 1 Bazuca partida
+  EventKey (Char '7') Down _ _ -> selecionarArmaJogador 1 Dinamite partida
+  EventKey (Char '8') Down _ _ -> selecionarArmaJogador 1 Mina partida
+  EventKey (Char '9') Down _ _ -> selecionarArmaJogador 1 Escavadora partida
+  EventKey (Char '0') Down _ _ -> selecionarArmaJogador 1 Jetpack partida
+  
+  -- Disparar Jogador 2 (Ç)
+  EventKey (Char 'ç') Down _ _ -> dispararJogador 1 partida
+  EventKey (Char 'Ç') Down _ _ -> dispararJogador 1 partida
   
   _ -> Jogando partida
 
 --------------------------------------------------------------------------------
--- * MOVIMENTO
+-- * MOVIMENTO (MODO SIMULTÂNEO)
 
--- | Move a minhoca atual numa direção
-moverMinhocaAtual :: Direcao -> EstadoPartida -> EstadoJogo
-moverMinhocaAtual dir partida =
-  let numMinhoca = jogadorAtual partida
-      estadoAtual = estadoWorms partida
-      novoEstado = efetuaJogada numMinhoca (Move dir) estadoAtual
-  in if validaEstado novoEstado
-       then Jogando (partida 
-         { estadoWorms = novoEstado
-         , ultimaDirecao = dir  -- ATUALIZA última direção!
-         })
-       else Jogando partida  -- Movimento inválido, mantém estado
+-- | Move um jogador específico (0=verde, 1=azul) independentemente
+moverJogador :: Int -> Direcao -> EstadoPartida -> EstadoJogo
+moverJogador numJogador dir partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      -- Encontra índice da minhoca do jogador (par=verde, ímpar=azul)
+      indicesMinhocas = if numJogador == 0
+                        then [i | i <- [0..length minhocas-1], even i, minhocaEstaViva (minhocas !! i)]
+                        else [i | i <- [0..length minhocas-1], odd i, minhocaEstaViva (minhocas !! i)]
+      -- Só ativa animação se mover horizontal (Este/Oeste)
+      novoFrame = if dir == Este || dir == Oeste then 1 else 0
+  in case indicesMinhocas of
+       (numMinhoca:_) ->
+         let estadoAtual = estadoWorms partida
+             novoEstado = efetuaJogada numMinhoca (Move dir) estadoAtual
+         in if validaEstado novoEstado
+              then Jogando (partida 
+                { estadoWorms = novoEstado
+                , ultimaDirecaoP1 = if numJogador == 0 then dir else ultimaDirecaoP1 partida
+                , ultimaDirecaoP2 = if numJogador == 1 then dir else ultimaDirecaoP2 partida
+                , frameAnimacao = novoFrame  -- WALK só se Este/Oeste!
+                })
+              else Jogando partida
+       [] -> Jogando partida  -- Sem minhocas vivas desse jogador
 
 --------------------------------------------------------------------------------
--- * ARMAS
+-- * ARMAS (MODO SIMULTÂNEO)
 
--- | Arma atualmente selecionada (guardamos no estado ou usamos default)
-type ArmaSelecionada = Maybe TipoArma
+-- | Seleciona arma para um jogador específico
+selecionarArmaJogador :: Int -> TipoArma -> EstadoPartida -> EstadoJogo
+selecionarArmaJogador numJogador arma partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      indicesMinhocas = if numJogador == 0
+                        then [i | i <- [0..length minhocas-1], even i, minhocaEstaViva (minhocas !! i)]
+                        else [i | i <- [0..length minhocas-1], odd i, minhocaEstaViva (minhocas !! i)]
+  in case indicesMinhocas of
+       (numMinhoca:_) ->
+         let minhoca = minhocas !! numMinhoca
+         in if temMunicaoArma minhoca arma
+              then Jogando (partida 
+                { armaSelecionadaP1 = if numJogador == 0 then Just arma else armaSelecionadaP1 partida
+                , armaSelecionadaP2 = if numJogador == 1 then Just arma else armaSelecionadaP2 partida
+                })
+              else Jogando partida  -- Sem munição
+       [] -> Jogando partida
 
--- | Seleciona uma arma (verifica se tem munição)
-selecionarArma :: TipoArma -> EstadoPartida -> EstadoJogo
-selecionarArma arma partida =
-  let numMinhoca = jogadorAtual partida
-      minhocas = minhocasEstado (estadoWorms partida)
-  in if numMinhoca < length minhocas
-       then let minhoca = minhocas !! numMinhoca
-            in if temMunicaoArma minhoca arma
-                 then Jogando (partida { armaSelecionada = Just arma })  -- GUARDA arma!
-                 else Jogando partida  -- Sem munição, ignora
-       else Jogando partida
+-- | Dispara arma de um jogador específico
+dispararJogador :: Int -> EstadoPartida -> EstadoJogo
+dispararJogador numJogador partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      indicesMinhocas = if numJogador == 0
+                        then [i | i <- [0..length minhocas-1], even i, minhocaEstaViva (minhocas !! i)]
+                        else [i | i <- [0..length minhocas-1], odd i, minhocaEstaViva (minhocas !! i)]
+      armaAtual = if numJogador == 0 then armaSelecionadaP1 partida else armaSelecionadaP2 partida
+      dirAtual = if numJogador == 0 then ultimaDirecaoP1 partida else ultimaDirecaoP2 partida
+  in case (indicesMinhocas, armaAtual) of
+       ((numMinhoca:_), Just arma) ->
+         let estadoAtual = estadoWorms partida
+             novoEstado = efetuaJogada numMinhoca (Dispara arma dirAtual) estadoAtual
+         in if validaEstado novoEstado
+              then Jogando (partida 
+                { estadoWorms = novoEstado
+                , armaSelecionadaP1 = if numJogador == 0 then Nothing else armaSelecionadaP1 partida
+                , armaSelecionadaP2 = if numJogador == 1 then Nothing else armaSelecionadaP2 partida
+                })
+              else Jogando partida
+       _ -> Jogando partida  -- Sem arma ou sem minhoca
 
 -- | Verifica se minhoca tem munição de uma arma
 temMunicaoArma :: Minhoca -> TipoArma -> Bool
@@ -135,53 +181,11 @@ temMunicaoArma m Bazuca = bazucaMinhoca m > 0
 temMunicaoArma m Mina = minaMinhoca m > 0
 temMunicaoArma m Dinamite = dinamiteMinhoca m > 0
 
--- | Dispara a arma atualmente selecionada
-dispararArmaAtual :: EstadoPartida -> EstadoJogo
-dispararArmaAtual partida =
-  let numMinhoca = jogadorAtual partida
-      arma = case armaSelecionada partida of
-               Just a -> a
-               Nothing -> Bazuca  -- Arma padrão se nenhuma selecionada
-      dir = ultimaDirecao partida  -- USA última direção!
-      estadoAtual = estadoWorms partida
-      novoEstado = efetuaJogada numMinhoca (Dispara arma dir) estadoAtual
-  in if validaEstado novoEstado
-       then Jogando (partida 
-         { estadoWorms = novoEstado
-         , armaSelecionada = Nothing  -- Limpa seleção após disparar
-         })
-       else Jogando partida
+--------------------------------------------------------------------------------
+-- * TURNOS (REMOVIDO - MODO SIMULTÂNEO NÃO USA TURNOS)
 
 --------------------------------------------------------------------------------
--- * TURNOS
-
--- | Passa o turno para a próxima minhoca viva
-passarTurno :: EstadoPartida -> EstadoJogo
-passarTurno partida =
-  let novoTurno = turnoAtual partida + 1
-      minhocas = minhocasEstado (estadoWorms partida)
-      proximaMinhoca = encontrarProximaMinhocaViva (jogadorAtual partida) minhocas
-  in case proximaMinhoca of
-       Just numProxima -> 
-         Jogando (partida 
-           { turnoAtual = novoTurno
-           , jogadorAtual = numProxima
-           })
-       Nothing -> 
-         -- Sem minhocas vivas - fim de jogo
-         verificarFimDeJogo partida
-
--- | Encontra a próxima minhoca viva após o índice dado
-encontrarProximaMinhocaViva :: Int -> [Minhoca] -> Maybe Int
-encontrarProximaMinhocaViva atual minhocas =
-  let tentativas = [atual + 1 .. length minhocas - 1] ++ [0 .. atual]
-      vivas = [ i | i <- tentativas
-              , i < length minhocas
-              , minhocaEstaViva (minhocas !! i)
-              ]
-  in case vivas of
-       (i:_) -> Just i
-       [] -> Nothing
+-- * FIM DE JOGO
 
 -- | Verifica se uma minhoca está viva
 minhocaEstaViva :: Minhoca -> Bool
@@ -189,23 +193,20 @@ minhocaEstaViva m = case vidaMinhoca m of
   Viva _ -> True
   Morta -> False
 
---------------------------------------------------------------------------------
--- * FIM DE JOGO
-
--- | Verifica se o jogo terminou e retorna estado apropriado
+-- | Verifica se o jogo terminou e retorna estado apropriado (SEM USAR - feito no Main)
 verificarFimDeJogo :: EstadoPartida -> EstadoJogo
 verificarFimDeJogo partida =
   let minhocas = minhocasEstado (estadoWorms partida)
       verdes = [ m | (i, m) <- zip [0..] minhocas, even i, minhocaEstaViva m ]
       azuis = [ m | (i, m) <- zip [0..] minhocas, odd i, minhocaEstaViva m ]
-      pontos = turnoAtual partida * 10  -- Pontuação baseada em turnos
+      pontos = turnoAtual partida * 10
   in if null verdes && null azuis
-       then GameOver (EstadoFinal pontos Restart)  -- Empate
+       then GameOver (EstadoFinal pontos Restart)
        else if null verdes
-              then Victory (EstadoFinal pontos Restart)  -- Azul vence
+              then Victory (EstadoFinal pontos Restart)
               else if null azuis
-                     then Victory (EstadoFinal pontos Restart)  -- Verde vence
-                     else Jogando partida  -- Jogo continua
+                     then Victory (EstadoFinal pontos Restart)
+                     else Jogando partida
 
 --------------------------------------------------------------------------------
 -- * EVENTOS DAS TELAS FINAIS

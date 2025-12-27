@@ -27,17 +27,15 @@ import SelecaoModo (desenharSelecao)
 --------------------------------------------------------------------------------
 -- * FUNÇÃO PRINCIPAL DE DESENHO
 
--- | Desenha o estado completo de uma partida
+-- | Desenha o estado completo de uma partida (CÂMERA FIXA!)
 desenha :: Assets -> EstadoPartida -> Picture
 desenha assets partida = Pictures
   [ desenharBackground assets
-  , aplicarCamera (camera partida) $ Pictures
-      [ desenharMapa (mapaEstado $ estadoWorms partida)
-      , desenharObjetos assets (objetosEstado $ estadoWorms partida)
-      , desenharMinhocas assets (minhocasEstado $ estadoWorms partida)
-      , desenharAnimacoes assets (animacoes partida)
-      ]
-  , desenharUI assets partida
+  , desenharMapa (mapaEstado $ estadoWorms partida)
+  , desenharObjetos assets (objetosEstado $ estadoWorms partida)
+  , desenharMinhocasAnimadas assets (minhocasEstado $ estadoWorms partida) (frameAnimacao partida)
+  , desenharAnimacoes assets (animacoes partida)
+  , desenharUIDoisJogadores assets partida  -- NOVA UI!
   , desenharPausaSeNecessario (pausado partida)
   ]
 
@@ -197,54 +195,67 @@ desenharBloco terreno (l, c) =
     textura _ = Blank
 
 --------------------------------------------------------------------------------
--- * MINHOCAS
+-- * MINHOCAS (COM ANIMAÇÃO WALK!)
 
--- | Desenha todas as minhocas
-desenharMinhocas :: Assets -> [Minhoca] -> Picture
-desenharMinhocas assets minhocas = Pictures
-  [ desenharMinhoca assets i minhoca
+-- | Desenha todas as minhocas com animação
+desenharMinhocasAnimadas :: Assets -> [Minhoca] -> Int -> Picture
+desenharMinhocasAnimadas assets minhocas frame = Pictures
+  [ desenharMinhocaAnimada assets i minhoca frame
   | (i, minhoca) <- zip [0..] minhocas
   , posicaoMinhoca minhoca /= Nothing
   ]
 
--- | Desenha uma minhoca individual
-desenharMinhoca :: Assets -> Int -> Minhoca -> Picture
-desenharMinhoca assets numMinhoca minhoca =
+-- | Desenha uma minhoca individual com animação walk
+desenharMinhocaAnimada :: Assets -> Int -> Minhoca -> Int -> Picture
+desenharMinhocaAnimada assets numMinhoca minhoca frame =
   case posicaoMinhoca minhoca of
     Nothing -> Blank
     Just (l, c) ->
       let x = fromIntegral c * tamanhoBloco - 480
           y = -fromIntegral l * tamanhoBloco + 300
-          sprite = escolherSpriteMinhoca assets numMinhoca (vidaMinhoca minhoca)
+          sprite = escolherSpriteMinhocaAnimado assets numMinhoca (vidaMinhoca minhoca) frame
       in Translate x y $ Pictures
            [ sprite
            , desenharBarraVida (vidaMinhoca minhoca)
            ]
 
--- | Escolhe o sprite correto da minhoca (USA AS TUAS IMAGENS!)
-escolherSpriteMinhoca :: Assets -> Int -> VidaMinhoca -> Picture
-escolherSpriteMinhoca assets numMinhoca vida
+-- | Escolhe o sprite correto com animação (idle, walk1, walk2)
+escolherSpriteMinhocaAnimado :: Assets -> Int -> VidaMinhoca -> Int -> Picture
+escolherSpriteMinhocaAnimado assets numMinhoca vida frame
   | vida == Morta = Blank
-  | even numMinhoca = 
-      -- Minhoca Verde (jogador 1) - IMAGENS 14-17
-      case minhocaVerdeIdle (spriteAssets assets) of
-        Just sprite -> Scale 1.2 1.2 sprite  -- Aumentei escala
-        Nothing -> Color (makeColorI 0 200 0 255) $ Pictures
-          [ circleSolid 12  -- Corpo
-          , Translate 0 8 $ circleSolid 8  -- Cabeça
-          , Color black $ Translate (-3) 10 $ circleSolid 2  -- Olho
-          , Color black $ Translate 3 10 $ circleSolid 2
-          ]
-  | otherwise = 
-      -- Minhoca Azul (jogador 2) - IMAGENS 10-13
-      case minhocaAzulIdle (spriteAssets assets) of
-        Just sprite -> Scale 1.2 1.2 sprite  -- Aumentei escala
-        Nothing -> Color (makeColorI 0 150 255 255) $ Pictures
-          [ circleSolid 12
-          , Translate 0 8 $ circleSolid 8
-          , Color black $ Translate (-3) 10 $ circleSolid 2
-          , Color black $ Translate 3 10 $ circleSolid 2
-          ]
+  | even numMinhoca =  -- VERDE
+      case frame of
+        0 -> case minhocaVerdeIdle (spriteAssets assets) of
+               Just sprite -> Scale 1.2 1.2 sprite
+               Nothing -> fallbackVerde
+        1 -> case minhocaVerdeWalk1 (spriteAssets assets) of
+               Just sprite -> Scale 1.2 1.2 sprite
+               Nothing -> fallbackVerde
+        _ -> case minhocaVerdeWalk2 (spriteAssets assets) of
+               Just sprite -> Scale 1.2 1.2 sprite
+               Nothing -> fallbackVerde
+  | otherwise =  -- AZUL
+      case frame of
+        0 -> case minhocaAzulIdle (spriteAssets assets) of
+               Just sprite -> Scale 1.2 1.2 sprite
+               Nothing -> fallbackAzul
+        1 -> case minhocaAzulWalk1 (spriteAssets assets) of
+               Just sprite -> Scale 1.2 1.2 sprite
+               Nothing -> fallbackAzul
+        _ -> case minhocaAzulWalk2 (spriteAssets assets) of
+               Just sprite -> Scale 1.2 1.2 sprite
+               Nothing -> fallbackAzul
+  where
+    fallbackVerde = Color (makeColorI 0 200 0 255) $ Pictures
+      [ circleSolid 12, Translate 0 8 $ circleSolid 8
+      , Color black $ Translate (-3) 10 $ circleSolid 2
+      , Color black $ Translate 3 10 $ circleSolid 2
+      ]
+    fallbackAzul = Color (makeColorI 0 150 255 255) $ Pictures
+      [ circleSolid 12, Translate 0 8 $ circleSolid 8
+      , Color black $ Translate (-3) 10 $ circleSolid 2
+      , Color black $ Translate 3 10 $ circleSolid 2
+      ]
 
 -- | Desenha barra de vida acima da minhoca
 desenharBarraVida :: VidaMinhoca -> Picture
@@ -407,66 +418,106 @@ escolherFrameExplosao assets frame
         Nothing -> Color yellow $ circleSolid 30
 
 --------------------------------------------------------------------------------
--- * UI (INTERFACE)
+-- * UI (INTERFACE PARA DOIS JOGADORES!)
 
--- | Desenha interface do jogo (vida, armas, turno)
-desenharUI :: Assets -> EstadoPartida -> Picture
-desenharUI assets partida = Pictures
-  [ desenharTurnoAtual (jogadorAtual partida) (turnoAtual partida)
-  , desenharArmasAtuais assets partida
-  , desenharModoJogo (modoPartida partida)
-  , desenharControles
+-- | Desenha UI dos dois jogadores lado a lado
+desenharUIDoisJogadores :: Assets -> EstadoPartida -> Picture
+desenharUIDoisJogadores assets partida = Pictures
+  [ desenharUIJogador1 assets partida  -- Esquerda
+  , desenharUIJogador2 assets partida  -- Direita
+  , desenharModoJogo (modoPartida partida)  -- Centro topo
+  , desenharControlesDoisJogadores  -- Centro baixo
   ]
 
--- | Mostra de quem é o turno
-desenharTurnoAtual :: NumMinhoca -> Int -> Picture
-desenharTurnoAtual jogador turno = Translate (-850) 520 $ Pictures
-  [ Color white $ Scale 0.2 0.2 $ Text ("TURNO " ++ show turno)
-  , Translate 0 (-30) $ Color cor $ Scale 0.15 0.15 $ Text nomeJogador
-  ]
-  where
-    (cor, nomeJogador) = if even jogador
-                         then (makeColorI 0 255 0 255, "VERDE")
-                         else (makeColorI 0 150 255 255, "AZUL")
+-- | UI do Jogador 1 (Verde) - lado esquerdo
+desenharUIJogador1 :: Assets -> EstadoPartida -> Picture
+desenharUIJogador1 assets partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      minhocasVerdes = [(i, m) | (i, m) <- zip [0..] minhocas, even i]
+  in case minhocasVerdes of
+       ((_, minhoca):_) -> Translate (-750) 0 $ Pictures
+         [ Color (makeColorI 0 0 0 180) $ rectangleSolid 350 1100  -- Fundo maior
+         , Translate 0 520 $ Color (makeColorI 0 255 0 255) $ Scale 0.25 0.25 $ Text "JOGADOR 1"
+         , Translate 0 480 $ Color (makeColorI 0 255 0 255) $ Scale 0.2 0.2 $ Text "VERDE"
+         , desenharVidaJogador assets minhoca (0, 400)
+         , desenharArmasJogador assets minhoca (armaSelecionadaP1 partida) (0, 150)
+         ]
+       [] -> Blank
 
--- | Mostra armas disponíveis da minhoca atual
-desenharArmasAtuais :: Assets -> EstadoPartida -> Picture
-desenharArmasAtuais assets partida =
-  case minhocaAtual of
-    Nothing -> Blank
-    Just minhoca -> Translate 750 480 $ Pictures
-      [ Color (greyN 0.2) $ rectangleSolid 300 200
-      , Color white $ Translate (-130) 80 $ Scale 0.15 0.15 $ Text "ARMAS"
-      , desenharListaArmas assets minhoca (armaSelecionada partida)  -- PASSA arma selecionada!
-      ]
-  where
-    minhocaAtual = if jogadorAtual partida < length (minhocasEstado $ estadoWorms partida)
-                   then Just $ (minhocasEstado $ estadoWorms partida) !! jogadorAtual partida
-                   else Nothing
+-- | UI do Jogador 2 (Azul) - lado direito
+desenharUIJogador2 :: Assets -> EstadoPartida -> Picture
+desenharUIJogador2 assets partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      minhocasAzuis = [(i, m) | (i, m) <- zip [0..] minhocas, odd i]
+  in case minhocasAzuis of
+       ((_, minhoca):_) -> Translate 750 0 $ Pictures
+         [ Color (makeColorI 0 0 0 180) $ rectangleSolid 350 1100  -- Fundo maior
+         , Translate 0 520 $ Color (makeColorI 0 150 255 255) $ Scale 0.25 0.25 $ Text "JOGADOR 2"
+         , Translate 0 480 $ Color (makeColorI 0 150 255 255) $ Scale 0.2 0.2 $ Text "AZUL"
+         , desenharVidaJogador assets minhoca (0, 400)
+         , desenharArmasJogador assets minhoca (armaSelecionadaP2 partida) (0, 150)
+         ]
+       [] -> Blank
 
--- | Lista todas as armas com munições (destaca a selecionada)
-desenharListaArmas :: Assets -> Minhoca -> Maybe TipoArma -> Picture
-desenharListaArmas assets minhoca armaSel = Pictures
-  [ desenharArma assets "Bazuca" Bazuca (bazucaMinhoca minhoca) (armaSel == Just Bazuca) (-100, 40)
-  , desenharArma assets "Dinamite" Dinamite (dinamiteMinhoca minhoca) (armaSel == Just Dinamite) (-100, 0)
-  , desenharArma assets "Mina" Mina (minaMinhoca minhoca) (armaSel == Just Mina) (-100, -40)
-  , desenharArma assets "Escavadora" Escavadora (escavadoraMinhoca minhoca) (armaSel == Just Escavadora) (50, 40)
-  , desenharArma assets "Jetpack" Jetpack (jetpackMinhoca minhoca) (armaSel == Just Jetpack) (50, 0)
-  ]
-
--- | Desenha ícone + quantidade de uma arma (destaca se selecionada)
-desenharArma :: Assets -> String -> TipoArma -> Int -> Bool -> (Float, Float) -> Picture
-desenharArma assets nome tipo qtd selecionada (x, y) = Translate x y $ Pictures
-  [ moldura  -- NOVO! Moldura amarela se selecionada
-  , icone
-  , Translate 40 (-5) $ Color cor $ Scale 0.12 0.12 $ Text (show qtd)
+-- | Desenha vida de um jogador com ícone
+desenharVidaJogador :: Assets -> Minhoca -> (Float, Float) -> Picture
+desenharVidaJogador assets minhoca (x, y) = Translate x y $ Pictures
+  [ iconeVida
+  , Translate 60 0 $ desenharNumeroVida (vidaMinhoca minhoca)
   ]
   where
-    cor = if qtd > 0 then white else greyN 0.4
-    moldura = if selecionada 
-              then Color yellow $ rectangleWire 35 35
-              else Blank
-    icone = Scale 0.5 0.5 $ desenharIconeArma assets tipo
+    iconeVida = case heartIcon (uiAssets assets) of
+      Just img -> Translate (-80) 0 $ Scale 0.8 0.8 $ img
+      Nothing -> Color red $ circleSolid 20
+
+desenharNumeroVida :: VidaMinhoca -> Picture
+desenharNumeroVida Morta = Color red $ Scale 0.3 0.3 $ Text "0 HP"
+desenharNumeroVida (Viva v) = Color cor $ Scale 0.3 0.3 $ Text (show v ++ " HP")
+  where
+    cor | v > 70 = makeColorI 0 255 0 255
+        | v > 30 = makeColorI 255 255 0 255
+        | otherwise = makeColorI 255 0 0 255
+
+-- | Desenha armas do jogador com slots verticais
+desenharArmasJogador :: Assets -> Minhoca -> Maybe TipoArma -> (Float, Float) -> Picture
+desenharArmasJogador assets minhoca armaSel (x, y) = Translate x y $ Pictures
+  [ Translate 0 (-50) $ Color white $ Scale 0.15 0.15 $ Text "ARMAS"
+  , desenharSlotArma assets Bazuca (bazucaMinhoca minhoca) (armaSel == Just Bazuca) (0, -120)
+  , desenharSlotArma assets Dinamite (dinamiteMinhoca minhoca) (armaSel == Just Dinamite) (0, -220)
+  , desenharSlotArma assets Mina (minaMinhoca minhoca) (armaSel == Just Mina) (0, -320)
+  , desenharSlotArma assets Escavadora (escavadoraMinhoca minhoca) (armaSel == Just Escavadora) (0, -420)
+  , desenharSlotArma assets Jetpack (jetpackMinhoca minhoca) (armaSel == Just Jetpack) (0, -520)
+  ]
+
+-- | Desenha um slot de arma: weapon_slot.png como fundo, ícone no centro, número embaixo
+desenharSlotArma :: Assets -> TipoArma -> Int -> Bool -> (Float, Float) -> Picture
+desenharSlotArma assets tipo qtd selecionada (x, y) = Translate x y $ Pictures
+  [ fundoSlot  -- weapon_slot.png
+  , molduraSelecionada  -- Moldura amarela se selecionada
+  , iconeArma  -- Ícone da arma no centro
+  , textoQuantidade  -- "x5" embaixo
+  ]
+  where
+    -- Fundo: weapon_slot.png
+    fundoSlot = case weaponSlot (uiAssets assets) of
+      Just img -> Scale 1.2 1.2 $ img  -- Escala para ficar maior
+      Nothing -> Color (greyN 0.3) $ rectangleSolid 90 90
+    
+    -- Moldura amarela se selecionada
+    molduraSelecionada = if selecionada
+                         then Color yellow $ rectangleWire 95 95
+                         else Blank
+    
+    -- Ícone da arma no CENTRO do slot
+    iconeArma = Scale 0.7 0.7 $ desenharIconeArma assets tipo
+    
+    -- Quantidade EMBAIXO do slot
+    textoQuantidade = Translate 0 (-55) $ 
+                      Color corTexto $ 
+                      Scale 0.2 0.2 $ 
+                      Text ("x" ++ show qtd)
+    
+    corTexto = if qtd > 0 then white else greyN 0.5
 
 -- | Desenha ícone de uma arma
 desenharIconeArma :: Assets -> TipoArma -> Picture
@@ -503,13 +554,11 @@ desenharModoJogo modo = Translate 0 560 $ Pictures
       VsBot -> "VS BOT"
       Treino -> "MODO TREINO"
 
--- | Mostra controles do jogo
-desenharControles :: Picture
-desenharControles = Translate (-850) (-540) $ Pictures
-  [ Color (greyN 0.8) $ Scale 0.1 0.1 $ Text "WASD/SETAS - Mover"
-  , Translate 0 15 $ Color (greyN 0.8) $ Scale 0.1 0.1 $ Text "1-5 - Armas"
-  , Translate 0 30 $ Color (greyN 0.8) $ Scale 0.1 0.1 $ Text "ESPACO - Disparar"
-  , Translate 0 45 $ Color (greyN 0.8) $ Scale 0.1 0.1 $ Text "P - Pausa | ESC - Menu"
+-- | Mostra controles dos dois jogadores
+desenharControlesDoisJogadores :: Picture
+desenharControlesDoisJogadores = Translate 0 (-550) $ Pictures
+  [ Color (makeColorI 0 0 0 150) $ rectangleSolid 500 80
+  , Color (greyN 0.8) $ Scale 0.12 0.12 $ Text "P - Pausa | ESC - Menu"
   ]
 
 --------------------------------------------------------------------------------
