@@ -27,6 +27,13 @@ data MenuAssets = MenuAssets
   , buttonPlay :: Maybe Picture
   , buttonTutorial :: Maybe Picture
   , buttonExit :: Maybe Picture
+  , modeBackground :: Maybe Picture      -- Background escurecido
+  , modeTitle :: Maybe Picture           -- "ESCOLHE UM MODO"
+  , modeButton2P :: Maybe Picture        -- Personagens 2 jogadores
+  , modeButtonBot :: Maybe Picture       -- Personagens VS Bot
+  , modeButtonTraining :: Maybe Picture 
+  , modeInstructions :: Maybe Picture    -- Instruções
+  , buttonBack :: Maybe Picture -- Personagens Treino
   } deriving (Show)
 
 -- | Sprites das minhocas (verde e azul)
@@ -68,7 +75,7 @@ data BackgroundAssets = BackgroundAssets
 -- | Cria estrutura vazia de assets (antes de carregar)
 assetsVazios :: Assets
 assetsVazios = Assets
-  { menuAssets = MenuAssets Nothing Nothing Nothing Nothing Nothing
+  { menuAssets = MenuAssets Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
   , spriteAssets = SpriteAssets Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
   , objetoAssets = ObjetoAssets Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
   , uiAssets = UIAssets Nothing Nothing
