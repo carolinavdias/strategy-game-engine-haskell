@@ -65,6 +65,15 @@ carregarAssets = do
   btnTutorial <- carregarImagem "assets/menu/button_tutorial.png" "Botão Tutorial"
   btnExit <- carregarImagem "assets/menu/button_exit.png" "Botão Exit"
   
+  putStrLn "  🎮 Carregando seleção de modo..."
+  modeBg <- carregarImagem "assets/menu/mode_background.png" "Mode Background"
+  modeTitle <- carregarImagem "assets/menu/mode_title.png" "Mode Title"
+  mode2P <- carregarImagem "assets/menu/character_2players.png" "Character 2P"
+  modeBot <- carregarImagem "assets/menu/character_vsbot.png" "Character VS Bot"
+  modeTraining <- carregarImagem "assets/menu/character_training.png" "Character Training"
+  modeInstr <- carregarImagem "assets/menu/mode_instructions.png" "Mode Instructions"
+  btnBack <- carregarImagem "assets/menu/button_back.png" "Button Back"
+  
   -- Sprites
   putStrLn "  🐛 Carregando sprites..."
   mvIdle <- carregarImagem "assets/sprites/minhoca_verde_idle.png" "Minhoca Verde Idle"
@@ -98,7 +107,7 @@ carregarAssets = do
   gameBg <- carregarImagem "assets/backgrounds/game_background.png" "Game Background"
   
   return $ Assets
-    { menuAssets = MenuAssets menuBg menuLg btnPlay btnTutorial btnExit
+    { menuAssets = MenuAssets menuBg menuLg btnPlay btnTutorial btnExit modeBg modeTitle mode2P modeBot modeTraining modeInstr btnBack
     , spriteAssets = SpriteAssets mvIdle mvWalk1 mvWalk2 mvHurt maIdle maWalk1 maWalk2 maHurt
     , objetoAssets = ObjetoAssets barril exp1 exp2 exp3 jetpack escavadora bazuca mina dinamite
     , uiAssets = UIAssets heart slot
