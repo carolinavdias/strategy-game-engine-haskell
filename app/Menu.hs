@@ -20,6 +20,7 @@ desenharMenu assets estado = Pictures
   [ desenharBackground assets
   , desenharLogo assets
   , desenharBotoes assets estado
+  , desenharInstrucoesMenu assets 
   ]
 
 -- | Desenha o background do menu
@@ -142,10 +143,18 @@ opcaoAnterior OpcaoExit = OpcaoTutorial
 selecionarOpcao :: OpcaoMenu -> EstadoJogo
 selecionarOpcao OpcaoPlay = SelecaoModo (EstadoSelecao DoisJogadores 0.0)
 selecionarOpcao OpcaoTutorial = Tutorial (EstadoTutorial 0)
-selecionarOpcao OpcaoExit = Menu (EstadoMenu OpcaoExit 0.0)  -- TODO: fechar jogo
+selecionarOpcao OpcaoExit = error "Jogo encerrado pelo utilizador"
+
 
 -- | Atualiza animação do menu (efeito glow pulsante)
 atualizarMenu :: Float -> EstadoMenu -> EstadoMenu
 atualizarMenu dt estado = estado { animacaoGlow = novoGlow }
   where
     novoGlow = animacaoGlow estado + dt * 2  -- velocidade da pulsação
+
+-- | Desenha instruções discretas no canto superior direito
+desenharInstrucoesMenu :: Assets -> Picture
+desenharInstrucoesMenu assets =
+  case modeInstructions (menuAssets assets) of
+    Just img -> Translate 720 520 $ Scale 0.5 0.5 $ img  -- Canto superior direito, pequeno
+    Nothing -> Blank
