@@ -19,76 +19,116 @@ import Labs2025
 desenharSelecao :: Assets -> EstadoSelecao -> Picture
 desenharSelecao assets estado = Pictures
   [ desenharBackgroundSelecao assets
-  , desenharTitulo
-  , desenharOpcoesModo assets estado
-  , desenharInstrucoes
+  , desenharTituloSelecao assets
+  , desenharModos assets estado   
+  , desenharInstrucoesSelecao assets 
   ]
 
--- | Background da seleção (usa mesmo do menu)
+-- | Background escurecido
 desenharBackgroundSelecao :: Assets -> Picture
 desenharBackgroundSelecao assets =
-  case menuBackground (menuAssets assets) of
+  case modeBackground (menuAssets assets) of
     Just bg -> bg
-    Nothing -> Color (makeColorI 80 40 120 255) $ rectangleSolid 1400 800
+    Nothing -> Color (makeColorI 40 30 60 200) $ rectangleSolid 1920 1200
 
--- | Título da tela
-desenharTitulo :: Picture
-desenharTitulo = Translate (-250) 300 $ Pictures
-  [ Color white $ Scale 0.4 0.4 $ Text "ESCOLHE O MODO"
-  , Translate 0 (-50) $ Color (greyN 0.7) $ Scale 0.2 0.2 $ Text "Seleciona com as setas"
+-- | Título "ESCOLHE UM MODO"
+desenharTituloSelecao :: Assets -> Picture
+desenharTituloSelecao assets =
+  case modeTitle (menuAssets assets) of
+    Just title -> Translate 0 360 title
+    Nothing -> Translate 0 400 $ 
+               Color white $ 
+               Scale 0.4 0.4 $ 
+               Text "ESCOLHE UM MODO"
+
+-- | Desenha os 3 modos + botão voltar como opção navegável
+desenharModos :: Assets -> EstadoSelecao -> Picture
+desenharModos assets estado = Pictures
+  [ desenharModo2P assets (modoSelecionado estado == DoisJogadores) (-450, -60)
+  , desenharModoBot assets (modoSelecionado estado == VsBot) (0, -60)
+  , desenharModoTraining assets (modoSelecionado estado == Treino) (450, -60)
+  , desenharBotaoVoltarSelecionavel assets (modoSelecionado estado == Voltar)
   ]
 
--- | Desenha as 3 opções de modo
-desenharOpcoesModo :: Assets -> EstadoSelecao -> Picture
-desenharOpcoesModo assets estado = Pictures
-  [ desenharOpcaoModo DoisJogadores (modoSelecionado estado == DoisJogadores) (0, 100)
-  , desenharOpcaoModo VsBot (modoSelecionado estado == VsBot) (0, -50)
-  , desenharOpcaoModo Treino (modoSelecionado estado == Treino) (0, -200)
-  ]
-
--- | Desenha uma opção de modo individual
-desenharOpcaoModo :: ModoJogo -> Bool -> (Float, Float) -> Picture
-desenharOpcaoModo modo selecionado (x, y) = Translate x y $ Pictures
-  [ efeitoGlow selecionado
-  , fundo selecionado
-  , icone modo
-  , texto modo selecionado
+-- | Modo 2 Jogadores
+desenharModo2P :: Assets -> Bool -> (Float, Float) -> Picture
+desenharModo2P assets selecionado (x, y) = Translate x y $ Pictures
+  [ feedback selecionado
+  , personagens
   ]
   where
-    -- Glow quando selecionado
-    efeitoGlow True = Color (makeColorI 0 255 255 80) $ 
-                      rectangleSolid 520 120
-    efeitoGlow False = Blank
+    escala = if selecionado then 1.2 else 0.9
     
-    -- Fundo do botão
-    fundo True = Color (makeColorI 0 200 200 200) $ rectangleSolid 500 100
-    fundo False = Color (makeColorI 50 50 80 200) $ rectangleSolid 500 100
+    personagens = case modeButton2P (menuAssets assets) of
+      Just img -> Scale escala escala $ img
+      Nothing -> Color green $ circleSolid 100
+    
+    feedback True = Translate 0 0 $
+                    Color (makeColorI 255 255 255 40) $ 
+                    rectangleSolid 420 520
+    feedback False = Blank
 
--- | Ícone do modo (emoji simples)
-icone :: ModoJogo -> Picture
-icone modo = Translate (-200) 0 $ Color white $ Scale 0.5 0.5 $ Text (iconeTexto modo)
-  where
-    iconeTexto DoisJogadores = "2P"
-    iconeTexto VsBot = "VS"
-    iconeTexto Treino = "T"
-
--- | Texto descritivo do modo
-texto :: ModoJogo -> Bool -> Picture
-texto modo selecionado = Translate (-100) (-10) $ 
-                         Color (if selecionado then white else greyN 0.7) $ 
-                         Scale 0.25 0.25 $ 
-                         Text (textoModo modo)
-  where
-    textoModo DoisJogadores = "2 JOGADORES"
-    textoModo VsBot = "VS BOT"
-    textoModo Treino = "TREINO"
-
--- | Instruções na parte inferior
-desenharInstrucoes :: Picture
-desenharInstrucoes = Translate (-200) (-350) $ Pictures
-  [ Color (greyN 0.6) $ Scale 0.15 0.15 $ Text "ENTER - Selecionar"
-  , Translate 0 (-30) $ Color (greyN 0.6) $ Scale 0.15 0.15 $ Text "ESC - Voltar"
+-- | Modo VS Bot
+desenharModoBot :: Assets -> Bool -> (Float, Float) -> Picture
+desenharModoBot assets selecionado (x, y) = Translate x y $ Pictures
+  [ feedback selecionado
+  , personagens
   ]
+  where
+    escala = if selecionado then 1.2 else 0.9
+    
+    personagens = case modeButtonBot (menuAssets assets) of
+      Just img -> Scale escala escala $ img
+      Nothing -> Color magenta $ circleSolid 100
+    
+    feedback True = Translate 0 0 $
+                    Color (makeColorI 255 255 255 40) $ 
+                    rectangleSolid 420 520
+    feedback False = Blank
+
+-- | Modo Treino
+desenharModoTraining :: Assets -> Bool -> (Float, Float) -> Picture
+desenharModoTraining assets selecionado (x, y) = Translate x y $ Pictures
+  [ feedback selecionado
+  , personagens
+  ]
+  where
+    escala = if selecionado then 1.2 else 0.9
+    
+    personagens = case modeButtonTraining (menuAssets assets) of
+      Just img -> Scale escala escala $ img
+      Nothing -> Color orange $ circleSolid 100
+    
+    feedback True = Translate 0 0 $
+                    Color (makeColorI 255 255 255 40) $ 
+                    rectangleSolid 420 520
+    feedback False = Blank
+
+-- | Botão voltar como opção selecionável e navegável
+desenharBotaoVoltarSelecionavel :: Assets -> Bool -> Picture
+desenharBotaoVoltarSelecionavel assets selecionado = Translate (-850) 520 $ Pictures
+  [ feedback selecionado
+  , botao
+  ]
+  where
+    escala = if selecionado then 1.5 else 1.4
+    
+    botao = case buttonBack (menuAssets assets) of
+      Just img -> Scale escala escala $ img
+      Nothing -> Pictures
+                   [ Color red $ circleSolid 50
+                   , Color white $ Scale 0.3 0.3 $ Text "<"
+                   ]
+    
+    feedback True = Color (makeColorI 255 255 255 60) $ circleSolid 80
+    feedback False = Blank
+
+-- | Instruções discretas no canto superior direito
+desenharInstrucoesSelecao :: Assets -> Picture
+desenharInstrucoesSelecao assets =
+  case modeInstructions (menuAssets assets) of
+    Just img -> Translate 720 520 $ Scale 0.5 0.5 $ img
+    Nothing -> Blank
 
 -- | Processa input na seleção de modo
 eventoSelecao :: Event -> EstadoSelecao -> EstadoJogo
@@ -101,11 +141,19 @@ eventoSelecao evento estado = case evento of
   EventKey (SpecialKey KeyUp) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = modoAnterior (modoSelecionado estado) })
   
+  -- Seta para direita - próximo modo
+  EventKey (SpecialKey KeyRight) Down _ _ ->
+    SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
+  
+  -- Seta para esquerda - modo anterior
+  EventKey (SpecialKey KeyLeft) Down _ _ ->
+    SelecaoModo (estado { modoSelecionado = modoAnterior (modoSelecionado estado) })
+  
   -- Tab - alterna modos
   EventKey (SpecialKey KeyTab) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
   
-  -- Enter - inicia jogo no modo selecionado
+  -- Enter - inicia jogo no modo selecionado OU volta ao menu se Voltar
   EventKey (SpecialKey KeyEnter) Down _ _ ->
     iniciarJogo (modoSelecionado estado)
   
@@ -116,20 +164,23 @@ eventoSelecao evento estado = case evento of
   -- Outros eventos
   _ -> SelecaoModo estado
 
--- | Avança para o próximo modo
+-- | Avança para o próximo modo (inclui Voltar)
 proximoModo :: ModoJogo -> ModoJogo
 proximoModo DoisJogadores = VsBot
 proximoModo VsBot = Treino
-proximoModo Treino = DoisJogadores
+proximoModo Treino = Voltar
+proximoModo Voltar = DoisJogadores
 
--- | Volta para o modo anterior
+-- | Volta para o modo anterior (inclui Voltar)
 modoAnterior :: ModoJogo -> ModoJogo
-modoAnterior DoisJogadores = Treino
+modoAnterior DoisJogadores = Voltar
 modoAnterior VsBot = DoisJogadores
 modoAnterior Treino = VsBot
+modoAnterior Voltar = Treino
 
--- | Inicia uma partida no modo selecionado
+-- | Inicia uma partida no modo selecionado OU volta ao menu
 iniciarJogo :: ModoJogo -> EstadoJogo
+iniciarJogo Voltar = Menu (EstadoMenu OpcaoPlay 0.0)  -- Volta ao menu!
 iniciarJogo modo = Jogando (criarPartida modo estadoInicialWorms)
   where
     -- Estado inicial do Worms (mapa de exemplo)
