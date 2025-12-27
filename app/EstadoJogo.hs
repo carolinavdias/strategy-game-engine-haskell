@@ -45,6 +45,7 @@ data ModoJogo
   = DoisJogadores    -- Humano vs Humano
   | VsBot            -- Humano vs IA (usa Tarefa4)
   | Treino           -- Modo livre, sem limite de jogadas
+  | Voltar          -- Voltar ao menu principal
   deriving (Show, Eq)
 
 -- | Estado durante uma partida
