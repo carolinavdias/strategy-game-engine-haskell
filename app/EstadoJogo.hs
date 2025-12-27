@@ -54,6 +54,8 @@ data EstadoPartida = EstadoPartida
   , modoPartida :: ModoJogo          -- Que modo está a jogar
   , turnoAtual :: Int                -- Número do turno
   , jogadorAtual :: NumMinhoca       -- Qual minhoca está a jogar
+  , armaSelecionada :: Maybe TipoArma  -- Arma atualmente selecionada
+  , ultimaDirecao :: Direcao         -- Última direção movida (para disparos)
   , animacoes :: [AnimacaoAtiva]     -- Animações ativas
   , camera :: Camera                 -- Posição da câmera
   , pausado :: Bool                  -- Jogo pausado?
@@ -102,6 +104,8 @@ criarPartida modo estadoWorms = EstadoPartida
   , modoPartida = modo
   , turnoAtual = 0
   , jogadorAtual = 0
+  , armaSelecionada = Nothing      -- Começa sem arma selecionada
+  , ultimaDirecao = Este           -- Direção padrão
   , animacoes = []
   , camera = cameraInicial
   , pausado = False

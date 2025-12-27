@@ -19,6 +19,10 @@ import Assets
 import EstadoJogo
 import Menu
 import SelecaoModo
+import Desenhar
+import Eventos
+import Tempo  -- NOVO! Importa física e tempo
+import Labs2025  -- NOVO! Para VidaMinhoca, Minhoca, etc
 
 -- | Configuração da janela do jogo
 janela :: Display
@@ -36,7 +40,7 @@ fps = 60
 main :: IO ()
 main = do
   putStrLn "🎮 Iniciando WORMS..."
-  putStrLn "📁 A carregar assets..."
+  putStrLn "📦 A carregar assets..."
   
   -- Carregar todos os assets
   assets <- carregarAssets
@@ -50,7 +54,7 @@ main = do
   -- Iniciar loop do jogo com Gloss
   play janela corFundo fps 
        (assets, estadoInicial')  -- Estado: (Assets, EstadoJogo)
-       desenhar                   -- Desenhar
+       desenharEstado             -- Desenhar (ATUALIZADO!)
        evento                     -- Eventos
        atualizar                  -- Atualizar
 
@@ -64,7 +68,8 @@ carregarAssets = do
   btnPlay <- carregarImagem "assets/menu/button_play.png" "Botão Play"
   btnTutorial <- carregarImagem "assets/menu/button_tutorial.png" "Botão Tutorial"
   btnExit <- carregarImagem "assets/menu/button_exit.png" "Botão Exit"
-  
+
+  -- Seleção de modo
   putStrLn "  🎮 Carregando seleção de modo..."
   modeBg <- carregarImagem "assets/menu/mode_background.png" "Mode Background"
   modeTitle <- carregarImagem "assets/menu/mode_title.png" "Mode Title"
@@ -73,7 +78,7 @@ carregarAssets = do
   modeTraining <- carregarImagem "assets/menu/character_training.png" "Character Training"
   modeInstr <- carregarImagem "assets/menu/mode_instructions.png" "Mode Instructions"
   btnBack <- carregarImagem "assets/menu/button_back.png" "Button Back"
-  
+
   -- Sprites
   putStrLn "  🐛 Carregando sprites..."
   mvIdle <- carregarImagem "assets/sprites/minhoca_verde_idle.png" "Minhoca Verde Idle"
@@ -103,11 +108,24 @@ carregarAssets = do
   slot <- carregarImagem "assets/ui/weapon_slot.png" "Weapon Slot"
   
   -- Backgrounds
-  putStrLn "  🖼️  Carregando backgrounds..."
+  putStrLn "  🖼️ Carregando backgrounds..."
   gameBg <- carregarImagem "assets/backgrounds/game_background.png" "Game Background"
   
   return $ Assets
-    { menuAssets = MenuAssets menuBg menuLg btnPlay btnTutorial btnExit modeBg modeTitle mode2P modeBot modeTraining modeInstr btnBack
+    { menuAssets = MenuAssets
+      { menuBackground = menuBg
+      , menuLogo = menuLg
+      , buttonPlay = btnPlay
+      , buttonTutorial = btnTutorial
+      , buttonExit = btnExit
+      , modeBackground = modeBg
+      , modeTitle = modeTitle
+      , modeButton2P = mode2P
+      , modeButtonBot = modeBot
+      , modeButtonTraining = modeTraining
+      , modeInstructions = modeInstr
+      , buttonBack = btnBack
+      }
     , spriteAssets = SpriteAssets mvIdle mvWalk1 mvWalk2 mvHurt maIdle maWalk1 maWalk2 maHurt
     , objetoAssets = ObjetoAssets barril exp1 exp2 exp3 jetpack escavadora bazuca mina dinamite
     , uiAssets = UIAssets heart slot
@@ -126,50 +144,27 @@ carregarImagem caminho nome = do
           putStrLn $ "    ✅ " ++ nome
           return (Just img)
         Nothing -> do
-          putStrLn $ "    ⚠️  " ++ nome ++ " - erro ao carregar"
+          putStrLn $ "    ⚠️ " ++ nome ++ " - erro ao carregar"
           return Nothing
     else do
-      putStrLn $ "    ℹ️  " ++ nome ++ " - ficheiro não encontrado"
+      putStrLn $ "    ℹ️ " ++ nome ++ " - ficheiro não encontrado"
       return Nothing
 
+--------------------------------------------------------------------------------
+-- * DESENHO (ATUALIZADO COM DESENHAR.HS!)
+
 -- | Desenha o estado atual do jogo
-desenhar :: (Assets, EstadoJogo) -> Picture
-desenhar (assets, estado) = case estado of
+desenharEstado :: (Assets, EstadoJogo) -> Picture
+desenharEstado (assets, estado) = case estado of
   Menu estadoMenu -> desenharMenu assets estadoMenu
   SelecaoModo estadoSelecao -> desenharSelecao assets estadoSelecao
-  Jogando _ -> desenharJogoPlaceholder
-  GameOver _ -> desenharGameOverPlaceholder
-  Victory _ -> desenharVictoryPlaceholder
-  Tutorial _ -> desenharTutorialPlaceholder
+  Jogando estadoPartida -> desenha assets estadoPartida  -- USA DESENHAR.HS!
+  GameOver estadoFinal -> desenharGameOver assets estadoFinal
+  Victory estadoFinal -> desenharVictory assets estadoFinal
+  Tutorial estadoTutorial -> desenharTutorial assets estadoTutorial
 
--- | Placeholder para o jogo (ainda não implementado)
-desenharJogoPlaceholder :: Picture
-desenharJogoPlaceholder = Pictures
-  [ Color (makeColorI 50 100 50 255) $ rectangleSolid 1920 1200  -- Era 1400 800
-  , Color white $ Scale 0.3 0.3 $ Text "JOGO AQUI"
-  , Translate (-200) (-100) $ Color white $ Scale 0.15 0.15 $ Text "(implementar Desenhar.hs)"
-  ]
-
--- | Placeholder para Game Over
-desenharGameOverPlaceholder :: Picture
-desenharGameOverPlaceholder = Pictures
-  [ Color (makeColorI 100 20 20 255) $ rectangleSolid 1920 1200
-  , Color white $ Scale 0.4 0.4 $ Text "GAME OVER"
-  ]
-
--- | Placeholder para Victory
-desenharVictoryPlaceholder :: Picture
-desenharVictoryPlaceholder = Pictures
-  [ Color (makeColorI 20 100 20 255) $ rectangleSolid 1920 1200
-  , Color white $ Scale 0.4 0.4 $ Text "VICTORY!"
-  ]
-
--- | Placeholder para Tutorial
-desenharTutorialPlaceholder :: Picture
-desenharTutorialPlaceholder = Pictures
-  [ Color (makeColorI 20 20 100 255) $ rectangleSolid 1920 1200
-  , Color white $ Scale 0.3 0.3 $ Text "TUTORIAL"
-  ]
+--------------------------------------------------------------------------------
+-- * EVENTOS
 
 -- | Processa eventos (teclado, mouse)
 evento :: Event -> (Assets, EstadoJogo) -> (Assets, EstadoJogo)
@@ -178,10 +173,13 @@ evento e (assets, estado) = (assets, novoEstado)
     novoEstado = case estado of
       Menu estadoMenu -> eventoMenu e estadoMenu
       SelecaoModo estadoSelecao -> eventoSelecao e estadoSelecao
-      Jogando _ -> estado  -- TODO: implementar
-      GameOver _ -> estado  -- TODO: implementar
-      Victory _ -> estado   -- TODO: implementar
-      Tutorial _ -> estado  -- TODO: implementar
+      Jogando estadoPartida -> eventoJogo e estadoPartida  -- USA EVENTOS.HS!
+      GameOver estadoFinal -> eventoGameOver e estadoFinal
+      Victory estadoFinal -> eventoVictory e estadoFinal
+      Tutorial estadoTutorial -> eventoTutorial e estadoTutorial
+
+--------------------------------------------------------------------------------
+-- * ATUALIZAÇÃO
 
 -- | Atualiza estado do jogo (animações, física, etc)
 atualizar :: Float -> (Assets, EstadoJogo) -> (Assets, EstadoJogo)
@@ -190,5 +188,22 @@ atualizar dt (assets, estado) = (assets, novoEstado)
     novoEstado = case estado of
       Menu estadoMenu -> Menu (atualizarMenu dt estadoMenu)
       SelecaoModo estadoSelecao -> SelecaoModo (atualizarSelecao dt estadoSelecao)
-      Jogando _ -> estado  -- TODO: implementar Tempo.hs
+      Jogando estadoPartida -> atualizarEstadoJogando dt estadoPartida  -- USA TEMPO.HS!
       _ -> estado
+
+-- | Atualiza estado quando está jogando (usa Tempo.hs)
+atualizarEstadoJogando :: Float -> EstadoPartida -> EstadoJogo
+atualizarEstadoJogando dt partida =
+  let partidaAtualizada = atualizarPartidaCompleta dt partida
+      -- Verifica se jogo terminou
+      minhocas = minhocasEstado (estadoWorms partidaAtualizada)
+      verdesVivas = length [ m | (i, m) <- zip [0..] minhocas, even i, minhocaEstaViva m ]
+      azuisVivas = length [ m | (i, m) <- zip [0..] minhocas, odd i, minhocaEstaViva m ]
+      pontos = turnoAtual partidaAtualizada * 10
+  in if verdesVivas == 0 && azuisVivas > 0
+       then Victory (EstadoFinal pontos Restart)  -- Azul vence
+     else if azuisVivas == 0 && verdesVivas > 0
+       then Victory (EstadoFinal pontos Restart)  -- Verde vence
+     else if verdesVivas == 0 && azuisVivas == 0
+       then GameOver (EstadoFinal pontos Restart)  -- Empate
+     else Jogando partidaAtualizada  -- Continua

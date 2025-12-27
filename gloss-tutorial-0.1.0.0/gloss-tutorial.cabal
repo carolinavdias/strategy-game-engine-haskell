@@ -1,0 +1,58 @@
+cabal-version:      3.0
+name:               gloss-tutorial
+version:            0.1.0.0
+synopsis: Gloss examples
+description: Gloss examples
+
+license:            BSD-3-Clause
+license-file:       LICENSE
+
+author:             Hugo Pacheco
+maintainer:         hpacheco@di.uminho.pt
+
+
+category:           Graphics
+build-type:         Simple
+
+data-files: bola.png, bola.bmp
+extra-source-files: bola.png, bola.bmp
+extra-doc-files:    README.md
+
+common warnings
+    ghc-options: -Wall
+
+executable gloss1
+    import:           warnings
+    main-is:          Gloss1.hs
+    build-depends:    base, gloss
+    hs-source-dirs:   .
+    default-language: Haskell2010
+
+executable gloss2
+    import:           warnings
+    main-is:          Gloss2.hs
+    build-depends:    base, gloss
+    hs-source-dirs:   .
+    default-language: Haskell2010
+
+executable gloss3
+    import:           warnings
+    main-is:          Gloss3.hs
+    build-depends:    base, gloss
+    hs-source-dirs:   .
+    default-language: Haskell2010
+    
+executable gloss4
+    import:           warnings
+    main-is:          Gloss4.hs
+    build-depends:    base, gloss
+    hs-source-dirs:   .
+    default-language: Haskell2010
+    
+executable gloss5
+    import:           warnings
+    main-is:          Gloss5.hs
+    build-depends:    base, gloss-juicy
+    hs-source-dirs:   .
+    default-language: Haskell2010
+
