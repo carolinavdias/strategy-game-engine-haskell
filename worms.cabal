@@ -92,24 +92,18 @@ executable t4-feedback
     default-language: GHC2021
 
 executable worms-game
-    import:           warnings
-
-    -- Modules included in this executable, other than Main.
+    import: warnings
+    main-is: Main.hs
     other-modules:
-        Worms
-        Desenhar
-        Eventos
-        Tempo
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
-
-    main-is:          Main.hs
-
+        Assets,
+        EstadoJogo,
+        Menu,
+        SelecaoModo
     build-depends:
-        base, gloss, worms
-
-    hs-source-dirs:   app
-
+        base >=4.18 && <5,
+        gloss,
+        gloss-juicy,
+        directory,
+        worms
+    hs-source-dirs: app
     default-language: GHC2021
-
