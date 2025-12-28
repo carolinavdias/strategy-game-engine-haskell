@@ -1,91 +1,127 @@
 {-|
 Module      : Assets
-Description : Estrutura de dados para assets (imagens) do jogo.
+Description : Gestão de recursos gráficos
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Define as estruturas para guardar todas as imagens carregadas do jogo.
+Estrutura para armazenar todas as imagens e recursos do jogo.
 -}
 
 module Assets where
 
 import Graphics.Gloss
 
--- | Todos os assets do jogo organizados por categoria
+-- Container principal de todos os assets
 data Assets = Assets
   { menuAssets :: MenuAssets
+  , backgroundAssets :: BackgroundAssets
   , spriteAssets :: SpriteAssets
   , objetoAssets :: ObjetoAssets
-  , terrenoAsserts :: TerrenoAsserts
   , uiAssets :: UIAssets
-  , backgroundAssets :: BackgroundAssets
+  , frameAssets :: FrameAssets
   } deriving (Show)
 
--- | Assets do menu principal
+-- Assets do menu principal
 data MenuAssets = MenuAssets
   { menuBackground :: Maybe Picture
   , menuLogo :: Maybe Picture
   , buttonPlay :: Maybe Picture
   , buttonTutorial :: Maybe Picture
   , buttonExit :: Maybe Picture
-  , modeBackground :: Maybe Picture      -- Background escurecido
-  , modeTitle :: Maybe Picture           -- "ESCOLHE UM MODO"
-  , modeButton2P :: Maybe Picture        -- Personagens 2 jogadores
-  , modeButtonBot :: Maybe Picture       -- Personagens VS Bot
-  , modeButtonTraining :: Maybe Picture 
-  , modeInstructions :: Maybe Picture    -- Instruções
-  , buttonBack :: Maybe Picture -- Personagens Treino
+  , modeBackground :: Maybe Picture
+  , modeTitle :: Maybe Picture
+  , modeButton2P :: Maybe Picture
+  , modeButtonBot :: Maybe Picture
+  , modeButtonTraining :: Maybe Picture
+  , modeInstructions :: Maybe Picture
+  , buttonBack :: Maybe Picture
   } deriving (Show)
 
--- | Sprites das minhocas (verde e azul)
+-- Assets de backgrounds
+data BackgroundAssets = BackgroundAssets
+  { gameBackground :: Maybe Picture
+  , victoryGreen :: Maybe Picture
+  , victoryBlue :: Maybe Picture 
+  } deriving (Show)
+
+-- Assets de sprites das minhocas
 data SpriteAssets = SpriteAssets
   { minhocaVerdeIdle :: Maybe Picture
   , minhocaVerdeWalk1 :: Maybe Picture
   , minhocaVerdeWalk2 :: Maybe Picture
-  , minhocaVerdeHurt :: Maybe Picture
   , minhocaAzulIdle :: Maybe Picture
   , minhocaAzulWalk1 :: Maybe Picture
   , minhocaAzulWalk2 :: Maybe Picture
-  , minhocaAzulHurt :: Maybe Picture
+  , wormGreenBig :: Maybe Picture
+  , wormBlueBig :: Maybe Picture
+  , wormGreenBazuca :: Maybe Picture
+  , wormGreenDinamite :: Maybe Picture
+  , wormGreenMina :: Maybe Picture
+  , wormGreenEscavadora :: Maybe Picture
+  , wormGreenJetpack :: Maybe Picture
+  , wormBlueBazuca :: Maybe Picture
+  , wormBlueDinamite :: Maybe Picture
+  , wormBlueMina :: Maybe Picture
+  , wormBlueEscavadora :: Maybe Picture
+  , wormBlueJetpack :: Maybe Picture
   } deriving (Show)
 
--- | Objetos do jogo (armas, barril, explosões)
+-- Assets de objetos e armas
 data ObjetoAssets = ObjetoAssets
   { barrilSprite :: Maybe Picture
+  , bazucaIcon :: Maybe Picture
+  , dinamiteIcon :: Maybe Picture
+  , minaIcon :: Maybe Picture
+  , escavadoraIcon :: Maybe Picture
+  , jetpackIcon :: Maybe Picture
   , explosao1 :: Maybe Picture
   , explosao2 :: Maybe Picture
   , explosao3 :: Maybe Picture
-  , jetpackIcon :: Maybe Picture
-  , escavadoraIcon :: Maybe Picture
-  , bazucaIcon :: Maybe Picture
-  , minaIcon :: Maybe Picture
-  , dinamiteIcon :: Maybe Picture
   } deriving (Show)
 
--- | Terreno 
-data TerrenoAsserts = TerrenoAsserts
-  { pedra :: Maybe Picture
-  , agua :: Maybe Picture
-  , terra :: Maybe Picture
-  } deriving (Show)
-
--- | Assets da interface (UI)
+-- Assets da interface do jogo
 data UIAssets = UIAssets
-  { heartIcon :: Maybe Picture
+  { hpBar0 :: Maybe Picture
+  , hpBar20 :: Maybe Picture
+  , hpBar40 :: Maybe Picture
+  , hpBar60 :: Maybe Picture
+  , hpBar80 :: Maybe Picture
+  , hpBar100 :: Maybe Picture
+  , textPlayer1 :: Maybe Picture
+  , textPlayer2 :: Maybe Picture
+  , textControls :: Maybe Picture
+  , timerGreen :: Maybe Picture
+  , timerBlue :: Maybe Picture
+  , buttonWeaponsGreen :: Maybe Picture
+  , buttonWeaponsBlue :: Maybe Picture
+  , heartIcon :: Maybe Picture
   , weaponSlot :: Maybe Picture
+  , buttonRestart :: Maybe Picture
+  , buttonMenu :: Maybe Picture
   } deriving (Show)
 
--- | Backgrounds do jogo
-data BackgroundAssets = BackgroundAssets
-  { gameBackground :: Maybe Picture
+-- Assets de molduras
+data FrameAssets = FrameAssets
+  { stoneFrame :: Maybe Picture
   } deriving (Show)
 
--- | Cria estrutura vazia de assets (antes de carregar)
+-- Assets vazios para inicialização
 assetsVazios :: Assets
 assetsVazios = Assets
-  { menuAssets = MenuAssets Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-  , spriteAssets = SpriteAssets Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-  , objetoAssets = ObjetoAssets Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-  , uiAssets = UIAssets Nothing Nothing
-  , backgroundAssets = BackgroundAssets Nothing
+  { menuAssets = MenuAssets Nothing Nothing Nothing Nothing Nothing 
+                            Nothing Nothing Nothing Nothing Nothing 
+                            Nothing Nothing
+  , backgroundAssets = BackgroundAssets Nothing Nothing Nothing
+  , spriteAssets = SpriteAssets 
+      Nothing Nothing Nothing
+      Nothing Nothing Nothing
+      Nothing Nothing
+      Nothing Nothing Nothing Nothing Nothing
+      Nothing Nothing Nothing Nothing Nothing
+  , objetoAssets = ObjetoAssets Nothing Nothing Nothing Nothing Nothing 
+                                Nothing Nothing Nothing Nothing
+  , uiAssets = UIAssets Nothing Nothing Nothing Nothing Nothing Nothing
+                        Nothing Nothing Nothing Nothing Nothing
+                        Nothing Nothing Nothing Nothing Nothing Nothing
+  , frameAssets = FrameAssets Nothing
   }
