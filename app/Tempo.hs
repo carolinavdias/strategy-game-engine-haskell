@@ -1,14 +1,8 @@
 {-|
 Module      : Tempo
-Description : Atualização temporal do jogo.
+Description : Atualização temporal e sistema de turnos
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
-
-Integra a Tarefa3 para avançar o estado do jogo ao longo do tempo:
-- Gravidade e quedas das minhocas
-- Movimento de projéteis
-- Explosões
-- Animações
 -}
 
 module Tempo where
@@ -17,94 +11,73 @@ import EstadoJogo
 import Tarefa3
 import Labs2025
 
--- | Tempo em segundos
 type Segundos = Float
 
--- | Tempo de tick do jogo (quantos segundos entre cada avancaEstado)
-tempoTick :: Segundos
-tempoTick = 0.1  -- 10 ticks por segundo
-
--- | Acumulador de tempo para controlar ticks
-type AcumuladorTempo = Float
-
---------------------------------------------------------------------------------
--- * ATUALIZAÇÃO PRINCIPAL
-
--- | Atualiza o estado da partida ao longo do tempo
-atualizarPartida :: Segundos -> EstadoPartida -> EstadoPartida
-atualizarPartida dt partida
-  | pausado partida = partida  -- Não atualiza se pausado
+-- Atualização completa da partida a cada frame
+atualizarPartidaCompleta :: Segundos -> EstadoPartida -> EstadoJogo
+atualizarPartidaCompleta dt partida
+  | pausado partida = Jogando partida
   | otherwise = 
-      let -- Atualiza animações (sempre, independente de ticks)
-          partidaComAnimacoes = partida { animacoes = atualizarAnimacoes dt (animacoes partida) }
-          
-          -- Atualiza animação de walk
-          partidaComWalk = atualizarAnimacaoWalk dt partidaComAnimacoes
-          
-          -- Avança física do jogo (gravidade, projéteis, explosões)
-          partidaComFisica = avancarFisica dt partidaComWalk
-          
-          -- Verifica fim de jogo
-          partidaFinal = verificarCondicaoVitoria partidaComFisica
-          
-      in partidaFinal
+      let partidaComTimer = atualizarTimer dt partida
+          novoFrame = if frameCounter partidaComTimer > 0
+                     then frameCounter partidaComTimer - 1
+                     else 0
+          partidaComFrame = partidaComTimer { frameCounter = novoFrame }
+          partidaComAnimacoes = partidaComFrame 
+            { animacoes = atualizarAnimacoes dt (animacoes partidaComFrame) }
+          partidaComFisica = avancarFisica dt partidaComAnimacoes
+      in verificarCondicaoVitoria partidaComFisica
 
---------------------------------------------------------------------------------
--- * ANIMAÇÃO DE WALK
+-- Atualiza o timer de turno
+atualizarTimer :: Segundos -> EstadoPartida -> EstadoPartida
+atualizarTimer dt partida =
+  let novoTempo = tempoRestante partida - dt
+  in if novoTempo <= 0
+     then trocarTurno partida
+     else partida { tempoRestante = novoTempo }
 
--- | Atualiza animação de andar (alterna entre idle, walk1, walk2)
-atualizarAnimacaoWalk :: Segundos -> EstadoPartida -> EstadoPartida
-atualizarAnimacaoWalk dt partida =
-  let novoTempo = tempoAnimacao partida + dt
-      -- Alterna frame a cada 0.15 segundos
-      (novoFrame, tempoReset) = if novoTempo > 0.15
-                                then case frameAnimacao partida of
-                                  0 -> (1, 0.0)  -- idle -> walk1
-                                  1 -> (2, 0.0)  -- walk1 -> walk2
-                                  _ -> (0, 0.0)  -- walk2 -> idle
-                                else (frameAnimacao partida, novoTempo)
-  in partida
-       { tempoAnimacao = tempoReset
-       , frameAnimacao = novoFrame
-       }
+-- Troca o turno entre jogadores
+trocarTurno :: EstadoPartida -> EstadoPartida
+trocarTurno partida = partida
+  { jogadorAtual = if jogadorAtual partida == 0 then 1 else 0
+  , tempoRestante = tempoTotal partida
+  , turnoAtual = turnoAtual partida + 1
+  , menuArmasAbertoP1 = False
+  , menuArmasAbertoP2 = False
+  , armaSelecionadaP1 = Nothing
+  , armaSelecionadaP2 = Nothing
+  , frameCounter = 0
+  }
 
---------------------------------------------------------------------------------
--- * FÍSICA DO JOGO (TAREFA 3)
+-- Passa o turno manualmente
+passarTurno :: EstadoPartida -> EstadoPartida
+passarTurno = trocarTurno
 
--- | Avança a física do jogo usando Tarefa3
+-- Avança a física do jogo
 avancarFisica :: Segundos -> EstadoPartida -> EstadoPartida
-avancarFisica dt partida =
+avancarFisica _ partida =
   let estadoAtual = estadoWorms partida
-      -- Aplica avancaEstado da Tarefa3
       novoEstado = avancaEstado estadoAtual
-      
-      -- Detecta explosões e cria animações
       novasAnimacoes = detectarExplosoes estadoAtual novoEstado
-      
   in partida 
        { estadoWorms = novoEstado
        , animacoes = animacoes partida ++ novasAnimacoes
        }
 
--- | Detecta explosões comparando estados antes/depois
+-- Detecta explosões e danos entre estados
 detectarExplosoes :: Estado -> Estado -> [AnimacaoAtiva]
 detectarExplosoes estadoAntes estadoDepois =
   let objetosAntes = objetosEstado estadoAntes
       objetosDepois = objetosEstado estadoDepois
       objetosRemovidos = [ obj | obj <- objetosAntes, obj `notElem` objetosDepois ]
       explosoes = [ AnimExplosao (posicaoObjeto obj) 0.0 0 
-                  | obj <- objetosRemovidos
-                  , eObjetoExplosivo obj
-                  ]
-      
-      -- Detecta dano em minhocas
+                  | obj <- objetosRemovidos, eObjetoExplosivo obj ]
       minhocasAntes = minhocasEstado estadoAntes
       minhocasDepois = minhocasEstado estadoDepois
       danos = detectarDanosMinhocas minhocasAntes minhocasDepois
-      
   in explosoes ++ danos
 
--- | Verifica se um objeto é explosivo (barril, mina, dinamite, bazuca)
+-- Verifica se objeto é explosivo
 eObjetoExplosivo :: Objeto -> Bool
 eObjetoExplosivo (Barril _ True) = True
 eObjetoExplosivo (Disparo _ _ Bazuca _ _) = True
@@ -112,12 +85,12 @@ eObjetoExplosivo (Disparo _ _ Mina (Just 0) _) = True
 eObjetoExplosivo (Disparo _ _ Dinamite (Just 0) _) = True
 eObjetoExplosivo _ = False
 
--- | Posição de um objeto
+-- Obtém posição de um objeto
 posicaoObjeto :: Objeto -> Posicao
 posicaoObjeto (Barril pos _) = pos
 posicaoObjeto (Disparo pos _ _ _ _) = pos
 
--- | Detecta dano causado a minhocas
+-- Detecta danos nas minhocas
 detectarDanosMinhocas :: [Minhoca] -> [Minhoca] -> [AnimacaoAtiva]
 detectarDanosMinhocas antes depois =
   [ AnimDano pos dano 1.0
@@ -127,90 +100,45 @@ detectarDanosMinhocas antes depois =
   , dano > 0
   ]
 
--- | Calcula dano sofrido comparando vidas
+-- Calcula dano entre dois estados de vida
 calcularDano :: VidaMinhoca -> VidaMinhoca -> Int
 calcularDano (Viva v1) (Viva v2) = max 0 (v1 - v2)
 calcularDano (Viva v1) Morta = v1
 calcularDano _ _ = 0
 
---------------------------------------------------------------------------------
--- * ANIMAÇÕES
-
--- | Atualiza todas as animações ativas
+-- Atualiza todas as animações ativas
 atualizarAnimacoes :: Segundos -> [AnimacaoAtiva] -> [AnimacaoAtiva]
 atualizarAnimacoes dt = filter animacaoAtiva . map (atualizarAnimacao dt)
   where
     atualizarAnimacao :: Segundos -> AnimacaoAtiva -> AnimacaoAtiva
-    atualizarAnimacao dt (AnimExplosao pos tempo frame) =
-      let novoTempo = tempo + dt
-          -- Cada frame dura 0.15 segundos
+    atualizarAnimacao dtLocal (AnimExplosao pos tempo frame) =
+      let novoTempo = tempo + dtLocal
           novoFrame = if novoTempo > 0.15 * fromIntegral (frame + 1)
-                      then frame + 1
-                      else frame
+                      then frame + 1 else frame
       in AnimExplosao pos novoTempo novoFrame
+    atualizarAnimacao dtLocal (AnimDano pos dano tempo) =
+      AnimDano pos dano (tempo - dtLocal)
+    atualizarAnimacao dtLocal (AnimMovimento num de para prog) =
+      AnimMovimento num de para (min 1.0 (prog + dtLocal * 3))
     
-    atualizarAnimacao dt (AnimDano pos dano tempo) =
-      AnimDano pos dano (tempo - dt)
-    
-    atualizarAnimacao dt (AnimMovimento num de para prog) =
-      AnimMovimento num de para (min 1.0 (prog + dt * 3))  -- 3x velocidade
-    
-    -- Verifica se animação ainda está ativa
-    animacaoAtiva :: AnimacaoAtiva -> Bool
-    animacaoAtiva (AnimExplosao _ _ frame) = frame < 3  -- 3 frames
+    animacaoAtiva (AnimExplosao _ _ frame) = frame < 3
     animacaoAtiva (AnimDano _ _ tempo) = tempo > 0
     animacaoAtiva (AnimMovimento _ _ _ prog) = prog < 1.0
 
---------------------------------------------------------------------------------
--- * CONDIÇÕES DE VITÓRIA
-
--- | Verifica se o jogo terminou
-verificarCondicaoVitoria :: EstadoPartida -> EstadoPartida
+-- Verifica condição de vitória
+verificarCondicaoVitoria :: EstadoPartida -> EstadoJogo
 verificarCondicaoVitoria partida =
   let minhocas = minhocasEstado (estadoWorms partida)
-      minhocasVivas = filter minhocaViva minhocas
-      
-      -- Conta minhocas vivas por equipe (par = verde, ímpar = azul)
-      verdesVivas = length [ m | (i, m) <- zip [0..] minhocas, even i, minhocaViva m ]
-      azuisVivas = length [ m | (i, m) <- zip [0..] minhocas, odd i, minhocaViva m ]
-      
-  in if verdesVivas == 0 && azuisVivas == 0
-       then partida  -- Empate (mas mantém jogando)
-     else if verdesVivas == 0
-       then partida  -- Azul vence (será tratado em Eventos)
-     else if azuisVivas == 0
-       then partida  -- Verde vence (será tratado em Eventos)
-     else partida  -- Jogo continua
+      verdesVivas = [m | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
+      azuisVivas = [m | (i, m) <- zip [0..] minhocas, odd i, minhocaViva m]
+  in if null verdesVivas
+     then Victory (EstadoFinal 0 (Just VenceuAzul) VoltarMenu)
+     else if null azuisVivas
+          then Victory (EstadoFinal 0 (Just VenceuVerde) VoltarMenu)
+          else Jogando partida
 
--- | Verifica se uma minhoca está viva
+-- Verifica se minhoca está viva
 minhocaViva :: Minhoca -> Bool
 minhocaViva m = case vidaMinhoca m of
   Viva _ -> True
   Morta -> False
-
---------------------------------------------------------------------------------
--- * CÂMERA FIXA (NÃO FAZ NADA AGORA)
-
--- | Câmera é fixa, não precisa atualizar
-atualizarCamera :: EstadoPartida -> EstadoPartida
-atualizarCamera = id  -- Retorna estado inalterado
-
---------------------------------------------------------------------------------
--- * MODO BOT (TAREFA 4)
-
--- | Se for modo VS Bot, executa jogada do bot
-executarBotSeNecessario :: EstadoPartida -> EstadoPartida
-executarBotSeNecessario partida
-  | modoPartida partida /= VsBot = partida
-  | odd (jogadorAtual partida) = partida  -- Bot é sempre jogador ímpar (azul)
-  | otherwise = partida  -- TODO: Integrar Tarefa4.tatica
-
---------------------------------------------------------------------------------
--- * INTEGRAÇÃO COMPLETA
-
--- | Atualização completa da partida (usar no Main.hs)
-atualizarPartidaCompleta :: Segundos -> EstadoPartida -> EstadoPartida
-atualizarPartidaCompleta dt =
-  atualizarPartida dt        -- Física + Animações
-  . atualizarCamera          -- Câmera segue jogador
-  . executarBotSeNecessario  -- IA se necessário
