@@ -48,19 +48,25 @@ avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
 avancaMinhoca estado _ minhoca
     | not (minhocaValidaGlobal estado minhoca) = minhoca {vidaMinhoca = Morta, posicaoMinhoca = Nothing}
     | isNothing (posicaoMinhoca minhoca) = minhoca
-    | otherwise = 
-        case posicaoMinhoca minhoca of
-            Just (x, y) ->
-                let mapa = mapaEstado estado
-                    novaPos = (x + 1, y)  -- gravidade normal para baixo
-                in if not (ePosicaoMatrizValida novaPos mapa)
-                      then minhoca {vidaMinhoca = Morta, posicaoMinhoca = Nothing}
-                      else case encontraPosicaoMatriz novaPos mapa of
-                        Just Ar -> minhoca {posicaoMinhoca = Just novaPos}
-                        Just Agua -> minhoca {vidaMinhoca = Morta, posicaoMinhoca = Just novaPos}
-                        _ -> minhoca
-            Nothing -> minhoca
-
+    | otherwise = cairAteChao estado minhoca
+  where
+    -- Faz minhoca cair até encontrar chão
+    cairAteChao :: Estado -> Minhoca -> Minhoca
+    cairAteChao est m =
+        case posicaoMinhoca m of
+            Nothing -> m
+            Just pos@(x, y) ->
+                let mapa = mapaEstado est
+                    posAbaixo = (x + 1, y)
+                in if not (ePosicaoMatrizValida posAbaixo mapa)
+                      then m {vidaMinhoca = Morta, posicaoMinhoca = Nothing}  -- Caiu fora do mapa
+                      else case encontraPosicaoMatriz posAbaixo mapa of
+                        Just Ar -> 
+                            -- Continua caindo recursivamente
+                            let minhocaCaida = m {posicaoMinhoca = Just posAbaixo}
+                            in cairAteChao est minhocaCaida
+                        Just Agua -> m {vidaMinhoca = Morta, posicaoMinhoca = Just posAbaixo}  -- Morreu na água
+                        _ -> m  -- Parou em Terra/Pedra
 --------------------------------------------------------------------------------
 -- * FUNÇÕES AUXILIARES PARA MINHOCAS
 
@@ -281,20 +287,21 @@ avancaObjeto state _ object
                     let (px, py) = position
                         (dx, dy) = delta Sul
                         newPos = (px + dx, py + dy)
+                        -- Raio de detecção: 5 blocos (mais generoso!)
                         deveAtivar = case timeUntilExplosion of
-                            Nothing -> existeMinhocaInimiganAreaExplosao position (donoDisparo gunshot) 3 state
+                            Nothing -> existeMinhocaInimiganAreaExplosao position (donoDisparo gunshot) 7 state
                             Just _ -> False
                         newTempo = case timeUntilExplosion of
                             Just n | n > 0 -> Just (n - 1)
                             Nothing | deveAtivar -> Just 2
                             _ -> timeUntilExplosion
                     in if ePosicaoMapaLivre newPos (mapaEstado state)
-                          then
+                        then
                             ( if ePosicaoMatrizValida newPos (mapaEstado state)
                                 then Left gunshot {posicaoDisparo = newPos, direcaoDisparo = Norte, tempoDisparo = newTempo}
                                 else Right []
                             )
-                          else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
+                        else Left gunshot {direcaoDisparo = Norte, tempoDisparo = newTempo}
                 
                 Jetpack -> Left gunshot
                 Escavadora -> Left gunshot
