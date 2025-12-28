@@ -147,10 +147,8 @@ selecionarOpcao OpcaoExit = error "Jogo encerrado pelo utilizador"
 
 
 -- | Atualiza animação do menu (efeito glow pulsante)
-atualizarMenu :: Float -> EstadoMenu -> EstadoMenu
-atualizarMenu dt estado = estado { animacaoGlow = novoGlow }
-  where
-    novoGlow = animacaoGlow estado + dt * 2  -- velocidade da pulsação
+atualizarMenu :: Float -> EstadoMenu -> EstadoJogo
+atualizarMenu dt estado = Menu (estado { animacaoMenu = animacaoMenu estado + dt * 5 })
 
 -- | Desenha instruções discretas no canto superior direito
 desenharInstrucoesMenu :: Assets -> Picture
