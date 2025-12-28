@@ -1,216 +1,203 @@
 {-|
 Module      : Main
-Description : Ponto de entrada do jogo Worms.
+Description : Ponto de entrada do jogo Worms
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
-
-Carrega todos os assets (imagens) e inicia o loop principal do jogo com Gloss.
 -}
 
 module Main where
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
-import Graphics.Gloss.Juicy
+import Codec.Picture.Png (decodePng)
+import qualified Data.ByteString as B
+import Graphics.Gloss.Juicy (fromDynamicImage)
 import System.Directory (doesFileExist)
-import Control.Monad (forM)
 
-import Assets
 import EstadoJogo
-import Menu
-import SelecaoModo
+import Assets
 import Desenhar
 import Eventos
-import Tempo  -- NOVO! Importa física e tempo
-import Labs2025  -- NOVO! Para VidaMinhoca, Minhoca, etc
+import Tempo
+import Menu
+import SelecaoModo
 
--- | Configuração da janela do jogo
-janela :: Display
-janela = FullScreen
+-- Configuração da janela do jogo
+window :: Display
+window = FullScreen
 
--- | Cor de fundo
-corFundo :: Color
-corFundo = makeColorI 20 20 40 255
+-- Cor de fundo
+background :: Color
+background = makeColorI 135 206 235 255
 
--- | FPS do jogo
+-- Taxa de atualização
 fps :: Int
 fps = 60
 
--- | Função principal - ponto de entrada
+-- Função principal
 main :: IO ()
 main = do
-  putStrLn "🎮 Iniciando WORMS..."
-  putStrLn "📦 A carregar assets..."
-  
-  -- Carregar todos os assets
+  putStrLn "Iniciando Worms..."
   assets <- carregarAssets
   
-  putStrLn "✅ Assets carregados!"
-  putStrLn "🚀 A iniciar jogo...\n"
+  let estadoInicial = Menu (EstadoMenu OpcaoPlay 0.0)
   
-  -- Estado inicial (começa no menu)
-  let estadoInicial' = estadoInicial assets
-  
-  -- Iniciar loop do jogo com Gloss
-  play janela corFundo fps 
-       (assets, estadoInicial')  -- Estado: (Assets, EstadoJogo)
-       desenharEstado             -- Desenhar (ATUALIZADO!)
-       evento                     -- Eventos
-       atualizar                  -- Atualizar
+  play window background fps estadoInicial
+       (desenhar assets)
+       (evento assets)
+       (atualizar assets)
 
--- | Carrega todos os assets do jogo
+-- Carregamento de todos os assets do jogo
 carregarAssets :: IO Assets
 carregarAssets = do
-  -- Menu
-  putStrLn "  📋 Carregando menu..."
-  menuBg <- carregarImagem "assets/menu/background.png" "Menu Background"
-  menuLg <- carregarImagem "assets/menu/logo.png" "Menu Logo"
-  btnPlay <- carregarImagem "assets/menu/button_play.png" "Botão Play"
-  btnTutorial <- carregarImagem "assets/menu/button_tutorial.png" "Botão Tutorial"
-  btnExit <- carregarImagem "assets/menu/button_exit.png" "Botão Exit"
-
-  -- Seleção de modo
-  putStrLn "  🎮 Carregando seleção de modo..."
-  modeBg <- carregarImagem "assets/menu/mode_background.png" "Mode Background"
-  modeTitle <- carregarImagem "assets/menu/mode_title.png" "Mode Title"
-  mode2P <- carregarImagem "assets/menu/character_2players.png" "Character 2P"
-  modeBot <- carregarImagem "assets/menu/character_vsbot.png" "Character VS Bot"
-  modeTraining <- carregarImagem "assets/menu/character_training.png" "Character Training"
-  modeInstr <- carregarImagem "assets/menu/mode_instructions.png" "Mode Instructions"
-  btnBack <- carregarImagem "assets/menu/button_back.png" "Button Back"
-
-  -- Sprites
-  putStrLn "  🐛 Carregando sprites..."
-  mvIdle <- carregarImagem "assets/sprites/minhoca_verde_idle.png" "Minhoca Verde Idle"
-  mvWalk1 <- carregarImagem "assets/sprites/minhoca_verde_walk1.png" "Minhoca Verde Walk1"
-  mvWalk2 <- carregarImagem "assets/sprites/minhoca_verde_walk2.png" "Minhoca Verde Walk2"
-  mvHurt <- carregarImagem "assets/sprites/minhoca_verde_hurt.png" "Minhoca Verde Hurt"
-  maIdle <- carregarImagem "assets/sprites/minhoca_azul_idle.png" "Minhoca Azul Idle"
-  maWalk1 <- carregarImagem "assets/sprites/minhoca_azul_walk1.png" "Minhoca Azul Walk1"
-  maWalk2 <- carregarImagem "assets/sprites/minhoca_azul_walk2.png" "Minhoca Azul Walk2"
-  maHurt <- carregarImagem "assets/sprites/minhoca_azul_hurt.png" "Minhoca Azul Hurt"
+  putStrLn "\nCarregando assets..."
   
-  -- Objetos
-  putStrLn "  💣 Carregando objetos..."
+  putStrLn "\n  Menu:"
+  menuBg <- carregarImagem "assets/menu/background.png" "Background menu"
+  menuLg <- carregarImagem "assets/menu/logo.png" "Logo"
+  btnPlay <- carregarImagem "assets/menu/button_play.png" "Botao Play"
+  btnTut <- carregarImagem "assets/menu/button_tutorial.png" "Botao Tutorial"
+  btnExit <- carregarImagem "assets/menu/button_exit.png" "Botao Exit"
+  modeBg <- carregarImagem "assets/menu/mode_background.png" "Background modos"
+  modeTitle <- carregarImagem "assets/menu/mode_title.png" "Titulo modos"
+  mode2P <- carregarImagem "assets/menu/character_2players.png" "2 Jogadores"
+  modeBot <- carregarImagem "assets/menu/character_vsbot.png" "VS Bot"
+  modeTraining <- carregarImagem "assets/menu/character_training.png" "Treino"
+  modeInstr <- carregarImagem "assets/menu/mode_instructions.png" "Instrucoes"
+  btnBack <- carregarImagem "assets/menu/button_back.png" "Botao Voltar"
+  
+  putStrLn "\n  Backgrounds:"
+  gameBg <- carregarImagem "assets/backgrounds/game_background.png" "Background jogo"
+  victoryG <- carregarImagem "assets/backgrounds/victory_green.png" "Vitoria verde"
+  victoryB <- carregarImagem "assets/backgrounds/victory_blue.png" "Vitoria azul"
+  
+  putStrLn "\n  Sprites minhocas:"
+  verdeIdle <- carregarImagem "assets/sprites/minhoca_verde_idle.png" "Verde idle"
+  verdeWalk1 <- carregarImagem "assets/sprites/minhoca_verde_walk1.png" "Verde walk1"
+  verdeWalk2 <- carregarImagem "assets/sprites/minhoca_verde_walk2.png" "Verde walk2"
+  azulIdle <- carregarImagem "assets/sprites/minhoca_azul_idle.png" "Azul idle"
+  azulWalk1 <- carregarImagem "assets/sprites/minhoca_azul_walk1.png" "Azul walk1"
+  azulWalk2 <- carregarImagem "assets/sprites/minhoca_azul_walk2.png" "Azul walk2"
+  wormGreenBig <- carregarImagem "assets/sprites/worm_green_big.png" "Minhoca verde grande"
+  wormBlueBig <- carregarImagem "assets/sprites/worm_blue_big.png" "Minhoca azul grande"
+  
+  putStrLn "  Sprites com armas:"
+  greenBazuca <- carregarImagem "assets/sprites/worm_green_bazuca.png" "Verde bazuca"
+  greenDinamite <- carregarImagem "assets/sprites/worm_green_dinamite.png" "Verde dinamite"
+  greenMina <- carregarImagem "assets/sprites/worm_green_mina.png" "Verde mina"
+  greenEscavadora <- carregarImagem "assets/sprites/worm_green_escavadora.png" "Verde escavadora"
+  greenJetpack <- carregarImagem "assets/sprites/worm_green_jetpack.png" "Verde jetpack"
+  blueBazuca <- carregarImagem "assets/sprites/worm_blue_bazuca.png" "Azul bazuca"
+  blueDinamite <- carregarImagem "assets/sprites/worm_blue_dinamite.png" "Azul dinamite"
+  blueMina <- carregarImagem "assets/sprites/worm_blue_mina.png" "Azul mina"
+  blueEscavadora <- carregarImagem "assets/sprites/worm_blue_escavadora.png" "Azul escavadora"
+  blueJetpack <- carregarImagem "assets/sprites/worm_blue_jetpack.png" "Azul jetpack"
+
+  putStrLn "\n  Objetos e armas:"
   barril <- carregarImagem "assets/objetos/barril.png" "Barril"
-  exp1 <- carregarImagem "assets/objetos/explosao1.png" "Explosão 1"
-  exp2 <- carregarImagem "assets/objetos/explosao2.png" "Explosão 2"
-  exp3 <- carregarImagem "assets/objetos/explosao3.png" "Explosão 3"
-  jetpack <- carregarImagem "assets/objetos/jetpack.png" "Jetpack"
-  escavadora <- carregarImagem "assets/objetos/escavadora.png" "Escavadora"
   bazuca <- carregarImagem "assets/objetos/bazuka.png" "Bazuca"
-  mina <- carregarImagem "assets/objetos/mina.png" "Mina"
   dinamite <- carregarImagem "assets/objetos/dinamite.png" "Dinamite"
-
-  -- Terreno 
-  putStrLn " Carregar terreno ..."
-  pedra <- carregarImagem "asserts/terreno/pedra.png" "Pedra"
-  agua <- carregarImagem "asserts/terreno/agua.png" "Água"
-  terra <- carregarImagem "asserts/terreno/terra.png" "Terra"
+  mina <- carregarImagem "assets/objetos/mina.png" "Mina"
+  escavadora <- carregarImagem "assets/objetos/escavadora.png" "Escavadora"
+  jetpack <- carregarImagem "assets/objetos/jetpack.png" "Jetpack"
+  exp1 <- carregarImagem "assets/objetos/explosao1.png" "Explosao 1"
+  exp2 <- carregarImagem "assets/objetos/explosao2.png" "Explosao 2"
+  exp3 <- carregarImagem "assets/objetos/explosao3.png" "Explosao 3"
   
-  -- UI
-  putStrLn "  🎨 Carregando UI..."
-  heart <- carregarImagem "assets/ui/heart_icon.png" "Heart Icon"
-  slot <- carregarImagem "assets/ui/weapon_slot.png" "Weapon Slot"
+  putStrLn "\n  Interface (UI):"
+  hp0 <- carregarImagem "assets/ui/hp_bar_0.png" "Barra vida 0"
+  hp20 <- carregarImagem "assets/ui/hp_bar_20.png" "Barra vida 20"
+  hp40 <- carregarImagem "assets/ui/hp_bar_40.png" "Barra vida 40"
+  hp60 <- carregarImagem "assets/ui/hp_bar_60.png" "Barra vida 60"
+  hp80 <- carregarImagem "assets/ui/hp_bar_80.png" "Barra vida 80"
+  hp100 <- carregarImagem "assets/ui/hp_bar_100.png" "Barra vida 100"
+  textP1 <- carregarImagem "assets/ui/text_player1.png" "Texto Jogador 1"
+  textP2 <- carregarImagem "assets/ui/text_player2.png" "Texto Jogador 2"
+  textCtrl <- carregarImagem "assets/ui/text_controls.png" "Texto controlos"
+  timerG <- carregarImagem "assets/ui/timer_green.png" "Timer verde"
+  timerB <- carregarImagem "assets/ui/timer_blue.png" "Timer azul"
+  btnWeapG <- carregarImagem "assets/ui/button_weapons_green.png" "Botao armas verde"
+  btnWeapB <- carregarImagem "assets/ui/button_weapons_blue.png" "Botao armas azul"
+  heart <- carregarImagemOpcional "assets/ui/heart_icon.png" "Icone coracao"
+  weapSlot <- carregarImagemOpcional "assets/ui/weapon_slot.png" "Slot arma"
+  btnRestart <- carregarImagem "assets/ui/button_restart.png" "Botao restart"
+  btnMenu <- carregarImagem "assets/ui/button_menu.png" "Botao menu"
   
-  -- Backgrounds
-  putStrLn "  🖼️ Carregando backgrounds..."
-  gameBg <- carregarImagem "assets/backgrounds/game_background.png" "Game Background"
+  putStrLn "\n  Molduras:"
+  stoneF <- carregarImagem "assets/frames/stone_frame.png" "Moldura de pedra"
+  
+  putStrLn "\nAssets carregados com sucesso!\n"
   
   return $ Assets
-    { menuAssets = MenuAssets
-      { menuBackground = menuBg
-      , menuLogo = menuLg
-      , buttonPlay = btnPlay
-      , buttonTutorial = btnTutorial
-      , buttonExit = btnExit
-      , modeBackground = modeBg
-      , modeTitle = modeTitle
-      , modeButton2P = mode2P
-      , modeButtonBot = modeBot
-      , modeButtonTraining = modeTraining
-      , modeInstructions = modeInstr
-      , buttonBack = btnBack
-      }
-    , spriteAssets = SpriteAssets mvIdle mvWalk1 mvWalk2 mvHurt maIdle maWalk1 maWalk2 maHurt
-    , objetoAssets = ObjetoAssets barril exp1 exp2 exp3 jetpack escavadora bazuca mina dinamite
-    , terrenoAsserts = TerrenoAsserts pedra agua terra 
-    , uiAssets = UIAssets heart slot
-    , backgroundAssets = BackgroundAssets gameBg
+    { menuAssets = MenuAssets menuBg menuLg btnPlay btnTut btnExit
+                              modeBg modeTitle mode2P modeBot modeTraining
+                              modeInstr btnBack
+    , backgroundAssets = BackgroundAssets gameBg victoryG victoryB
+    , spriteAssets = SpriteAssets verdeIdle verdeWalk1 verdeWalk2
+                                  azulIdle azulWalk1 azulWalk2
+                                  wormGreenBig wormBlueBig 
+                                  greenBazuca greenDinamite greenMina greenEscavadora greenJetpack
+                                  blueBazuca blueDinamite blueMina blueEscavadora blueJetpack
+    , objetoAssets = ObjetoAssets barril bazuca dinamite mina escavadora
+                                  jetpack exp1 exp2 exp3
+    , uiAssets = UIAssets hp0 hp20 hp40 hp60 hp80 hp100
+                          textP1 textP2 textCtrl
+                          timerG timerB btnWeapG btnWeapB
+                          heart weapSlot btnRestart btnMenu 
+    , frameAssets = FrameAssets stoneF
     }
 
--- | Carrega uma imagem individual (com fallback se não existir)
+-- Carrega uma imagem PNG do disco
 carregarImagem :: FilePath -> String -> IO (Maybe Picture)
-carregarImagem caminho nome = do
-  existe <- doesFileExist caminho
-  if existe
+carregarImagem path nome = do
+  existe <- doesFileExist path
+  if not existe
     then do
-      resultado <- loadJuicy caminho
-      case resultado of
-        Just img -> do
-          putStrLn $ "    ✅ " ++ nome
-          return (Just img)
-        Nothing -> do
-          putStrLn $ "    ⚠️ " ++ nome ++ " - erro ao carregar"
-          return Nothing
-    else do
-      putStrLn $ "    ℹ️ " ++ nome ++ " - ficheiro não encontrado"
+      putStrLn $ "    Aviso: " ++ nome ++ " nao encontrado (" ++ path ++ ")"
       return Nothing
+    else do
+      putStr $ "    Carregando " ++ nome ++ "..."
+      conteudo <- B.readFile path
+      case decodePng conteudo of
+        Left err -> do
+          putStrLn $ " Erro: " ++ err
+          return Nothing
+        Right img -> do
+          putStrLn " OK"
+          return (fromDynamicImage img)
 
---------------------------------------------------------------------------------
--- * DESENHO (ATUALIZADO COM DESENHAR.HS!)
+-- Carrega imagem opcional sem mostrar erro
+carregarImagemOpcional :: FilePath -> String -> IO (Maybe Picture)
+carregarImagemOpcional path nome = do
+  existe <- doesFileExist path
+  if not existe
+    then return Nothing
+    else carregarImagem path nome
 
--- | Desenha o estado atual do jogo
-desenharEstado :: (Assets, EstadoJogo) -> Picture
-desenharEstado (assets, estado) = case estado of
+-- Desenha o estado atual do jogo
+desenhar :: Assets -> EstadoJogo -> Picture
+desenhar assets estado = case estado of
   Menu estadoMenu -> desenharMenu assets estadoMenu
-  SelecaoModo estadoSelecao -> desenharSelecao assets estadoSelecao
-  Jogando estadoPartida -> desenha assets estadoPartida  -- USA DESENHAR.HS!
+  SelecaoModo estadoSel -> desenharSelecao assets estadoSel
+  Jogando partida -> Desenhar.desenha assets partida
   GameOver estadoFinal -> desenharGameOver assets estadoFinal
   Victory estadoFinal -> desenharVictory assets estadoFinal
-  Tutorial estadoTutorial -> desenharTutorial assets estadoTutorial
+  Tutorial estadoTut -> desenharTutorial assets estadoTut
 
---------------------------------------------------------------------------------
--- * EVENTOS
+-- Processa eventos de input
+evento :: Assets -> Event -> EstadoJogo -> EstadoJogo
+evento assets ev estado = case estado of
+  Menu estadoMenu -> eventoMenu ev estadoMenu
+  SelecaoModo estadoSel -> eventoSelecao ev estadoSel
+  Jogando partida -> eventoJogo ev partida
+  GameOver estadoFinal -> eventoGameOver ev estadoFinal
+  Victory estadoFinal -> eventoVictory ev estadoFinal
+  Tutorial estadoTut -> eventoTutorial ev estadoTut
 
--- | Processa eventos (teclado, mouse)
-evento :: Event -> (Assets, EstadoJogo) -> (Assets, EstadoJogo)
-evento e (assets, estado) = (assets, novoEstado)
-  where
-    novoEstado = case estado of
-      Menu estadoMenu -> eventoMenu e estadoMenu
-      SelecaoModo estadoSelecao -> eventoSelecao e estadoSelecao
-      Jogando estadoPartida -> eventoJogo e estadoPartida  -- USA EVENTOS.HS!
-      GameOver estadoFinal -> eventoGameOver e estadoFinal
-      Victory estadoFinal -> eventoVictory e estadoFinal
-      Tutorial estadoTutorial -> eventoTutorial e estadoTutorial
-
---------------------------------------------------------------------------------
--- * ATUALIZAÇÃO
-
--- | Atualiza estado do jogo (animações, física, etc)
-atualizar :: Float -> (Assets, EstadoJogo) -> (Assets, EstadoJogo)
-atualizar dt (assets, estado) = (assets, novoEstado)
-  where
-    novoEstado = case estado of
-      Menu estadoMenu -> Menu (atualizarMenu dt estadoMenu)
-      SelecaoModo estadoSelecao -> SelecaoModo (atualizarSelecao dt estadoSelecao)
-      Jogando estadoPartida -> atualizarEstadoJogando dt estadoPartida  -- USA TEMPO.HS!
-      _ -> estado
-
--- | Atualiza estado quando está jogando (usa Tempo.hs)
-atualizarEstadoJogando :: Float -> EstadoPartida -> EstadoJogo
-atualizarEstadoJogando dt partida =
-  let partidaAtualizada = atualizarPartidaCompleta dt partida
-      -- Verifica se jogo terminou
-      minhocas = minhocasEstado (estadoWorms partidaAtualizada)
-      verdesVivas = length [ m | (i, m) <- zip [0..] minhocas, even i, minhocaEstaViva m ]
-      azuisVivas = length [ m | (i, m) <- zip [0..] minhocas, odd i, minhocaEstaViva m ]
-      pontos = turnoAtual partidaAtualizada * 10
-  in if verdesVivas == 0 && azuisVivas > 0
-       then Victory (EstadoFinal pontos Restart)  -- Azul vence
-     else if azuisVivas == 0 && verdesVivas > 0
-       then Victory (EstadoFinal pontos Restart)  -- Verde vence
-     else if verdesVivas == 0 && azuisVivas == 0
-       then GameOver (EstadoFinal pontos Restart)  -- Empate
-     else Jogando partidaAtualizada  -- Continua
+-- Atualiza o estado do jogo ao longo do tempo
+atualizar :: Assets -> Float -> EstadoJogo -> EstadoJogo
+atualizar assets dt estado = case estado of
+  Menu estadoMenu -> atualizarMenu dt estadoMenu
+  SelecaoModo estadoSel -> atualizarSelecao dt estadoSel
+  Jogando partida -> atualizarPartidaCompleta dt partida
+  _ -> estado
