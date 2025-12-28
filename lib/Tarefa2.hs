@@ -150,11 +150,20 @@ jaTemDisparoAtivo numMinhoca arma estado =
 -- Cada arma tem uma forma diferente de atuar no mapa.
 executaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Posicao -> Estado -> Estado
 -- Jetpack: move para a próxima posição se estiver livre, gastando combustível.
+-- Jetpack: voa até 3 blocos na direção, ou até encontrar obstáculo
 executaDisparo numMinhoca Jetpack dir pos estado =
-  let novaPos = proximaPosicao pos dir
-  in if posicaoValidaLivre novaPos estado
-       then gastaMunicaoEMove numMinhoca Jetpack novaPos estado
-       else gastaMunicao numMinhoca Jetpack estado
+  let tentarVoar distancia posAtual
+        | distancia <= 0 = posAtual  -- Máximo de voo atingido
+        | otherwise =
+            let proximaPos = proximaPosicao posAtual dir
+            in if posicaoValidaLivre proximaPos estado
+               then tentarVoar (distancia - 1) proximaPos  -- Continua voando
+               else posAtual  -- Para no obstáculo
+      
+      posicaoFinal = tentarVoar 3 pos  -- Voa até 3 blocos
+  in if posicaoFinal /= pos
+     then gastaMunicaoEMove numMinhoca Jetpack posicaoFinal estado
+     else gastaMunicao numMinhoca Jetpack estado  -- Gasta mesmo sem mover
 
 -- Escavadora: destrói terra ou move para uma posição livre.
 executaDisparo numMinhoca Escavadora dir pos estado =
