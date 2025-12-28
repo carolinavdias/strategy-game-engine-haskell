@@ -101,6 +101,12 @@ carregarAssets = do
   bazuca <- carregarImagem "assets/objetos/bazuka.png" "Bazuca"
   mina <- carregarImagem "assets/objetos/mina.png" "Mina"
   dinamite <- carregarImagem "assets/objetos/dinamite.png" "Dinamite"
+
+  -- Terreno 
+  putStrLn " Carregar terreno ..."
+  pedra <- carregarImagem "asserts/terreno/pedra.png" "Pedra"
+  agua <- carregarImagem "asserts/terreno/agua.png" "Água"
+  terra <- carregarImagem "asserts/terreno/terra.png" "Terra"
   
   -- UI
   putStrLn "  🎨 Carregando UI..."
@@ -128,6 +134,7 @@ carregarAssets = do
       }
     , spriteAssets = SpriteAssets mvIdle mvWalk1 mvWalk2 mvHurt maIdle maWalk1 maWalk2 maHurt
     , objetoAssets = ObjetoAssets barril exp1 exp2 exp3 jetpack escavadora bazuca mina dinamite
+    , terrenoAsserts = TerrenoAsserts pedra agua terra 
     , uiAssets = UIAssets heart slot
     , backgroundAssets = BackgroundAssets gameBg
     }

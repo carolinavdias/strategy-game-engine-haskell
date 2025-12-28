@@ -35,7 +35,7 @@ desenha assets partida = Pictures
   , desenharObjetos assets (objetosEstado $ estadoWorms partida)
   , desenharMinhocasAnimadas assets (minhocasEstado $ estadoWorms partida) (frameAnimacao partida)
   , desenharAnimacoes assets (animacoes partida)
-  , desenharUIDoisJogadores assets partida  -- NOVA UI!
+  , desenharUIDoisJogadores assets partida  
   , desenharPausaSeNecessario (pausado partida)
   ]
 

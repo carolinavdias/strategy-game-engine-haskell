@@ -196,17 +196,6 @@ atualizarCamera :: EstadoPartida -> EstadoPartida
 atualizarCamera = id  -- Retorna estado inalterado
 
 --------------------------------------------------------------------------------
--- * SISTEMA DE TURNOS AUTOMÁTICO
-
--- | Tempo máximo por turno (em segundos)
-tempoMaximoPorTurno :: Segundos
-tempoMaximoPorTurno = 30.0
-
--- | Adiciona contador de tempo ao EstadoPartida (se necessário)
--- Por agora, turnos são manuais (ENTER para passar)
--- Mas podes adicionar um campo 'tempoTurno :: Float' ao EstadoPartida depois
-
---------------------------------------------------------------------------------
 -- * MODO BOT (TAREFA 4)
 
 -- | Se for modo VS Bot, executa jogada do bot

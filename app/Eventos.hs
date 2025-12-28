@@ -182,9 +182,6 @@ temMunicaoArma m Mina = minaMinhoca m > 0
 temMunicaoArma m Dinamite = dinamiteMinhoca m > 0
 
 --------------------------------------------------------------------------------
--- * TURNOS (REMOVIDO - MODO SIMULTÂNEO NÃO USA TURNOS)
-
---------------------------------------------------------------------------------
 -- * FIM DE JOGO
 
 -- | Verifica se uma minhoca está viva

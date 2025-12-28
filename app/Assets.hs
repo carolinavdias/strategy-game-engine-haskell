@@ -16,6 +16,7 @@ data Assets = Assets
   { menuAssets :: MenuAssets
   , spriteAssets :: SpriteAssets
   , objetoAssets :: ObjetoAssets
+  , terrenoAsserts :: TerrenoAsserts
   , uiAssets :: UIAssets
   , backgroundAssets :: BackgroundAssets
   } deriving (Show)
@@ -59,6 +60,13 @@ data ObjetoAssets = ObjetoAssets
   , bazucaIcon :: Maybe Picture
   , minaIcon :: Maybe Picture
   , dinamiteIcon :: Maybe Picture
+  } deriving (Show)
+
+-- | Terreno 
+data TerrenoAsserts = TerrenoAsserts
+  { pedra :: Maybe Picture
+  , agua :: Maybe Picture
+  , terra :: Maybe Picture
   } deriving (Show)
 
 -- | Assets da interface (UI)
