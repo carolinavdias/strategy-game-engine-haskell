@@ -1,20 +1,19 @@
 {-|
 Module      : EstadoJogo
-Description : Estados do jogo e transições entre eles.
+Description : Estados do jogo e estruturas de dados.
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
-
-Define os diferentes estados do jogo (Menu, Seleção de Modo, Jogando, etc)
-e as transições entre eles.
 -}
 
 module EstadoJogo where
 
 import Graphics.Gloss
 import Labs2025
-import Assets
 
--- | Estado principal do jogo - pode estar em diferentes "telas"
+--------------------------------------------------------------------------------
+-- * ESTADOS PRINCIPAIS
+
+-- | Estado global do jogo
 data EstadoJogo
   = Menu EstadoMenu
   | SelecaoModo EstadoSelecao
@@ -24,97 +23,140 @@ data EstadoJogo
   | Tutorial EstadoTutorial
   deriving (Show)
 
--- | Estado do menu principal
+--------------------------------------------------------------------------------
+-- * ESTADO DO MENU
+
 data EstadoMenu = EstadoMenu
   { opcaoSelecionadaMenu :: OpcaoMenu
-  , animacaoGlow :: Float  -- para efeito de pulsar nos botões
+  , animacaoMenu :: Float
   } deriving (Show)
 
--- | Opções do menu principal
-data OpcaoMenu = OpcaoPlay | OpcaoTutorial | OpcaoExit
+data OpcaoMenu
+  = OpcaoPlay
+  | OpcaoTutorial
+  | OpcaoExit
   deriving (Show, Eq)
 
--- | Estado da seleção de modo de jogo
+--------------------------------------------------------------------------------
+-- * SELEÇÃO DE MODO
+
 data EstadoSelecao = EstadoSelecao
   { modoSelecionado :: ModoJogo
   , animacaoGlowSelecao :: Float
   } deriving (Show)
 
--- | Modos de jogo disponíveis
-data ModoJogo 
-  = DoisJogadores    -- Humano vs Humano
-  | VsBot            -- Humano vs IA (usa Tarefa4)
-  | Treino           -- Modo livre, sem limite de jogadas
-  | Voltar           -- Voltar ao menu principal
+data ModoJogo
+  = DoisJogadores
+  | VsBot
+  | Treino
+  | Voltar
   deriving (Show, Eq)
 
--- | Estado durante uma partida
+--------------------------------------------------------------------------------
+-- * PARTIDA EM JOGO (COM TURNOS!)
+
 data EstadoPartida = EstadoPartida
-  { estadoWorms :: Estado           -- Estado do jogo Worms (Labs2025)
-  , modoPartida :: ModoJogo          -- Que modo está a jogar
-  , turnoAtual :: Int                -- Número do turno
-  , jogadorAtual :: NumMinhoca       -- Qual minhoca está a jogar
-  , armaSelecionadaP1 :: Maybe TipoArma  -- NOVO! Arma jogador 1 (verde)
-  , armaSelecionadaP2 :: Maybe TipoArma  -- NOVO! Arma jogador 2 (azul)
-  , ultimaDirecaoP1 :: Direcao       -- NOVO! Última direção P1
-  , ultimaDirecaoP2 :: Direcao       -- NOVO! Última direção P2
-  , tempoAnimacao :: Float           -- NOVO! Tempo para animar walk
-  , frameAnimacao :: Int             -- NOVO! Frame atual (0=idle, 1=walk1, 2=walk2)
-  , animacoes :: [AnimacaoAtiva]     -- Animações ativas
-  , camera :: Camera                 -- Posição da câmera (FIXA agora)
-  , pausado :: Bool                  -- Jogo pausado?
+  { estadoWorms :: Estado
+  , modoPartida :: ModoJogo
+  , pausado :: Bool
+  , modoJogo :: ModoJogo
+  , camera :: Camera
+  , animacoes :: [AnimacaoAtiva]
+  , turnoAtual :: Int
+  , frameCounter :: Int
+  
+  -- SISTEMA DE TURNOS (NOVO!)
+  , jogadorAtual :: Int              -- 0 = Verde, 1 = Azul
+  , tempoRestante :: Float           -- Segundos restantes (30s)
+  , tempoTotal :: Float              -- Tempo total do turno (30s)
+  
+  -- MENU DE ARMAS
+  , menuArmasAbertoP1 :: Bool        -- Menu armas jogador 1 aberto?
+  , menuArmasAbertoP2 :: Bool        -- Menu armas jogador 2 aberto?
+  
+  -- ESTADO ANTERIOR
+  , ultimaDirecaoP1 :: Direcao
+  , ultimaDirecaoP2 :: Direcao
+  , armaSelecionadaP1 :: Maybe TipoArma
+  , armaSelecionadaP2 :: Maybe TipoArma
+  
+  -- ANIMAÇÃO
+  , frameAnimacao :: Int
+  , tempoAnimacao :: Float
   } deriving (Show)
 
--- | Câmera do jogo (para scroll/zoom)
+-- | Câmera do jogo
 data Camera = Camera
-  { posCamera :: (Float, Float)  -- Posição x,y
-  , zoomCamera :: Float          -- Nível de zoom
+  { posCamera :: (Float, Float)
+  , zoomCamera :: Float
   } deriving (Show)
 
--- | Animação ativa no jogo
+--------------------------------------------------------------------------------
+-- * ANIMAÇÕES
+
 data AnimacaoAtiva
-  = AnimExplosao Posicao Float Int          -- posição, tempo, frame atual
-  | AnimDano Posicao Int Float              -- posição, dano, tempo restante
-  | AnimMovimento NumMinhoca Posicao Posicao Float  -- num, de, para, progresso
+  = AnimExplosao Posicao Float Int
+  | AnimDano Posicao Int Float
+  | AnimMovimento Int Posicao Posicao Float
   deriving (Show)
 
--- | Estado das telas finais (Game Over ou Victory)
+--------------------------------------------------------------------------------
+-- * TELAS FINAIS
+
 data EstadoFinal = EstadoFinal
   { pontuacaoFinal :: Int
+  , vencedorJogo :: Maybe VencedorJogo  -- ← ADICIONA!
   , opcaoFinal :: OpcaoFinal
   } deriving (Show)
 
--- | Opções nas telas finais
-data OpcaoFinal = Restart | VoltarMenu
+data OpcaoFinal
+  = Restart
+  | VoltarMenu
   deriving (Show, Eq)
 
--- | Estado do tutorial
+data VencedorJogo
+  = VenceuVerde  -- Jogador 1
+  | VenceuAzul   -- Jogador 2
+  deriving (Show, Eq)
+
+--------------------------------------------------------------------------------
+-- * TUTORIAL
+
 data EstadoTutorial = EstadoTutorial
-  { paginaTutorial :: Int  -- Qual página do tutorial (0-N)
+  { paginaTutorial :: Int
   } deriving (Show)
 
--- | Estado inicial do jogo (começa no menu)
-estadoInicial :: Assets -> EstadoJogo
-estadoInicial _ = Menu (EstadoMenu OpcaoPlay 0.0)
+--------------------------------------------------------------------------------
+-- * CRIAÇÃO DE PARTIDA
 
--- | Câmera inicial (centrada)
-cameraInicial :: Camera
-cameraInicial = Camera (0, 0) 1.0
-
--- | Cria estado de partida inicial para um modo
+-- | Cria uma nova partida no modo especificado
 criarPartida :: ModoJogo -> Estado -> EstadoPartida
-criarPartida modo estadoWorms = EstadoPartida
-  { estadoWorms = estadoWorms
+criarPartida modo estadoInicial = EstadoPartida
+  { estadoWorms = estadoInicial
   , modoPartida = modo
-  , turnoAtual = 0
-  , jogadorAtual = 0
-  , armaSelecionadaP1 = Nothing    -- Começa sem arma P1
-  , armaSelecionadaP2 = Nothing    -- Começa sem arma P2
-  , ultimaDirecaoP1 = Este         -- Direção padrão P1
-  , ultimaDirecaoP2 = Oeste        -- Direção padrão P2
-  , tempoAnimacao = 0.0            -- Tempo animação
-  , frameAnimacao = 0              -- Frame inicial (idle)
-  , animacoes = []
-  , camera = cameraInicial
+  , modoJogo = modo  -- ← ADICIONA ESTA LINHA!
   , pausado = False
+  , camera = Camera (0, 0) 1.0
+  , animacoes = []
+  , turnoAtual = 1
+  
+  -- TURNOS (COMEÇA JOGADOR 1 - VERDE)
+  , jogadorAtual = 0
+  , tempoRestante = 30.0
+  , tempoTotal = 30.0
+  
+  -- MENUS DE ARMAS
+  , menuArmasAbertoP1 = False
+  , menuArmasAbertoP2 = False
+  
+  -- DIREÇÕES E ARMAS
+  , ultimaDirecaoP1 = Este
+  , ultimaDirecaoP2 = Oeste
+  , armaSelecionadaP1 = Nothing
+  , armaSelecionadaP2 = Nothing
+  
+  -- ANIMAÇÃO
+  , frameAnimacao = 0
+  , tempoAnimacao = 0.0
+  , frameCounter = 0
   }
