@@ -25,9 +25,10 @@ import SelecaoModo (desenharSelecao)
 desenha :: Assets -> EstadoPartida -> Picture
 desenha assets partida = Pictures
   [ desenharBackground assets
-  , desenharMapa (mapaEstado $ estadoWorms partida)
+  , desenharMapa assets (mapaEstado $ estadoWorms partida)
   , desenharObjetos assets (objetosEstado $ estadoWorms partida)
   , desenharMinhocasJogo assets 
+      (mapaEstado $ estadoWorms partida)
       (minhocasEstado $ estadoWorms partida) 
       (frameCounter partida) 
       (jogadorAtual partida) 
@@ -296,8 +297,8 @@ desenharBackground assets =
 tamanhoBloco :: Float
 tamanhoBloco = 32.0
 
-desenharMapa :: Mapa -> Picture
-desenharMapa mapa = 
+desenharMapa :: Assets -> Mapa -> Picture
+desenharMapa assets mapa = 
   let numColunas = if null mapa then 0 else length (head mapa)
       numLinhas = length mapa
       larguraMapa = fromIntegral numColunas * tamanhoBloco
@@ -308,78 +309,97 @@ desenharMapa mapa =
   
   in Scale 1.3 1.3 $    
     Translate offsetX offsetY $ Pictures $ concat
-    [ [ desenharBloco terreno (l, c)
+    [ [ desenharBloco assets terreno (l, c)
       | (c, terreno) <- zip [0..] linha
       ]
     | (l, linha) <- zip [0..] mapa
     ]
 
-desenharBloco :: Terreno -> Posicao -> Picture
-desenharBloco Ar _ = Blank
-desenharBloco terreno (l, c) = 
-  Translate x y $ Pictures [corFundo terreno, textura terreno]
+desenharBloco :: Assets -> Terreno -> Posicao -> Picture
+desenharBloco _ Ar _ = Blank
+desenharBloco assets terreno (l, c) = 
+  Translate x y $ escolherImagemTerreno assets terreno
   where
-    x = fromIntegral c * tamanhoBloco
-    y = -fromIntegral l * tamanhoBloco
-    
-    corFundo Agua = Color (makeColorI 30 144 255 180) $ rectangleSolid tamanhoBloco tamanhoBloco
-    corFundo Terra = Color (makeColorI 139 69 19 255) $ rectangleSolid tamanhoBloco tamanhoBloco
-    corFundo Pedra = Color (makeColorI 105 105 105 255) $ rectangleSolid tamanhoBloco tamanhoBloco
-    corFundo _ = Blank
-    
-    textura Agua = Color (makeColorI 255 255 255 40) $ 
-                   Translate 0 (sin (fromIntegral c * 0.5) * 2) $ 
-                   rectangleSolid (tamanhoBloco - 4) 2
-    textura Terra = Pictures
-      [ Color (makeColorI 101 51 10 100) $ Translate dx dy $ circleSolid 2
-      | dx <- [-8, 0, 8], dy <- [-8, 0, 8]
-      ]
-    textura Pedra = Color (makeColorI 80 80 80 150) $ 
-                    rectangleSolid (tamanhoBloco - 6) (tamanhoBloco - 6)
-    textura _ = Blank
+    x = fromIntegral c * tamanhoBloco 
+    y = -fromIntegral l * tamanhoBloco 
+
+-- | Escolhe a imagem correta para cada tipo de terreno
+escolherImagemTerreno :: Assets -> Terreno -> Picture
+escolherImagemTerreno assets Agua = 
+  case agua (terrenoAsserts assets) of
+    Just img -> Scale escala escala img
+    Nothing -> Color (makeColorI 30 144 255 180) $ rectangleSolid tamanhoBloco tamanhoBloco
+  where
+    escala = tamanhoBloco / 32.0  -- Ajusta para o tamanho do bloco
+
+escolherImagemTerreno assets Terra = 
+  case terra (terrenoAsserts assets) of
+    Just img -> Scale escala escala img
+    Nothing -> Color (makeColorI 139 69 19 255) $ rectangleSolid tamanhoBloco tamanhoBloco
+  where
+    escala = tamanhoBloco / 32.0
+
+escolherImagemTerreno assets Pedra = 
+  case pedra (terrenoAsserts assets) of
+    Just img -> Scale escala escala img
+    Nothing -> Color (makeColorI 105 105 105 255) $ rectangleSolid tamanhoBloco tamanhoBloco
+  where
+    escala = tamanhoBloco / 32.0
+
+escolherImagemTerreno _ _ = Blank
 
 -- Renderização de minhocas no jogo
-desenharMinhocasJogo :: Assets -> [Minhoca] -> Int -> Int -> Maybe TipoArma -> Maybe TipoArma -> Picture
-desenharMinhocasJogo assets minhocas frameCount jogadorAtual armaP1 armaP2 = Pictures
-  [ desenharMinhocaJogo assets i minhoca (getFrameParaMinhoca i) (getArmaParaMinhoca i)
-  | (i, minhoca) <- zip [0..] minhocas
-  , posicaoMinhoca minhoca /= Nothing
-  ]
-  where
+desenharMinhocasJogo :: Assets -> Mapa -> [Minhoca] -> Int -> Int -> Maybe TipoArma -> Maybe TipoArma -> Picture
+desenharMinhocasJogo assets mapa minhocas frameCount jogadorAtual armaP1 armaP2 =
+  Pictures
+    [ desenharMinhocaJogo assets mapa i minhoca
+        (getFrameParaMinhoca i)
+        (getArmaParaMinhoca i)
+    | (i, minhoca) <- zip [0..] minhocas
+    , posicaoMinhoca minhoca /= Nothing
+    ]
+    where
     getFrameParaMinhoca numMinhoca
       | even numMinhoca && jogadorAtual == 0 = frameCount
-      | odd numMinhoca && jogadorAtual == 1 = frameCount
+      | odd  numMinhoca && jogadorAtual == 1 = frameCount
       | otherwise = 0
-    
+
     getArmaParaMinhoca numMinhoca
       | even numMinhoca && jogadorAtual == 0 = armaP1
-      | odd numMinhoca && jogadorAtual == 1 = armaP2
+      | odd  numMinhoca && jogadorAtual == 1 = armaP2
       | otherwise = Nothing
 
-desenharMinhocaJogo :: Assets -> Int -> Minhoca -> Int -> Maybe TipoArma -> Picture
-desenharMinhocaJogo assets numMinhoca minhoca frameCount armaEquipada =
+desenharMinhocaJogo :: Assets -> Mapa -> Int -> Minhoca -> Int -> Maybe TipoArma -> Picture
+desenharMinhocaJogo assets mapa numMinhoca minhoca frameCount armaEquipada =
   case posicaoMinhoca minhoca of
     Nothing -> Blank
     Just (l, c) ->
-      let numColunas = 34
-          numLinhas = 20
+      let
+          numLinhas  = length mapa
+          numColunas = if null mapa then 0 else length (head mapa)
+
           larguraMapa = fromIntegral numColunas * tamanhoBloco
-          alturaMapa = fromIntegral numLinhas * tamanhoBloco
-          
-          -- USA OS MESMOS OFFSETS DO MAPA!
+          alturaMapa  = fromIntegral numLinhas * tamanhoBloco
+
           offsetX = -larguraMapa / 2 + 10
-          offsetY = alturaMapa / 2 - 20
-          
+          offsetY =  alturaMapa / 2 -20
+
           x = fromIntegral c * tamanhoBloco
           y = -fromIntegral l * tamanhoBloco
-          
-          sprite = escolherSpriteMinhoca assets numMinhoca (vidaMinhoca minhoca) frameCount armaEquipada
-      in Scale 1.3 1.3 $  -- MESMO SCALE DO MAPA!
+
+          sprite =
+            escolherSpriteMinhoca assets numMinhoca
+              (vidaMinhoca minhoca) frameCount armaEquipada
+
+      in Scale 1.3 1.3 $
          Translate offsetX offsetY $
-         Translate x y $ Scale 1.4 1.4 $ Pictures
-           [ sprite
-           , Scale 0.55 0.55 $ desenharBarraVidaMinhoca (vidaMinhoca minhoca)
-           ]
+         Translate x y $
+         Scale 1.4 1.4 $
+           Pictures
+             [ sprite
+             , Scale 0.55 0.55 $
+               desenharBarraVidaMinhoca (vidaMinhoca minhoca)
+             ]
 
 -- Seleciona sprite apropriado baseado em estado e animação
 escolherSpriteMinhoca :: Assets -> Int -> VidaMinhoca -> Int -> Maybe TipoArma -> Picture
@@ -441,22 +461,31 @@ minhocaViva m = case vidaMinhoca m of
   Morta -> False
 
 -- Renderização de objetos do jogo
-desenharObjetos :: Assets -> [Objeto] -> Picture
-desenharObjetos assets objetos = Pictures [desenharObjeto assets obj | obj <- objetos]
+desenharObjetos :: Assets -> Mapa -> [Objeto] -> Picture
+desenharObjetos assets mapa objetos = Pictures [desenharObjeto assets mapa obj | obj <- objetos]
 
 desenharObjeto :: Assets -> Objeto -> Picture
-desenharObjeto assets (Barril (l, c) prestes) =
-  let x = fromIntegral c * tamanhoBloco - 480
-      y = -fromIntegral l * tamanhoBloco + 300
+desenharObjeto assets mapa (Barril (l, c) prestes) =
+ let
+      numLinhas  = length mapa
+      numColunas = if null mapa then 0 else length (head mapa)
+
+      larguraMapa = fromIntegral numColunas * tamanhoBloco
+      alturaMapa  = fromIntegral numLinhas * tamanhoBloco
+
+      offsetX = -larguraMapa / 2
+      offsetY =  alturaMapa / 2
+
+      x = fromIntegral c * tamanhoBloco
+      y = -fromIntegral l * tamanhoBloco
+
       sprite = getPicOr (barrilSprite $ objetoAssets assets) fallback
       fallback = Color (makeColorI 139 69 19 255) $ rectangleSolid 20 28
       aviso = if prestes then Color (makeColorI 255 0 0 150) $ Circle 18 else Blank
-  in Translate x y $ Pictures [sprite, aviso]
-
-desenharObjeto assets (Disparo (l, c) dir tipo _ _) =
-  let x = fromIntegral c * tamanhoBloco - 480
-      y = -fromIntegral l * tamanhoBloco + 300
-  in Translate x y $ desenharDisparo assets tipo dir
+  in
+      Translate offsetX offsetY $
+      Translate x y $
+      Pictures [sprite, aviso]
 
 desenharDisparo :: Assets -> TipoArma -> Direcao -> Picture
 desenharDisparo assets tipo dir =
@@ -474,18 +503,29 @@ anguloParaDirecao Noroeste = 135
 anguloParaDirecao Sudoeste = -135
 
 -- Sistema de animações
-desenharAnimacoes :: Assets -> [AnimacaoAtiva] -> Picture
-desenharAnimacoes assets animacoes = Pictures [desenharAnimacao assets anim | anim <- animacoes]
+desenharAnimacoes :: Assets -> Mapa -> [AnimacaoAtiva] -> Picture
+desenharAnimacoes assets  mapa animacoes = Pictures [desenharAnimacao assets mapa anim | anim <- animacoes]
 
-desenharAnimacao :: Assets -> AnimacaoAtiva -> Picture
-desenharAnimacao assets (AnimExplosao (l, c) _ frame) =
-  let x = fromIntegral c * tamanhoBloco - 480
-      y = -fromIntegral l * tamanhoBloco + 300
-  in Translate x y $ escolherFrameExplosao assets frame
+desenharAnimacao :: Assets -> Mapa -> AnimacaoAtiva -> Picture
+desenharAnimacao assets mapa (AnimExplosao (l, c) _ frame) =
+  let
+      numLinhas  = length mapa
+      numColunas = if null mapa then 0 else length (head mapa)
 
-desenharAnimacao _ (AnimDano (l, c) dano tempo) = Blank
+      larguraMapa = fromIntegral numColunas * tamanhoBloco
+      alturaMapa  = fromIntegral numLinhas * tamanhoBloco
 
-desenharAnimacao _ (AnimMovimento _ _ _ _) = Blank
+      offsetX = -larguraMapa / 2
+      offsetY =  alturaMapa / 2
+
+      x = fromIntegral c * tamanhoBloco
+      y = -fromIntegral l * tamanhoBloco
+  in
+      Translate offsetX offsetY $
+      Translate x y $
+      escolherFrameExplosao assets frame
+desenharAnimacao _ _ (AnimDano _ _ _) = Blank
+desenharAnimacao _ _ (AnimMovimento _ _ _ _) = Blank
 
 escolherFrameExplosao :: Assets -> Int -> Picture
 escolherFrameExplosao assets frame

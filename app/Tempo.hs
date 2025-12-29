@@ -16,7 +16,6 @@ import Labs2025
 
 type Segundos = Float
 
-
 -- Atualização completa da partida a cada frame
 atualizarPartidaCompleta :: Segundos -> EstadoPartida -> EstadoJogo
 atualizarPartidaCompleta dt partida

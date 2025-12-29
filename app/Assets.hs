@@ -17,6 +17,7 @@ data Assets = Assets
   , backgroundAssets :: BackgroundAssets
   , spriteAssets :: SpriteAssets
   , objetoAssets :: ObjetoAssets
+  , terrenoAsserts :: TerrenoAsserts
   , uiAssets :: UIAssets
   , frameAssets :: FrameAssets
   } deriving (Show)
@@ -81,6 +82,13 @@ data ObjetoAssets = ObjetoAssets
   , explosao3 :: Maybe Picture
   } deriving (Show)
 
+-- | Terreno 
+data TerrenoAsserts = TerrenoAsserts
+  { pedra :: Maybe Picture
+  , agua :: Maybe Picture
+  , terra :: Maybe Picture
+  } deriving (Show)
+
 -- Assets da interface do jogo
 data UIAssets = UIAssets
   { hpBar0 :: Maybe Picture
@@ -122,6 +130,7 @@ assetsVazios = Assets
       Nothing Nothing Nothing Nothing Nothing
   , objetoAssets = ObjetoAssets Nothing Nothing Nothing Nothing Nothing 
                                 Nothing Nothing Nothing Nothing
+  , terrenoAsserts = TerrenoAsserts Nothing Nothing Nothing
   , uiAssets = UIAssets Nothing Nothing Nothing Nothing Nothing Nothing
                         Nothing Nothing Nothing Nothing Nothing
                         Nothing Nothing Nothing Nothing Nothing Nothing

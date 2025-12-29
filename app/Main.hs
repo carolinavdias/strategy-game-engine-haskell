@@ -105,6 +105,12 @@ carregarAssets = do
   exp1 <- carregarImagem "assets/objetos/explosao1.png" "Explosao 1"
   exp2 <- carregarImagem "assets/objetos/explosao2.png" "Explosao 2"
   exp3 <- carregarImagem "assets/objetos/explosao3.png" "Explosao 3"
+
+  -- Terreno 
+  putStrLn " Carregar terreno ..."
+  pedra <- carregarImagem "assets/terreno/pedra.png" "Pedra"
+  agua <- carregarImagem "assets/terreno/agua.png" "Água"
+  terra <- carregarImagem "assets/terreno/terra.png" "Terra"
   
   putStrLn "\n  Interface (UI):"
   hp0 <- carregarImagem "assets/ui/hp_bar_0.png" "Barra vida 0"
@@ -142,6 +148,7 @@ carregarAssets = do
                                   blueBazuca blueDinamite blueMina blueEscavadora blueJetpack
     , objetoAssets = ObjetoAssets barril bazuca dinamite mina escavadora
                                   jetpack exp1 exp2 exp3
+    , terrenoAsserts = TerrenoAsserts pedra agua terra
     , uiAssets = UIAssets hp0 hp20 hp40 hp60 hp80 hp100
                           textP1 textP2 textCtrl
                           timerG timerB btnWeapG btnWeapB

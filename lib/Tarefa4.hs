@@ -310,3 +310,20 @@ terrenoNaPos :: Posicao -> Mapa -> Terreno
 terrenoNaPos (l, c) mapa 
     | posValida (l, c) mapa = (mapa !! l) !! c
     | otherwise = Ar
+
+caminhoLivre :: Posicao -> Direcao -> Int -> Estado -> Bool
+caminhoLivre pos dir n estado =
+  let mapa = mapaEstado estado
+      posicoes = take n $ tail $ iterate (`calculaPosicaoDestino` dir) pos
+  in all (\p -> posValida p mapa &&
+                terrenoNaPos p mapa == Ar) posicoes
+
+deveSaltar :: Posicao -> Direcao -> Estado -> Bool
+deveSaltar pos dir estado =
+  let frente = calculaPosicaoDestino pos dir
+      frente2 = calculaPosicaoDestino frente dir
+      mapa = mapaEstado estado
+  in posValida frente mapa &&
+     terrenoNaPos frente mapa == Ar &&
+     posValida frente2 mapa &&
+     terrenoNaPos frente2 mapa == Terra
