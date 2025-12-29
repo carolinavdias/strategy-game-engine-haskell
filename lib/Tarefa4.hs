@@ -15,6 +15,7 @@ Bot melhorado que:
 
 module Tarefa4 where
 
+
 import Data.Either (partitionEithers)
 import Data.List (minimumBy, maximumBy, sortBy)
 import Data.Ord (comparing)
@@ -61,15 +62,28 @@ avancaObjetoJogada e objetos (i, objeto') = if elem objeto' objetos
 type Pontuacao = Int
 type Distancia = Int
 
--- | Para um número de ticks, dado um estado, determina a próxima jogada INTELIGENTE.
+-- | Para um número de ticks, dado um estado, determina a próxima jogada do BOT.
 jogadaTatica :: Ticks -> Estado -> (NumMinhoca, Jogada)
-jogadaTatica t e =
-    let minhocas = minhocasEstado e
-        minhocasVivas = [(i, m) | (i, m) <- zip [0..] minhocas, estaViva m]
-    in case minhocasVivas of
+jogadaTatica ticks estado =
+    let minhocas = minhocasEstado estado
+
+        -- Minhocas vivas do bot (índices ímpares)
+        minhocasBotVivas =
+            [ (i, m)
+            | (i, m) <- zip [0..] minhocas
+            , odd i
+            , estaViva m
+            ]
+
+    in case minhocasBotVivas of
+        -- Caso extremo: nenhuma minhoca do bot viva
         [] -> (0, Move Este)
-        ((numMinhoca, minhoca):_) -> 
-            escolheMelhorJogadaInteligente t numMinhoca minhoca e
+
+        -- Escolhe a minhoca ciclicamente usando ticks
+        _  ->
+            let idx = ticks `mod` length minhocasBotVivas
+                (numMinhoca, minhoca) = minhocasBotVivas !! idx
+            in escolheMelhorJogadaInteligente ticks numMinhoca minhoca estado
 
 -- | Escolhe a melhor jogada considerando SEGURANÇA e ESTRATÉGIA
 escolheMelhorJogadaInteligente :: Ticks -> NumMinhoca -> Minhoca -> Estado -> (NumMinhoca, Jogada)
@@ -93,9 +107,16 @@ escolheMelhorJogadaInteligente t num minhoca estado =
                            | j <- jogadas]
                 
                 -- Escolhe a melhor (maior pontuação)
+                -- Escolhe a melhor (maior pontuação)
                 melhor = if null avaliadas
-                         then (num, Move Este)
-                         else (num, fst $ maximumBy (comparing snd) avaliadas)
+                         then 
+                            -- Fallback inteligente: tenta direções diferentes baseado em ticks
+                            let dirs = [Norte, Sul, Este, Oeste]
+                                dirIdx = fromIntegral t `mod` length dirs
+                            in (num, Move (dirs !! dirIdx))
+                         else 
+                            let best = maximumBy (comparing snd) avaliadas
+                            in (num, fst best)
                 
             in melhor
 
@@ -142,6 +163,7 @@ movimentoSeguro pos dir estado =
        else case terrenoNaPos novaPos mapa of
               Agua -> False  -- Água = morte
               Pedra -> False  -- Pedra = não pode passar
+              Terra-> False
               _ -> True
 
 -- | Verifica se um disparo é seguro (não explode perto do bot)

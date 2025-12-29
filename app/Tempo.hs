@@ -16,14 +16,15 @@ import Labs2025
 
 type Segundos = Float
 
+
 -- Atualização completa da partida a cada frame
 atualizarPartidaCompleta :: Segundos -> EstadoPartida -> EstadoJogo
 atualizarPartidaCompleta dt partida
   | pausado partida = Jogando partida
   | otherwise = 
       let 
-          -- Se for modo VsBot e turno do bot (jogador 1 = azul), executa jogada do bot
-          partidaComBot = if modoPartida partida == VsBot && jogadorAtual partida == 1
+          -- Se for modo VsBot e turno do bot (jogador 1 = azul) E frameCounter a 0, executa jogada
+          partidaComBot = if modoPartida partida == VsBot && jogadorAtual partida == 1 && frameCounter partida == 0
                           then executarJogadaBot partida
                           else partida
           
@@ -41,8 +42,8 @@ atualizarPartidaCompleta dt partida
 executarJogadaBot :: EstadoPartida -> EstadoPartida
 executarJogadaBot partida =
   let estadoAtual = estadoWorms partida
-      -- Calcula ticks baseado no turno atual
-      ticksAtual = (turnoAtual partida - 1) * 2 + 1  -- Bot joga nos ticks ímpares
+      -- Calcula ticks baseado no tempo restante para variar comportamento
+      ticksAtual = floor (tempoRestante partida * 10)
       
       -- Obtém jogada inteligente do bot
       (numMinhoca, jogada) = jogadaTatica ticksAtual estadoAtual
