@@ -181,7 +181,7 @@ iniciarJogo modo = Jogando (criarPartida modo estadoInicialWorms)
       [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..8] ] ++
       [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
     
-    barrisExemplo = 
+     barrisExemplo =     
       [ Barril (9, 8) False
       , Barril (9, 13) False
       , Barril (9, 17) False

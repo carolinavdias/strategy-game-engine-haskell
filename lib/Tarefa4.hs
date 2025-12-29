@@ -158,13 +158,10 @@ movimentoSeguro :: Posicao -> Direcao -> Estado -> Bool
 movimentoSeguro pos dir estado =
     let novaPos = calculaPosicaoDestino pos dir
         mapa = mapaEstado estado
-    in if not (posValida novaPos mapa)
-       then False  -- Fora do mapa = perigoso
-       else case terrenoNaPos novaPos mapa of
-              Agua -> False  -- Água = morte
-              Pedra -> False  -- Pedra = não pode passar
-              Terra-> False
-              _ -> True
+    in posValida novaPos mapa &&
+       terrenoNaPos novaPos mapa == Ar &&
+       not (temBarril novaPos estado)
+
 
 -- | Verifica se um disparo é seguro (não explode perto do bot)
 disparoSeguro :: Posicao -> Direcao -> Int -> Estado -> Bool
@@ -183,7 +180,7 @@ disparoSeguro posBot dir diametro estado =
 -- | Avalia uma jogada considerando distância aos adversários e segurança
 avaliaJogadaInteligente :: Jogada -> NumMinhoca -> Posicao -> [(NumMinhoca, Posicao)] -> Estado -> Pontuacao
 avaliaJogadaInteligente jogada num posBot adversarios estado =
-    let -- Encontra adversário mais próximo
+    let  -- Encontra adversário mais próximo
         adversarioMaisProximo = if null adversarios
                                 then Nothing
                                 else Just $ minimumBy (comparing (\(_, p) -> distancia posBot p)) adversarios
@@ -196,21 +193,33 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
         -- ARMAS: avaliar baseado em distância e dano potencial
         Dispara Dinamite dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
-                danoEstimado = case adversarioMaisProximo of
-                                 Just (_, posAdv) -> if distancia posDisparo posAdv <= 3
-                                                     then 100  -- Muito próximo = ótimo!
-                                                     else 20
-                                 Nothing -> 10
+                alinhado = case adversarioMaisProximo of
+                            Just (_, posAdv) -> alinhadoComDir posBot posAdv dir
+                            Nothing -> False
+
+                danoEstimado =
+                    case adversarioMaisProximo of
+                      Just (_, posAdv)
+                        | alinhado && distancia posDisparo posAdv <= 4 -> 130
+                        | distancia posDisparo posAdv <= 3             -> 100
+                        | otherwise                                    -> 20
+                      Nothing -> 10
+
                 terraDestruida = contaTerraEmExplosao posDisparo 7 (mapaEstado estado)
             in danoEstimado + terraDestruida * 5
-        
+
         Dispara Bazuca dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
-                danoEstimado = case adversarioMaisProximo of
-                                 Just (_, posAdv) -> if distancia posDisparo posAdv <= 2
-                                                     then 150  -- Bazuca = ataque direto
-                                                     else 30
-                                 Nothing -> 15
+                alinhado = case adversarioMaisProximo of
+                             Just (_, posAdv) -> alinhadoComDir posBot posAdv dir
+                             Nothing -> False
+                danoEstimado =
+                    case adversarioMaisProximo of
+                        Just (_, posAdv)
+                          | alinhado && distancia posBot posAdv <= 8 -> 220
+                          | distancia posDisparo posAdv <= 2         -> 150
+                          | otherwise                                -> 40
+                        Nothing -> 15
                 terraDestruida = contaTerraEmExplosao posDisparo 5 (mapaEstado estado)
             in danoEstimado + terraDestruida * 5
         
@@ -218,8 +227,10 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
             let posDisparo = calculaPosicaoDestino posBot dir
                 mapa = mapaEstado estado
             in if terrenoNaPos posDisparo mapa == Terra
-               then 40 + (if distanciaAdv < 5 then 20 else 0)  -- Escavar perto do inimigo = bom
-               else 5
+                then if bloqueado posBot dir estado
+                        then 80     --  escavar para desbloquear
+                        else 40
+                else 5
         
         Dispara Mina dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
@@ -242,13 +253,33 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
                 novaDistancia = case adversarioMaisProximo of
                                   Just (_, posAdv) -> distancia novaPos posAdv
                                   Nothing -> 100
+                alinhado = case adversarioMaisProximo of
+                     Just (_, posAdv) -> alinhadoComDir posBot posAdv dir
+                     Nothing -> False
                 -- Priorizar aproximação se longe, manter distância se muito perto
-                pontos = if distanciaAdv > 5
-                         then if novaDistancia < distanciaAdv then 50 else 10  -- Aproximar
-                         else if distanciaAdv < 2
-                              then if novaDistancia > distanciaAdv then 40 else 5  -- Afastar um pouco
-                              else 25  -- Distância ideal = ficar
-            in pontos
+            in
+                -- Caminho bloqueado → penalizar forte
+              if bloqueado posBot dir estado
+                then -30
+
+                -- Deve saltar → muito bom
+              else if deveSaltar posBot dir estado
+                then 60
+
+                -- Está alinhado para disparar → não estragar
+              else if alinhado && distanciaAdv <= 8 && distanciaAdv >= 3
+                then 3
+
+                --  Muito longe → aproximar
+              else if distanciaAdv > 5
+                then if novaDistancia < distanciaAdv then 50 else 10
+
+                --  Muito perto → afastar
+              else if distanciaAdv < 2
+                then if novaDistancia > distanciaAdv then 40 else 5
+
+                -- Distância ideal
+              else 25
 
 --------------------------------------------------------------------------------
 -- * FUNÇÕES DE UTILIDADE
@@ -327,3 +358,28 @@ deveSaltar pos dir estado =
      terrenoNaPos frente mapa == Ar &&
      posValida frente2 mapa &&
      terrenoNaPos frente2 mapa == Terra
+
+alinhadoComDir :: Posicao -> Posicao -> Direcao -> Bool
+alinhadoComDir posBot posAdv dir =
+    let (x1, y1) = posBot
+        (x2, y2) = posAdv
+        (dxE, dyE) = (x2 - x1, y2 - y1)
+
+        -- vetor do disparo (1 passo na direção)
+        (xD, yD) = calculaPosicaoDestino posBot dir
+        (dxD, dyD) = (xD - x1, yD - y1)
+
+        -- produto escalar
+        dot = dxE * dxD + dyE * dyD
+    in dot > 0
+
+temBarril :: Posicao -> Estado -> Bool
+temBarril pos estado =
+  any (\b -> posBarril b == pos) (objetosEstado estado)
+
+bloqueado :: Posicao -> Direcao -> Estado -> Bool
+bloqueado pos dir estado =
+  let frente = calculaPosicaoDestino pos dir
+      mapa = mapaEstado estado
+  in not (posValida frente mapa) ||
+     terrenoNaPos frente mapa /= Ar

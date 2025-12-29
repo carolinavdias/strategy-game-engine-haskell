@@ -40,7 +40,7 @@ main = do
   putStrLn "Iniciando Worms..."
   assets <- carregarAssets
   
-  let estadoInicial = Menu (EstadoMenu OpcaoPlay 0.0)
+  let estadoInicial = Menu (EstadoMenu OpcaoPlay 0.0 )
   
   play window background fps estadoInicial
        (desenhar assets)

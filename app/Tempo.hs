@@ -7,12 +7,14 @@ License     : GPL-3
 
 module Tempo where
 
+
 import EstadoJogo
 import Tarefa3
 import Tarefa4 (jogadaTatica)
 import Tarefa2 (efetuaJogada)
 import Tarefa1 (validaEstado)
 import Labs2025
+import Debug.Trace (trace)
 
 type Segundos = Float
 
@@ -22,12 +24,17 @@ atualizarPartidaCompleta dt partida
   | pausado partida = Jogando partida
   | otherwise = 
       let 
-          -- Se for modo VsBot e turno do bot (jogador 1 = azul) E frameCounter a 0, executa jogada
-          partidaComBot = if modoPartida partida == VsBot && jogadorAtual partida == 1 && frameCounter partida == 0
+          -- Se for modo VsBot e turno do bot (jogador 1 = azul), executa jogada após pequeno delay
+          deveJogarBot = modoPartida partida == VsBot && 
+                        jogadorAtual partida == 1 && 
+                        tempoRestante partida < 29.0  -- Espera 1 segundo antes de jogar
+          
+          
+          partidaComBot = if deveJogarBot && frameCounter partida == 0
                           then executarJogadaBot partida
                           else partida
           
-          partidaComTimer = atualizarTimer dt partida
+          partidaComTimer = atualizarTimer dt partidaComBot
           novoFrame = if frameCounter partidaComTimer > 0
                      then frameCounter partidaComTimer - 1
                      else 0
@@ -41,6 +48,7 @@ atualizarPartidaCompleta dt partida
 executarJogadaBot :: EstadoPartida -> EstadoPartida
 executarJogadaBot partida =
   let estadoAtual = estadoWorms partida
+      
       -- Calcula ticks baseado no tempo restante para variar comportamento
       ticksAtual = floor (tempoRestante partida * 10)
       

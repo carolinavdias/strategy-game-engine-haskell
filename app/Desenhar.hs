@@ -26,7 +26,7 @@ desenha :: Assets -> EstadoPartida -> Picture
 desenha assets partida = Pictures
   [ desenharBackground assets
   , desenharMapa assets (mapaEstado $ estadoWorms partida)
-  , desenharObjetos assets (objetosEstado $ estadoWorms partida)
+  , desenharObjetos assets (mapaEstado $ estadoWorms partida) (objetosEstado $ estadoWorms partida)
   , desenharMinhocasJogo assets 
       (mapaEstado $ estadoWorms partida)
       (minhocasEstado $ estadoWorms partida) 
@@ -34,7 +34,7 @@ desenha assets partida = Pictures
       (jogadorAtual partida) 
       (armaSelecionadaP1 partida) 
       (armaSelecionadaP2 partida)
-  , desenharAnimacoes assets (animacoes partida)
+  , desenharAnimacoes assets (mapaEstado $ estadoWorms partida) (animacoes partida)
   , desenharMolduraPedra assets
   , desenharMinhocasLaterais assets
   , desenharHUDCompleto assets partida
@@ -464,7 +464,7 @@ minhocaViva m = case vidaMinhoca m of
 desenharObjetos :: Assets -> Mapa -> [Objeto] -> Picture
 desenharObjetos assets mapa objetos = Pictures [desenharObjeto assets mapa obj | obj <- objetos]
 
-desenharObjeto :: Assets -> Objeto -> Picture
+desenharObjeto :: Assets -> Mapa -> Objeto -> Picture
 desenharObjeto assets mapa (Barril (l, c) prestes) =
  let
       numLinhas  = length mapa
@@ -486,6 +486,26 @@ desenharObjeto assets mapa (Barril (l, c) prestes) =
       Translate offsetX offsetY $
       Translate x y $
       Pictures [sprite, aviso]
+
+desenharObjeto assets mapa (Disparo (l, c) dir arma _ _) =
+ let
+      numLinhas  = length mapa
+      numColunas = if null mapa then 0 else length (head mapa)
+
+      larguraMapa = fromIntegral numColunas * tamanhoBloco
+      alturaMapa  = fromIntegral numLinhas * tamanhoBloco
+
+      offsetX = -larguraMapa / 2
+      offsetY =  alturaMapa / 2
+
+      x = fromIntegral c * tamanhoBloco
+      y = -fromIntegral l * tamanhoBloco
+
+      sprite = desenharDisparo assets arma dir
+  in
+      Translate offsetX offsetY $
+      Translate x y $
+      sprite
 
 desenharDisparo :: Assets -> TipoArma -> Direcao -> Picture
 desenharDisparo assets tipo dir =
