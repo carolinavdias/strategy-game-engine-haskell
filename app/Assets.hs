@@ -49,9 +49,11 @@ data SpriteAssets = SpriteAssets
   { minhocaVerdeIdle :: Maybe Picture
   , minhocaVerdeWalk1 :: Maybe Picture
   , minhocaVerdeWalk2 :: Maybe Picture
+  , minhocaVerdeSalta :: Maybe Picture 
   , minhocaAzulIdle :: Maybe Picture
   , minhocaAzulWalk1 :: Maybe Picture
   , minhocaAzulWalk2 :: Maybe Picture
+  , minhocaAzulSalta :: Maybe Picture
   , wormGreenBig :: Maybe Picture
   , wormBlueBig :: Maybe Picture
   , wormGreenBazuca :: Maybe Picture
@@ -113,8 +115,8 @@ assetsVazios = Assets
                             Nothing Nothing
   , backgroundAssets = BackgroundAssets Nothing Nothing Nothing
   , spriteAssets = SpriteAssets 
-      Nothing Nothing Nothing
-      Nothing Nothing Nothing
+      Nothing Nothing Nothing Nothing
+      Nothing Nothing Nothing Nothing
       Nothing Nothing
       Nothing Nothing Nothing Nothing Nothing
       Nothing Nothing Nothing Nothing Nothing

@@ -40,15 +40,28 @@ eventoJogoAtivo evento partida = case evento of
   EventKey (SpecialKey KeySpace) Down _ _ -> Jogando (passarTurno partida)
   EventKey (Char 'q') Down _ _ -> toggleMenuArmas partida
   EventKey (Char 'Q') Down _ _ -> toggleMenuArmas partida
-  _ -> if jogadorAtual partida == 0
-       then eventoJogador1 evento partida
-       else eventoJogador2 evento partida
+  _ -> processarEventoJogador evento partida
+
+-- Decide qual jogador processa o evento
+processarEventoJogador :: Event -> EstadoPartida -> EstadoJogo
+processarEventoJogador evento partida
+  -- Se for modo VsBot e turno do jogador 2 (azul/bot), ignora input
+  | modoPartida partida == VsBot && jogadorAtual partida == 1 = Jogando partida
+  -- Se for turno do jogador 1 (verde), processa eventos do jogador 1
+  | jogadorAtual partida == 0 = eventoJogador1 evento partida
+  -- Se for turno do jogador 2 e NÃO for modo VsBot, processa eventos do jogador 2
+  | jogadorAtual partida == 1 && modoPartida partida /= VsBot = eventoJogador2 evento partida
+  -- Caso contrário, ignora
+  | otherwise = Jogando partida
 
 toggleMenuArmas :: EstadoPartida -> EstadoJogo
 toggleMenuArmas partida =
-  if jogadorAtual partida == 0
-  then Jogando (partida { menuArmasAbertoP1 = not (menuArmasAbertoP1 partida) })
-  else Jogando (partida { menuArmasAbertoP2 = not (menuArmasAbertoP2 partida) })
+  -- Não abre menu de armas se for turno do bot
+  if modoPartida partida == VsBot && jogadorAtual partida == 1
+  then Jogando partida
+  else if jogadorAtual partida == 0
+       then Jogando (partida { menuArmasAbertoP1 = not (menuArmasAbertoP1 partida) })
+       else Jogando (partida { menuArmasAbertoP2 = not (menuArmasAbertoP2 partida) })
 
 -- Eventos específicos do Jogador 1
 eventoJogador1 :: Event -> EstadoPartida -> EstadoJogo
@@ -70,7 +83,7 @@ eventoJogador1 evento partida = case evento of
   EventKey (Char 'C') Down _ _ -> dispararJogador 0 partida
   _ -> Jogando partida
 
--- Eventos específicos do Jogador 2
+-- Eventos específicos do Jogador 2 (apenas quando NÃO for bot)
 eventoJogador2 :: Event -> EstadoPartida -> EstadoJogo
 eventoJogador2 evento partida = case evento of
   EventKey (Char 'i') Down _ _ -> moverJogador 1 Norte partida

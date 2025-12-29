@@ -75,9 +75,11 @@ carregarAssets = do
   verdeIdle <- carregarImagem "assets/sprites/minhoca_verde_idle.png" "Verde idle"
   verdeWalk1 <- carregarImagem "assets/sprites/minhoca_verde_walk1.png" "Verde walk1"
   verdeWalk2 <- carregarImagem "assets/sprites/minhoca_verde_walk2.png" "Verde walk2"
+  verdesalta <- carregarImagem "assets/sprites/minhoca_verde_salta.png" "Verde Salta"
   azulIdle <- carregarImagem "assets/sprites/minhoca_azul_idle.png" "Azul idle"
   azulWalk1 <- carregarImagem "assets/sprites/minhoca_azul_walk1.png" "Azul walk1"
   azulWalk2 <- carregarImagem "assets/sprites/minhoca_azul_walk2.png" "Azul walk2"
+  azulsalta <- carregarImagem "assets/sprites/minhoca_azul_salta.png" "Azul Salta"
   wormGreenBig <- carregarImagem "assets/sprites/worm_green_big.png" "Minhoca verde grande"
   wormBlueBig <- carregarImagem "assets/sprites/worm_blue_big.png" "Minhoca azul grande"
   
@@ -133,8 +135,8 @@ carregarAssets = do
                               modeBg modeTitle mode2P modeBot modeTraining
                               modeInstr btnBack
     , backgroundAssets = BackgroundAssets gameBg victoryG victoryB
-    , spriteAssets = SpriteAssets verdeIdle verdeWalk1 verdeWalk2
-                                  azulIdle azulWalk1 azulWalk2
+    , spriteAssets = SpriteAssets verdeIdle verdeWalk1 verdeWalk2 verdesalta
+                                  azulIdle azulWalk1 azulWalk2 azulsalta
                                   wormGreenBig wormBlueBig 
                                   greenBazuca greenDinamite greenMina greenEscavadora greenJetpack
                                   blueBazuca blueDinamite blueMina blueEscavadora blueJetpack

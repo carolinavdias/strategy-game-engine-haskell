@@ -9,6 +9,9 @@ module Tempo where
 
 import EstadoJogo
 import Tarefa3
+import Tarefa4 (jogadaTatica)
+import Tarefa2 (efetuaJogada)
+import Tarefa1 (validaEstado)
 import Labs2025
 
 type Segundos = Float
@@ -18,7 +21,13 @@ atualizarPartidaCompleta :: Segundos -> EstadoPartida -> EstadoJogo
 atualizarPartidaCompleta dt partida
   | pausado partida = Jogando partida
   | otherwise = 
-      let partidaComTimer = atualizarTimer dt partida
+      let 
+          -- Se for modo VsBot e turno do bot (jogador 1 = azul), executa jogada do bot
+          partidaComBot = if modoPartida partida == VsBot && jogadorAtual partida == 1
+                          then executarJogadaBot partida
+                          else partida
+          
+          partidaComTimer = atualizarTimer dt partida
           novoFrame = if frameCounter partidaComTimer > 0
                      then frameCounter partidaComTimer - 1
                      else 0
@@ -27,6 +36,36 @@ atualizarPartidaCompleta dt partida
             { animacoes = atualizarAnimacoes dt (animacoes partidaComFrame) }
           partidaComFisica = avancarFisica dt partidaComAnimacoes
       in verificarCondicaoVitoria partidaComFisica
+
+-- Executa jogada inteligente do bot
+executarJogadaBot :: EstadoPartida -> EstadoPartida
+executarJogadaBot partida =
+  let estadoAtual = estadoWorms partida
+      -- Calcula ticks baseado no turno atual
+      ticksAtual = (turnoAtual partida - 1) * 2 + 1  -- Bot joga nos ticks ímpares
+      
+      -- Obtém jogada inteligente do bot
+      (numMinhoca, jogada) = jogadaTatica ticksAtual estadoAtual
+      
+      -- Verifica se a minhoca é azul (ímpar) e está viva
+      minhocas = minhocasEstado estadoAtual
+      minhocaValida = numMinhoca < length minhocas && 
+                      odd numMinhoca && 
+                      minhocaViva (minhocas !! numMinhoca)
+      
+  in if minhocaValida
+     then let novoEstado = efetuaJogada numMinhoca jogada estadoAtual
+          in if validaEstado novoEstado
+             then case jogada of
+                    -- Armas ofensivas passam turno automaticamente
+                    Dispara Bazuca _ -> trocarTurno (partida { estadoWorms = novoEstado })
+                    Dispara Dinamite _ -> trocarTurno (partida { estadoWorms = novoEstado })
+                    Dispara Mina _ -> trocarTurno (partida { estadoWorms = novoEstado })
+                    -- Movimentos e ferramentas não passam turno
+                    _ -> partida { estadoWorms = novoEstado, frameCounter = 20 }
+             else partida
+     else partida
+
 
 -- Atualiza o timer de turno
 atualizarTimer :: Segundos -> EstadoPartida -> EstadoPartida
