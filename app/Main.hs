@@ -8,11 +8,12 @@ License     : GPL-3
 module Main where
 
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss.Interface.IO.Game
 import Codec.Picture.Png (decodePng)
 import qualified Data.ByteString as B
 import Graphics.Gloss.Juicy (fromDynamicImage)
 import System.Directory (doesFileExist)
+import Data.IORef
 
 import EstadoJogo
 import Assets
@@ -21,6 +22,7 @@ import Eventos
 import Tempo
 import Menu
 import SelecaoModo
+import Mapas
 
 -- Configuração da janela do jogo
 window :: Display
@@ -40,12 +42,15 @@ main = do
   putStrLn "Iniciando Worms..."
   assets <- carregarAssets
   
+  -- Cria contador que começa em 0 e incrementa a cada jogo
+  contadorMapas <- newIORef (0 :: Int)
+
   let estadoInicial = Menu (EstadoMenu OpcaoPlay 0.0 )
   
-  play window background fps estadoInicial
-       (desenhar assets)
-       (evento assets)
-       (atualizar assets)
+  playIO window background fps estadoInicial
+       (\estado -> return (desenhar assets estado))
+       (eventoComContador assets contadorMapas)
+       (\dt estado -> return (atualizar assets dt estado))
 
 -- Carregamento de todos os assets do jogo
 carregarAssets :: IO Assets
@@ -193,15 +198,103 @@ desenhar assets estado = case estado of
   Victory estadoFinal -> desenharVictory assets estadoFinal
   Tutorial estadoTut -> desenharTutorial assets estadoTut
 
--- Processa eventos de input
-evento :: Assets -> Event -> EstadoJogo -> EstadoJogo
-evento assets ev estado = case estado of
-  Menu estadoMenu -> eventoMenu ev estadoMenu
-  SelecaoModo estadoSel -> eventoSelecao ev estadoSel
-  Jogando partida -> eventoJogo ev partida
-  GameOver estadoFinal -> eventoGameOver ev estadoFinal
-  Victory estadoFinal -> eventoVictory ev estadoFinal
-  Tutorial estadoTut -> eventoTutorial ev estadoTut
+-- EVENTOS COM CONTADOR
+eventoComContador :: Assets -> IORef Int -> Event -> EstadoJogo -> IO EstadoJogo
+eventoComContador assets contadorRef ev estado = case estado of
+  Menu estadoMenu -> return $ eventoMenu ev estadoMenu
+  
+  SelecaoModo estadoSel -> eventoSelecaoContador contadorRef ev estadoSel
+  
+  Jogando partida -> return $ eventoJogo ev partida
+  
+  GameOver estadoFinal -> eventoVictoryContador contadorRef ev estadoFinal
+  
+  Victory estadoFinal -> eventoVictoryContador contadorRef ev estadoFinal
+  
+  Tutorial estadoTut -> return $ eventoTutorial ev estadoTut
+
+-- EVENTOS NA SELEÇÃO COM CONTADOR
+eventoSelecaoContador :: IORef Int -> Event -> EstadoSelecao -> IO EstadoJogo
+eventoSelecaoContador contadorRef evento estado = case evento of
+  EventKey (SpecialKey KeyDown) Down _ _ ->
+    return $ SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
+  
+  EventKey (SpecialKey KeyUp) Down _ _ ->
+    return $ SelecaoModo (estado { modoSelecionado = modoAnterior (modoSelecionado estado) })
+  
+  EventKey (SpecialKey KeyRight) Down _ _ ->
+    return $ SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
+  
+  EventKey (SpecialKey KeyLeft) Down _ _ ->
+    return $ SelecaoModo (estado { modoSelecionado = modoAnterior (modoSelecionado estado) })
+  
+  EventKey (SpecialKey KeyTab) Down _ _ ->
+    return $ SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
+  
+  -- QUANDO PRESSIONA ENTER: Incrementa contador e escolhe próximo mapa
+  EventKey (SpecialKey KeyEnter) Down _ _ -> do
+    contador <- readIORef contadorRef
+    let novoContador = contador + 1
+    writeIORef contadorRef novoContador
+    
+    let mapaEscolhido = selecionarMapa novoContador
+    putStrLn $ "Jogo " ++ show novoContador ++ " - Mapa: " ++ mapaNome mapaEscolhido
+    
+    return $ iniciarComMapa (modoSelecionado estado) mapaEscolhido
+  
+  EventKey (SpecialKey KeyEsc) Down _ _ ->
+    return $ Menu (EstadoMenu OpcaoPlay 0.0)
+  
+  _ -> return $ SelecaoModo estado
+
+-- EVENTOS DE VITÓRIA COM CONTADOR
+eventoVictoryContador :: IORef Int -> Event -> EstadoFinal -> IO EstadoJogo
+eventoVictoryContador contadorRef (EventKey (Char 'r') Down _ _) _ = do
+  contador <- readIORef contadorRef
+  let novoContador = contador + 1
+  writeIORef contadorRef novoContador
+  
+  let mapaEscolhido = selecionarMapa novoContador
+  putStrLn $ "Reinício " ++ show novoContador ++ " - Mapa: " ++ mapaNome mapaEscolhido
+  
+  return $ Jogando (criarPartida DoisJogadores (criarEstadoDoMapa mapaEscolhido))
+
+eventoVictoryContador contadorRef (EventKey (Char 'R') Down m p) estado = 
+  eventoVictoryContador contadorRef (EventKey (Char 'r') Down m p) estado
+
+eventoVictoryContador _ (EventKey (Char 'x') Down _ _) _ = 
+  return $ Menu (EstadoMenu OpcaoPlay 0.0)
+
+eventoVictoryContador _ (EventKey (Char 'X') Down _ _) _ = 
+  return $ Menu (EstadoMenu OpcaoPlay 0.0)
+
+eventoVictoryContador _ (EventKey (SpecialKey KeyUp) Down _ _) estado = 
+  return $ Victory (estado { opcaoFinal = Restart })
+
+eventoVictoryContador _ (EventKey (SpecialKey KeyDown) Down _ _) estado = 
+  return $ Victory (estado { opcaoFinal = VoltarMenu })
+
+eventoVictoryContador contadorRef (EventKey (SpecialKey KeyEnter) Down _ _) estado =
+  case opcaoFinal estado of
+    Restart -> do
+      contador <- readIORef contadorRef
+      let novoContador = contador + 1
+      writeIORef contadorRef novoContador
+      
+      let mapaEscolhido = selecionarMapa novoContador
+      putStrLn $ "Restart " ++ show novoContador ++ " - Mapa: " ++ mapaNome mapaEscolhido
+      
+      return $ Jogando (criarPartida DoisJogadores (criarEstadoDoMapa mapaEscolhido))
+    
+    VoltarMenu -> return $ Menu (EstadoMenu OpcaoPlay 0.0)
+
+eventoVictoryContador _ _ estado = return $ Victory estado
+
+-- FUNÇÃO AUXILIAR: Inicia jogo com mapa específico
+iniciarComMapa :: ModoJogo -> MapaCompleto -> EstadoJogo
+iniciarComMapa Voltar _ = Menu (EstadoMenu OpcaoPlay 0.0)
+iniciarComMapa modo mapa = Jogando (criarPartida modo (criarEstadoDoMapa mapa))
+
 
 -- Atualiza o estado do jogo ao longo do tempo
 atualizar :: Assets -> Float -> EstadoJogo -> EstadoJogo

@@ -14,6 +14,7 @@ import Graphics.Gloss.Interface.Pure.Game
 import EstadoJogo
 import Assets
 import Labs2025
+import Mapas
 
 -- Desenha a tela de seleção de modo
 desenharSelecao :: Assets -> EstadoSelecao -> Picture
@@ -171,29 +172,17 @@ modoAnterior Treino = VsBot
 modoAnterior Voltar = Treino
 
 -- Inicia uma partida no modo selecionado ou volta ao menu
+iniciarJogoComMapa :: ModoJogo -> MapaCompleto -> EstadoJogo
+iniciarJogoComMapa Voltar _ = Menu (EstadoMenu OpcaoPlay 0.0)
+iniciarJogoComMapa modo mapaEscolhido = 
+  Jogando (criarPartida modo (criarEstadoDoMapa mapaEscolhido))
+
+-- Esta função agora é só um placeholder - será chamada do Main.hs
 iniciarJogo :: ModoJogo -> EstadoJogo
 iniciarJogo Voltar = Menu (EstadoMenu OpcaoPlay 0.0)
-iniciarJogo modo = Jogando (criarPartida modo estadoInicialWorms)
-  where
-    mapaExemplo = 
-      [ [Pedra | _ <- [1..34]] ] ++
-      [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..9] ] ++
-      [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..8] ] ++
-      [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
-    
-     barrisExemplo =     
-      [ Barril (9, 8) False
-      , Barril (9, 13) False
-      , Barril (9, 17) False
-      , Barril (9, 24) False
-      ]
-    
-    minhocasExemplo = 
-      [ Minhoca (Just (8, 6)) (Viva 100) 2 3 5 2 3
-      , Minhoca (Just (8, 26)) (Viva 100) 2 3 5 2 3
-      ]
-    
-    estadoInicialWorms = Estado mapaExemplo barrisExemplo minhocasExemplo
+iniciarJogo modo = 
+  -- Usa o mapa clássico como fallback
+  Jogando (criarPartida modo (criarEstadoDoMapa (todosOsMapas !! 0)))
 
 -- Atualiza animação da seleção
 atualizarSelecao :: Float -> EstadoSelecao -> EstadoJogo

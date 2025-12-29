@@ -128,30 +128,42 @@ geraJogadasSeguras :: NumMinhoca -> Minhoca -> Posicao -> Estado -> [Jogada]
 geraJogadasSeguras num minhoca pos estado =
     let direcoes = [Norte, Sul, Este, Oeste, Nordeste, Noroeste, Sudeste, Sudoeste]
         
+        -- Calcula distância ao adversário mais próximo
+        adversarios = encontraAdversarios num estado
+        distMin = if null adversarios 
+                  then 100 
+                  else minimum [distancia pos p | (_, p) <- adversarios]
+        
+        -- Só usar armas ofensivas se houver inimigo a menos de 10 blocos
+        usarArmas = distMin <= 10
+        
         -- Movimentos seguros (não cair em água/vazio)
         movimentosSeguras = [Move d | d <- direcoes, movimentoSeguro pos d estado]
         
         -- Armas que podem ser usadas COM SEGURANÇA
-        dinamitesSeguras = [Dispara Dinamite d | d <- direcoes, 
-                            dinamiteMinhoca minhoca > 0,
-                            disparoSeguro pos d 7 estado]
+        dinamitesSeguras = if usarArmas && dinamiteMinhoca minhoca > 0
+                          then [Dispara Dinamite d | d <- direcoes, 
+                                disparoSeguroHex pos d 7 num estado]
+                          else []
         
-        bazucasSeguras = [Dispara Bazuca d | d <- direcoes,
-                          bazucaMinhoca minhoca > 0,
-                          disparoSeguro pos d 5 estado]
+        bazucasSeguras = if usarArmas && bazucaMinhoca minhoca > 0
+                        then [Dispara Bazuca d | d <- direcoes,
+                              disparoSeguroHex pos d 5 num estado]
+                        else []
         
         escavadoras = [Dispara Escavadora d | d <- direcoes,
                        escavadoraMinhoca minhoca > 0]
         
-        minasSeguras = [Dispara Mina d | d <- direcoes,
-                        minaMinhoca minhoca > 0,
-                        disparoSeguro pos d 3 estado]
+        minasSeguras = if usarArmas && minaMinhoca minhoca > 0
+                      then [Dispara Mina d | d <- direcoes,
+                            disparoSeguroHex pos d 3 num estado]
+                      else []
         
         jetpacks = [Dispara Jetpack d | d <- direcoes,
                     jetpackMinhoca minhoca > 0,
                     movimentoSeguro pos d estado]
-        
-    in dinamitesSeguras ++ bazucasSeguras ++ escavadoras ++ minasSeguras ++ jetpacks ++ movimentosSeguras
+             
+    in dinamitesSeguras ++ bazucasSeguras ++ escavadoras ++ minasSeguras ++ jetpacks  ++ movimentosSeguras
 
 -- | Verifica se um movimento é seguro (não cai em água ou buraco)
 movimentoSeguro :: Posicao -> Direcao -> Estado -> Bool
@@ -163,24 +175,56 @@ movimentoSeguro pos dir estado =
        not (temBarril novaPos estado)
 
 
--- | Verifica se um disparo é seguro (não explode perto do bot)
-disparoSeguro :: Posicao -> Direcao -> Int -> Estado -> Bool
-disparoSeguro posBot dir diametro estado =
+-- | Verifica se um disparo é seguro usando o raio hexagonal correto
+disparoSeguroHex :: Posicao -> Direcao -> Int -> NumMinhoca -> Estado -> Bool
+disparoSeguroHex posBot dir diametro numBot estado =
     let posDisparo = calculaPosicaoDestino posBot dir
         raio = diametro `div` 2
-        -- Verifica se o bot está na área de explosão
-        (l1, c1) = posBot
-        (l2, c2) = posDisparo
-        distancia = abs (l1 - l2) + abs (c1 - c2)
-    in distancia > raio  -- Seguro se estiver longe da explosão
+        
+        -- Verifica todas as posições dentro do raio hexagonal de explosão
+        posicoesExplosao = posicoesNoRaioHex posDisparo raio diametro
+        
+        -- O bot está na área de explosão?
+        botNaExplosao = posBot `elem` posicoesExplosao
+        
+        -- Outras minhocas do bot (ímpares) estão na explosão?
+        minhocas = minhocasEstado estado
+        aliados = [(i, m) | (i, m) <- zip [0..] minhocas, 
+                   odd i, i /= numBot, estaViva m]
+        
+        aliadosEmPerigo = any (\(_, m) -> 
+            case posicaoMinhoca m of
+                Just p -> p `elem` posicoesExplosao
+                Nothing -> False) aliados
+        
+    in not botNaExplosao && not aliadosEmPerigo
 
---------------------------------------------------------------------------------
+-- | Calcula todas as posições dentro do raio hexagonal de uma explosão
+posicoesNoRaioHex :: Posicao -> Int -> Int -> [Posicao]
+posicoesNoRaioHex (l, c) raio diametro =
+    [ (l + dl, c + dc)
+    | dl <- [-raio..raio]
+    , dc <- [-raio..raio]
+    , let custo = 2 * max (abs dl) (abs dc) + min (abs dl) (abs dc)
+    , (diametro - custo) > 0
+    ]--------------------------------------------------------------------------------
 -- * AVALIAÇÃO INTELIGENTE DE JOGADAS
 
 -- | Avalia uma jogada considerando distância aos adversários e segurança
 avaliaJogadaInteligente :: Jogada -> NumMinhoca -> Posicao -> [(NumMinhoca, Posicao)] -> Estado -> Pontuacao
 avaliaJogadaInteligente jogada num posBot adversarios estado =
-    let  -- Encontra adversário mais próximo
+    let minhocas = minhocasEstado estado
+        minhoca = minhocas !! num
+        
+        -- Vida atual da minhoca
+        vidaAtual = case vidaMinhoca minhoca of
+                      Viva v -> v
+                      Morta -> 0
+        
+        -- Modificador baseado em vida (se vida < 30, priorizar defesa)
+        modificadorVida = if vidaAtual < 30 then 0.6 else 1.0
+        
+        -- Encontra adversário mais próximo
         adversarioMaisProximo = if null adversarios
                                 then Nothing
                                 else Just $ minimumBy (comparing (\(_, p) -> distancia posBot p)) adversarios
@@ -189,8 +233,12 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
                          Just (_, posAdv) -> distancia posBot posAdv
                          Nothing -> 100
         
+        -- Número de adversários (para estratégia endgame)
+        numAdversarios = length adversarios
+        bonusAgressivo = if numAdversarios == 1 then 30 else 0
+        
     in case jogada of
-        -- ARMAS: avaliar baseado em distância e dano potencial
+        -- DINAMITE: melhor a curta distância (2-4 blocos)
         Dispara Dinamite dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
                 alinhado = case adversarioMaisProximo of
@@ -200,14 +248,15 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
                 danoEstimado =
                     case adversarioMaisProximo of
                       Just (_, posAdv)
-                        | alinhado && distancia posDisparo posAdv <= 4 -> 130
-                        | distancia posDisparo posAdv <= 3             -> 100
+                        | alinhado && distancia posDisparo posAdv <= 4 -> 150 + bonusAgressivo
+                        | distancia posDisparo posAdv <= 3             -> 120
                         | otherwise                                    -> 20
                       Nothing -> 10
 
                 terraDestruida = contaTerraEmExplosao posDisparo 7 (mapaEstado estado)
-            in danoEstimado + terraDestruida * 5
+            in round (fromIntegral (danoEstimado + terraDestruida * 5) * modificadorVida)
 
+        -- BAZUCA: melhor a média distância (5-8 blocos)
         Dispara Bazuca dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
                 alinhado = case adversarioMaisProximo of
@@ -216,38 +265,44 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
                 danoEstimado =
                     case adversarioMaisProximo of
                         Just (_, posAdv)
-                          | alinhado && distancia posBot posAdv <= 8 -> 220
-                          | distancia posDisparo posAdv <= 2         -> 150
-                          | otherwise                                -> 40
+                          | alinhado && distanciaAdv >= 5 && distanciaAdv <= 8 -> 250 + bonusAgressivo
+                          | distancia posDisparo posAdv <= 2                   -> 180
+                          | otherwise                                          -> 40
                         Nothing -> 15
                 terraDestruida = contaTerraEmExplosao posDisparo 5 (mapaEstado estado)
-            in danoEstimado + terraDestruida * 5
+            in round (fromIntegral (danoEstimado + terraDestruida * 5) * modificadorVida)
         
+        -- ESCAVADORA: útil para desbloquear caminho
         Dispara Escavadora dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
                 mapa = mapaEstado estado
             in if terrenoNaPos posDisparo mapa == Terra
                 then if bloqueado posBot dir estado
-                        then 80     --  escavar para desbloquear
-                        else 40
+                        then 90  -- Escavar para desbloquear
+                        else 45
                 else 5
         
+        -- MINA: armadilha tática
         Dispara Mina dir ->
             let posDisparo = calculaPosicaoDestino posBot dir
-            in if distanciaAdv <= 4
-               then 80  -- Mina perto do inimigo = bom
+            in if distanciaAdv <= 4 && distanciaAdv >= 2
+               then 85  -- Mina a distância ideal
                else 20
         
+        -- JETPACK: mobilidade tática
         Dispara Jetpack dir ->
             let novaPos = calculaPosicaoDestino posBot dir
                 novaDistancia = case adversarioMaisProximo of
                                   Just (_, posAdv) -> distancia novaPos posAdv
                                   Nothing -> 100
-            in if novaDistancia < distanciaAdv
-               then 60  -- Aproximar-se = bom
-               else 30  -- Afastar-se = menos bom
+            in if vidaAtual < 30 && novaDistancia > distanciaAdv
+               then 100  -- Fugir se vida baixa
+               else if novaDistancia < distanciaAdv
+                    then 65  -- Aproximar-se
+                    else 35
         
-        -- MOVIMENTO: avaliar baseado em aproximação ao adversário
+        
+        -- MOVIMENTO: tática baseada em distância e contexto
         Move dir ->
             let novaPos = calculaPosicaoDestino posBot dir
                 novaDistancia = case adversarioMaisProximo of
@@ -256,31 +311,39 @@ avaliaJogadaInteligente jogada num posBot adversarios estado =
                 alinhado = case adversarioMaisProximo of
                      Just (_, posAdv) -> alinhadoComDir posBot posAdv dir
                      Nothing -> False
-                -- Priorizar aproximação se longe, manter distância se muito perto
             in
-                -- Caminho bloqueado → penalizar forte
+                -- Caminho bloqueado
               if bloqueado posBot dir estado
-                then -30
-
+                then if escavadoraMinhoca minhoca > 0
+                     then 25  -- Pode escavar depois
+                     else -30
+                
                 -- Deve saltar → muito bom
               else if deveSaltar posBot dir estado
                 then 60
+                
+                -- Vida baixa → priorizar fuga
+              else if vidaAtual < 30
+                then if novaDistancia > distanciaAdv
+                     then 80  -- Fugir!
+                     else 10
 
-                -- Está alinhado para disparar → não estragar
+                -- Está alinhado para disparar → não estragar posição
               else if alinhado && distanciaAdv <= 8 && distanciaAdv >= 3
-                then 3
+                then 5
 
-                --  Muito longe → aproximar
+                -- Muito longe → aproximar
               else if distanciaAdv > 5
-                then if novaDistancia < distanciaAdv then 50 else 10
+                then if novaDistancia < distanciaAdv 
+                     then 55 + bonusAgressivo
+                     else 15
 
-                --  Muito perto → afastar
+                -- Muito perto → manter distância tática
               else if distanciaAdv < 2
-                then if novaDistancia > distanciaAdv then 40 else 5
+                then if novaDistancia > distanciaAdv then 45 else 5
 
-                -- Distância ideal
-              else 25
-
+                -- Distância ideal (2-5 blocos)
+              else 30
 --------------------------------------------------------------------------------
 -- * FUNÇÕES DE UTILIDADE
 
@@ -375,7 +438,9 @@ alinhadoComDir posBot posAdv dir =
 
 temBarril :: Posicao -> Estado -> Bool
 temBarril pos estado =
-  any (\b -> posBarril b == pos) (objetosEstado estado)
+  any (\obj -> case obj of
+                 Barril posObj _ -> posObj == pos
+                 _ -> False) (objetosEstado estado)
 
 bloqueado :: Posicao -> Direcao -> Estado -> Bool
 bloqueado pos dir estado =
