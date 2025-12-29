@@ -133,45 +133,37 @@ desenharInstrucoesSelecao assets =
 -- Processa input na seleção de modo
 eventoSelecao :: Event -> EstadoSelecao -> EstadoJogo
 eventoSelecao evento estado = case evento of
-  -- Seta para baixo: próximo modo
   EventKey (SpecialKey KeyDown) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
   
-  -- Seta para cima: modo anterior
   EventKey (SpecialKey KeyUp) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = modoAnterior (modoSelecionado estado) })
   
-  -- Seta para direita: próximo modo
   EventKey (SpecialKey KeyRight) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
   
-  -- Seta para esquerda: modo anterior
   EventKey (SpecialKey KeyLeft) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = modoAnterior (modoSelecionado estado) })
   
-  -- Tab: alterna modos
   EventKey (SpecialKey KeyTab) Down _ _ ->
     SelecaoModo (estado { modoSelecionado = proximoModo (modoSelecionado estado) })
   
-  -- Enter: inicia jogo no modo selecionado ou volta ao menu se Voltar
   EventKey (SpecialKey KeyEnter) Down _ _ ->
     iniciarJogo (modoSelecionado estado)
   
-  -- ESC: volta ao menu
   EventKey (SpecialKey KeyEsc) Down _ _ ->
     Menu (EstadoMenu OpcaoPlay 0.0)
   
-  -- Outros eventos
   _ -> SelecaoModo estado
 
--- Avança para o próximo modo (inclui Voltar)
+-- Avança para o próximo modo
 proximoModo :: ModoJogo -> ModoJogo
 proximoModo DoisJogadores = VsBot
 proximoModo VsBot = Treino
 proximoModo Treino = Voltar
 proximoModo Voltar = DoisJogadores
 
--- Volta para o modo anterior (inclui Voltar)
+-- Volta para o modo anterior
 modoAnterior :: ModoJogo -> ModoJogo
 modoAnterior DoisJogadores = Voltar
 modoAnterior VsBot = DoisJogadores
@@ -183,36 +175,25 @@ iniciarJogo :: ModoJogo -> EstadoJogo
 iniciarJogo Voltar = Menu (EstadoMenu OpcaoPlay 0.0)
 iniciarJogo modo = Jogando (criarPartida modo estadoInicialWorms)
   where
-    -- Mapa de exemplo (34x20 com água no fundo)
     mapaExemplo = 
       [ [Pedra | _ <- [1..34]] ] ++
-      [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..14] ] ++
-      [ [if c == 1 || c == 34 then Pedra 
-           else if l >= 18 then Terra
-           else Ar 
-         | c <- [1..34]] 
-      | l <- [15..18] ] ++
-      [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] ]
+      [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..9] ] ++
+      [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..8] ] ++
+      [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
     
-    -- Barris espalhados pelo mapa
     barrisExemplo = 
-      [ Barril (5, 17) False
-      , Barril (8, 10) False
-      , Barril (8, 24) False
-      , Barril (12, 17) False
-      , Barril (15, 10) False
-      , Barril (15, 24) False
+      [ Barril (9, 8) False
+      , Barril (9, 13) False
+      , Barril (9, 17) False
+      , Barril (9, 24) False
       ]
     
-    -- Minhocas de exemplo (posicionadas acima da água)
     minhocasExemplo = 
-      [ Minhoca (Just (16, 8)) (Viva 100) 2 3 5 2 3    -- Verde
-      , Minhoca (Just (16, 26)) (Viva 100) 2 3 5 2 3   -- Azul
+      [ Minhoca (Just (8, 6)) (Viva 100) 2 3 5 2 3
+      , Minhoca (Just (8, 26)) (Viva 100) 2 3 5 2 3
       ]
     
-    -- Estado inicial do Worms com barris
     estadoInicialWorms = Estado mapaExemplo barrisExemplo minhocasExemplo
-
 
 -- Atualiza animação da seleção
 atualizarSelecao :: Float -> EstadoSelecao -> EstadoJogo

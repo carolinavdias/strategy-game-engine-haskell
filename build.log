@@ -1,0 +1,574 @@
+Resolving dependencies...
+Build profile: -w ghc-9.6.7 -O1
+In order, the following will be built (use -v for more details):
+ - worms-0.0.0.0 (lib) (first run)
+ - worms-0.0.0.0 (exe:worms-game) (first run)
+ - worms-0.0.0.0 (exe:t4-feedback) (first run)
+ - worms-0.0.0.0 (exe:t3-feedback) (first run)
+ - worms-0.0.0.0 (exe:t2-feedback) (first run)
+ - worms-0.0.0.0 (exe:t1-feedback) (first run)
+Configuring library for worms-0.0.0.0...
+Preprocessing library for worms-0.0.0.0...
+Building library for worms-0.0.0.0...
+[1 of 7] Compiling Tarefa0_geral    ( lib/Tarefa0_geral.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa0_geral.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa0_geral.dyn_o )
+[2 of 7] Compiling Labs2025         ( lib/Labs2025.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Labs2025.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Labs2025.dyn_o )
+[3 of 7] Compiling Tarefa0_2025     ( lib/Tarefa0_2025.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa0_2025.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa0_2025.dyn_o )
+[4 of 7] Compiling Tarefa1          ( lib/Tarefa1.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa1.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa1.dyn_o )
+[5 of 7] Compiling Tarefa2          ( lib/Tarefa2.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa2.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa2.dyn_o )
+
+lib/Tarefa2.hs:163:22: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Ord t0)
+          arising from a use of ‘tentarVoar’ at lib/Tarefa2.hs:163:22-31
+        (Num t0)
+          arising from a use of ‘tentarVoar’ at lib/Tarefa2.hs:163:22-31
+    • In the expression: tentarVoar 3 pos
+      In an equation for ‘posicaoFinal’: posicaoFinal = tentarVoar 3 pos
+      In the expression:
+        let
+          tentarVoar distancia posAtual
+            | distancia <= 0 = posAtual
+            | otherwise = let ... in ...
+          posicaoFinal = tentarVoar 3 pos
+        in
+          if posicaoFinal /= pos then
+              gastaMunicaoEMove numMinhoca Jetpack posicaoFinal estado
+          else
+              gastaMunicao numMinhoca Jetpack estado
+    |
+163 |       posicaoFinal = tentarVoar 3 pos  -- Voa até 3 blocos
+    |                      ^^^^^^^^^^
+[6 of 7] Compiling Tarefa3          ( lib/Tarefa3.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa3.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa3.dyn_o )
+
+lib/Tarefa3.hs:58:18: warning: [-Wunused-matches]
+    Defined but not used: ‘pos’
+   |
+58 |             Just pos@(x, y) ->
+   |                  ^^^
+[7 of 7] Compiling Tarefa4          ( lib/Tarefa4.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa4.o, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/build/Tarefa4.dyn_o )
+Configuring executable 'worms-game' for worms-0.0.0.0...
+Configuring executable 't4-feedback' for worms-0.0.0.0...
+Configuring executable 't3-feedback' for worms-0.0.0.0...
+Configuring executable 't2-feedback' for worms-0.0.0.0...
+Configuring executable 't1-feedback' for worms-0.0.0.0...
+Preprocessing executable 'worms-game' for worms-0.0.0.0...
+Building executable 'worms-game' for worms-0.0.0.0...
+Preprocessing executable 't4-feedback' for worms-0.0.0.0...
+Building executable 't4-feedback' for worms-0.0.0.0...
+Preprocessing executable 't3-feedback' for worms-0.0.0.0...
+Building executable 't3-feedback' for worms-0.0.0.0...
+
+<no location info>: warning: [GHC-32850] [-Wmissing-home-modules]
+    These modules are needed for compilation but not listed in your .cabal file's other-modules for ‘worms-0.0.0.0-inplace-worms-game’ :
+        Desenhar Eventos Tempo
+[1 of 8] Compiling Assets           ( app/Assets.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/Assets.o )
+Preprocessing executable 't2-feedback' for worms-0.0.0.0...
+Building executable 't2-feedback' for worms-0.0.0.0...
+Preprocessing executable 't1-feedback' for worms-0.0.0.0...
+Building executable 't1-feedback' for worms-0.0.0.0...
+[1 of 2] Compiling Magic            ( test/Magic.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t4-feedback/build/t4-feedback/t4-feedback-tmp/Magic.o )
+[1 of 2] Compiling Magic            ( test/Magic.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t3-feedback/build/t3-feedback/t3-feedback-tmp/Magic.o )
+[1 of 2] Compiling Magic            ( test/Magic.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t2-feedback/build/t2-feedback/t2-feedback-tmp/Magic.o )
+[1 of 2] Compiling Magic            ( test/Magic.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t1-feedback/build/t1-feedback/t1-feedback-tmp/Magic.o )
+[2 of 8] Compiling EstadoJogo       ( app/EstadoJogo.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/EstadoJogo.o )
+
+app/EstadoJogo.hs:10:1: warning: [-Wunused-imports]
+    The import of ‘Graphics.Gloss’ is redundant
+      except perhaps to import instances from ‘Graphics.Gloss’
+    To import instances alone, use: import Graphics.Gloss()
+   |
+10 | import Graphics.Gloss
+   | ^^^^^^^^^^^^^^^^^^^^^
+[3 of 8] Compiling Menu             ( app/Menu.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/Menu.o )
+[4 of 8] Compiling SelecaoModo      ( app/SelecaoModo.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/SelecaoModo.o )
+
+app/SelecaoModo.hs:179:23: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/SelecaoModo.hs:179:23-29
+        (Num t0) arising from the literal ‘1’ at app/SelecaoModo.hs:179:24
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: _ <- [1 .. 34]
+      In the expression: [Pedra | _ <- [1 .. 34]]
+    |
+179 |       [ [Pedra | _ <- [1..34]] ] ++
+    |                       ^^^^^^^
+
+app/SelecaoModo.hs:180:57: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/SelecaoModo.hs:180:57-63
+        (Eq a0) arising from a use of ‘==’ at app/SelecaoModo.hs:180:15-16
+        (Num a0) arising from the literal ‘1’ at app/SelecaoModo.hs:180:18
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Ar | c <- [1 .. 34]]
+    |
+180 |       [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..8] ] ++
+    |                                                         ^^^^^^^
+
+app/SelecaoModo.hs:180:73: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 8’
+          at app/SelecaoModo.hs:180:73-78
+        (Num t0) arising from the literal ‘1’ at app/SelecaoModo.hs:180:74
+    • In the expression: [1 .. 8]
+      In a stmt of a list comprehension: _ <- [1 .. 8]
+      In the first argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Ar | c <- [1 .. 34]] |
+            _ <- [1 .. 8]]’
+    |
+180 |       [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..8] ] ++
+    |                                                                         ^^^^^^
+
+app/SelecaoModo.hs:181:60: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/SelecaoModo.hs:181:60-66
+        (Eq a0) arising from a use of ‘==’ at app/SelecaoModo.hs:181:15-16
+        (Num a0) arising from the literal ‘1’ at app/SelecaoModo.hs:181:18
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Terra | c <- [1 .. 34]]
+    |
+181 |       [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..9] ] ++
+    |                                                            ^^^^^^^
+
+app/SelecaoModo.hs:181:76: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 9’
+          at app/SelecaoModo.hs:181:76-81
+        (Num t0) arising from the literal ‘1’ at app/SelecaoModo.hs:181:77
+    • In the expression: [1 .. 9]
+      In a stmt of a list comprehension: _ <- [1 .. 9]
+      In the first argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Terra | c <- [1 .. 34]] |
+            _ <- [1 .. 9]]’
+    |
+181 |       [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..9] ] ++
+    |                                                                            ^^^^^^
+
+app/SelecaoModo.hs:182:59: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/SelecaoModo.hs:182:59-65
+        (Eq a0) arising from a use of ‘==’ at app/SelecaoModo.hs:182:15-16
+        (Num a0) arising from the literal ‘1’ at app/SelecaoModo.hs:182:18
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Agua | c <- [1 .. 34]]
+    |
+182 |       [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
+    |                                                           ^^^^^^^
+
+app/SelecaoModo.hs:182:75: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 2’
+          at app/SelecaoModo.hs:182:75-80
+        (Num t0) arising from the literal ‘1’ at app/SelecaoModo.hs:182:76
+    • In the expression: [1 .. 2]
+      In a stmt of a list comprehension: _ <- [1 .. 2]
+      In the second argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Agua | c <- [1 .. 34]] |
+            _ <- [1 .. 2]]’
+    |
+182 |       [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
+    |                                                                           ^^^^^^
+[5 of 8] Compiling Desenhar         ( app/Desenhar.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/Desenhar.o )
+
+app/Desenhar.hs:63:49: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘0’ at app/Desenhar.hs:63:49
+        (Enum a0)
+          arising from the arithmetic sequence ‘0 .. ’
+          at app/Desenhar.hs:63:48-52
+        (Integral a0)
+          arising from a use of ‘even’ at app/Desenhar.hs:63:64-67
+    • In the expression: 0
+      In the first argument of ‘zip’, namely ‘[0 .. ]’
+      In the expression: zip [0 .. ] minhocas
+   |
+63 |       minhocasVerdes = [(i, m) | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
+   |                                                 ^
+
+app/Desenhar.hs:74:48: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘0’ at app/Desenhar.hs:74:48
+        (Enum a0)
+          arising from the arithmetic sequence ‘0 .. ’
+          at app/Desenhar.hs:74:47-51
+        (Integral a0)
+          arising from a use of ‘odd’ at app/Desenhar.hs:74:63-65
+    • In the expression: 0
+      In the first argument of ‘zip’, namely ‘[0 .. ]’
+      In the expression: zip [0 .. ] minhocas
+   |
+74 |       minhocasAzuis = [(i, m) | (i, m) <- zip [0..] minhocas, odd i, minhocaViva m]
+   |                                                ^
+
+app/Desenhar.hs:206:49: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘0’ at app/Desenhar.hs:206:49
+        (Enum a0)
+          arising from the arithmetic sequence ‘0 .. ’
+          at app/Desenhar.hs:206:48-52
+        (Integral a0)
+          arising from a use of ‘even’ at app/Desenhar.hs:206:64-67
+    • In the expression: 0
+      In the first argument of ‘zip’, namely ‘[0 .. ]’
+      In the expression: zip [0 .. ] minhocas
+    |
+206 |       minhocasVerdes = [(i, m) | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
+    |                                                 ^
+
+app/Desenhar.hs:215:48: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘0’ at app/Desenhar.hs:215:48
+        (Enum a0)
+          arising from the arithmetic sequence ‘0 .. ’
+          at app/Desenhar.hs:215:47-51
+        (Integral a0)
+          arising from a use of ‘odd’ at app/Desenhar.hs:215:63-65
+    • In the expression: 0
+      In the first argument of ‘zip’, namely ‘[0 .. ]’
+      In the expression: zip [0 .. ] minhocas
+    |
+215 |       minhocasAzuis = [(i, m) | (i, m) <- zip [0..] minhocas, odd i, minhocaViva m]
+    |                                                ^
+
+app/Desenhar.hs:364:24: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘34’ at app/Desenhar.hs:364:24-25
+        (Integral a0)
+          arising from a use of ‘fromIntegral’ at app/Desenhar.hs:366:25-36
+    • In the expression: 34
+      In an equation for ‘numColunas’: numColunas = 34
+      In the expression:
+        let
+          numColunas = 34
+          numLinhas = 20
+          larguraMapa = fromIntegral numColunas * tamanhoBloco
+          ....
+        in
+          Translate (offsetXMapa + x) (offsetYMapa + y)
+            $ Scale 1.8 1.8
+                $ Pictures
+                    [sprite,
+                     Scale 0.55 0.55 $ desenharBarraVidaMinhoca (vidaMinhoca minhoca)]
+    |
+364 |       let numColunas = 34
+    |                        ^^
+
+app/Desenhar.hs:365:23: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘20’ at app/Desenhar.hs:365:23-24
+        (Integral a0)
+          arising from a use of ‘fromIntegral’ at app/Desenhar.hs:367:24-35
+    • In the expression: 20
+      In an equation for ‘numLinhas’: numLinhas = 20
+      In the expression:
+        let
+          numColunas = 34
+          numLinhas = 20
+          larguraMapa = fromIntegral numColunas * tamanhoBloco
+          ....
+        in
+          Translate (offsetXMapa + x) (offsetYMapa + y)
+            $ Scale 1.8 1.8
+                $ Pictures
+                    [sprite,
+                     Scale 0.55 0.55 $ desenharBarraVidaMinhoca (vidaMinhoca minhoca)]
+    |
+365 |           numLinhas = 20
+    |                       ^^
+
+app/Desenhar.hs:382:23: warning: [-Wunused-matches]
+    Defined but not used: ‘assets’
+    |
+382 | escolherSpriteMinhoca assets numMinhoca Morta _ _ = 
+    |                       ^^^^^^
+
+app/Desenhar.hs:382:30: warning: [-Wunused-matches]
+    Defined but not used: ‘numMinhoca’
+    |
+382 | escolherSpriteMinhoca assets numMinhoca Morta _ _ = 
+    |                              ^^^^^^^^^^
+
+app/Desenhar.hs:509:7: warning: [-Wunused-local-binds]
+    Defined but not used: ‘textoVitoria’
+    |
+509 |       textoVitoria = case vencedor of
+    |       ^^^^^^^^^^^^
+[2 of 2] Compiling Main             ( test/Tarefa3Test.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t3-feedback/build/t3-feedback/t3-feedback-tmp/Main.o )
+[6 of 8] Compiling Tempo            ( app/Tempo.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/Tempo.o )
+
+app/Tempo.hs:132:41: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘0’ at app/Tempo.hs:132:41
+        (Enum a0)
+          arising from the arithmetic sequence ‘0 .. ’
+          at app/Tempo.hs:132:40-44
+        (Integral a0)
+          arising from a use of ‘even’ at app/Tempo.hs:132:56-59
+    • In the expression: 0
+      In the first argument of ‘zip’, namely ‘[0 .. ]’
+      In the expression: zip [0 .. ] minhocas
+    |
+132 |       verdesVivas = [m | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
+    |                                         ^
+
+[2 of 2] Compiling Main             ( test/Tarefa4Test.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t4-feedback/build/t4-feedback/t4-feedback-tmp/Main.o )
+app/Tempo.hs:133:40: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Num a0) arising from the literal ‘0’ at app/Tempo.hs:133:40
+        (Enum a0)
+          arising from the arithmetic sequence ‘0 .. ’
+          at app/Tempo.hs:133:39-43
+        (Integral a0) arising from a use of ‘odd’ at app/Tempo.hs:133:55-57
+    • In the expression: 0
+      In the first argument of ‘zip’, namely ‘[0 .. ]’
+      In the expression: zip [0 .. ] minhocas
+    |
+133 |       azuisVivas = [m | (i, m) <- zip [0..] minhocas, odd i, minhocaViva m]
+    |                                        ^
+[2 of 2] Compiling Main             ( test/Tarefa2Test.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t2-feedback/build/t2-feedback/t2-feedback-tmp/Main.o )
+[2 of 2] Compiling Main             ( test/Tarefa1Test.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t1-feedback/build/t1-feedback/t1-feedback-tmp/Main.o )
+[7 of 8] Compiling Eventos          ( app/Eventos.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/Eventos.o )
+
+app/Eventos.hs:171:23: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:171:23-29
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:171:24
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: _ <- [1 .. 34]
+      In the expression: [Pedra | _ <- [1 .. 34]]
+    |
+171 |       [ [Pedra | _ <- [1..34]] ] ++
+    |                       ^^^^^^^
+
+app/Eventos.hs:172:57: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:172:57-63
+        (Eq a0) arising from a use of ‘==’ at app/Eventos.hs:172:15-16
+        (Num a0) arising from the literal ‘1’ at app/Eventos.hs:172:18
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Ar | c <- [1 .. 34]]
+    |
+172 |       [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..8] ] ++
+    |                                                         ^^^^^^^
+
+app/Eventos.hs:172:73: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 8’
+          at app/Eventos.hs:172:73-78
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:172:74
+    • In the expression: [1 .. 8]
+      In a stmt of a list comprehension: _ <- [1 .. 8]
+      In the first argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Ar | c <- [1 .. 34]] |
+            _ <- [1 .. 8]]’
+    |
+172 |       [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..8] ] ++
+    |                                                                         ^^^^^^
+
+app/Eventos.hs:173:60: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:173:60-66
+        (Eq a0) arising from a use of ‘==’ at app/Eventos.hs:173:15-16
+        (Num a0) arising from the literal ‘1’ at app/Eventos.hs:173:18
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Terra | c <- [1 .. 34]]
+    |
+173 |       [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..9] ] ++
+    |                                                            ^^^^^^^
+
+app/Eventos.hs:173:76: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 9’
+          at app/Eventos.hs:173:76-81
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:173:77
+    • In the expression: [1 .. 9]
+      In a stmt of a list comprehension: _ <- [1 .. 9]
+      In the first argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Terra | c <- [1 .. 34]] |
+            _ <- [1 .. 9]]’
+    |
+173 |       [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..9] ] ++
+    |                                                                            ^^^^^^
+
+app/Eventos.hs:174:59: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:174:59-65
+        (Eq a0) arising from a use of ‘==’ at app/Eventos.hs:174:15-16
+        (Num a0) arising from the literal ‘1’ at app/Eventos.hs:174:18
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Agua | c <- [1 .. 34]]
+    |
+174 |       [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
+    |                                                           ^^^^^^^
+
+app/Eventos.hs:174:75: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 2’
+          at app/Eventos.hs:174:75-80
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:174:76
+    • In the expression: [1 .. 2]
+      In a stmt of a list comprehension: _ <- [1 .. 2]
+      In the second argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Agua | c <- [1 .. 34]] |
+            _ <- [1 .. 2]]’
+    |
+174 |       [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
+    |                                                                           ^^^^^^
+
+app/Eventos.hs:203:27: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:203:27-33
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:203:28
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: _ <- [1 .. 34]
+      In the expression: [Pedra | _ <- [1 .. 34]]
+    |
+203 |           [ [Pedra | _ <- [1..34]] ] ++
+    |                           ^^^^^^^
+
+app/Eventos.hs:204:61: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:204:61-67
+        (Eq a0) arising from a use of ‘==’ at app/Eventos.hs:204:19-20
+        (Num a0) arising from the literal ‘1’ at app/Eventos.hs:204:22
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Ar | c <- [1 .. 34]]
+    |
+204 |           [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..8] ] ++
+    |                                                             ^^^^^^^
+
+app/Eventos.hs:204:77: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 8’
+          at app/Eventos.hs:204:77-82
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:204:78
+    • In the expression: [1 .. 8]
+      In a stmt of a list comprehension: _ <- [1 .. 8]
+      In the first argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Ar | c <- [1 .. 34]] |
+            _ <- [1 .. 8]]’
+    |
+204 |           [ [if c == 1 || c == 34 then Pedra else Ar | c <- [1..34]] | _ <- [1..8] ] ++
+    |                                                                             ^^^^^^
+
+app/Eventos.hs:205:64: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:205:64-70
+        (Eq a0) arising from a use of ‘==’ at app/Eventos.hs:205:19-20
+        (Num a0) arising from the literal ‘1’ at app/Eventos.hs:205:22
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Terra | c <- [1 .. 34]]
+    |
+205 |           [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..9] ] ++
+    |                                                                ^^^^^^^
+
+app/Eventos.hs:205:80: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 9’
+          at app/Eventos.hs:205:80-85
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:205:81
+    • In the expression: [1 .. 9]
+      In a stmt of a list comprehension: _ <- [1 .. 9]
+      In the first argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Terra | c <- [1 .. 34]] |
+            _ <- [1 .. 9]]’
+    |
+205 |           [ [if c == 1 || c == 34 then Pedra else Terra | c <- [1..34]] | _ <- [1..9] ] ++
+    |                                                                                ^^^^^^
+
+app/Eventos.hs:206:63: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘a0’ to type ‘Integer’ in the following constraints
+        (Enum a0)
+          arising from the arithmetic sequence ‘1 .. 34’
+          at app/Eventos.hs:206:63-69
+        (Eq a0) arising from a use of ‘==’ at app/Eventos.hs:206:19-20
+        (Num a0) arising from the literal ‘1’ at app/Eventos.hs:206:22
+    • In the expression: [1 .. 34]
+      In a stmt of a list comprehension: c <- [1 .. 34]
+      In the expression:
+        [if c == 1 || c == 34 then Pedra else Agua | c <- [1 .. 34]]
+    |
+206 |           [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
+    |                                                               ^^^^^^^
+
+app/Eventos.hs:206:79: warning: [GHC-18042] [-Wtype-defaults]
+    • Defaulting the type variable ‘t0’ to type ‘Integer’ in the following constraints
+        (Enum t0)
+          arising from the arithmetic sequence ‘1 .. 2’
+          at app/Eventos.hs:206:79-84
+        (Num t0) arising from the literal ‘1’ at app/Eventos.hs:206:80
+    • In the expression: [1 .. 2]
+      In a stmt of a list comprehension: _ <- [1 .. 2]
+      In the second argument of ‘(++)’, namely
+        ‘[[if c == 1 || c == 34 then Pedra else Agua | c <- [1 .. 34]] |
+            _ <- [1 .. 2]]’
+    |
+206 |           [ [if c == 1 || c == 34 then Pedra else Agua | c <- [1..34]] | _ <- [1..2] ]
+    |                                                                               ^^^^^^
+[3 of 3] Linking /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t3-feedback/build/t3-feedback/t3-feedback
+[3 of 3] Linking /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t4-feedback/build/t4-feedback/t4-feedback
+[8 of 8] Compiling Main             ( app/Main.hs, /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game-tmp/Main.o )
+[3 of 3] Linking /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t2-feedback/build/t2-feedback/t2-feedback
+
+app/Main.hs:189:8: warning: [-Wunused-matches]
+    Defined but not used: ‘assets’
+    |
+189 | evento assets ev estado = case estado of
+    |        ^^^^^^
+
+app/Main.hs:199:11: warning: [-Wunused-matches]
+    Defined but not used: ‘assets’
+    |
+199 | atualizar assets dt estado = case estado of
+    |           ^^^^^^
+[3 of 3] Linking /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/t1-feedback/build/t1-feedback/t1-feedback
+
+<no location info>: warning: [GHC-32850] [-Wmissing-home-modules]
+    These modules are needed for compilation but not listed in your .cabal file's other-modules for ‘worms-0.0.0.0-inplace-worms-game’ :
+        Desenhar Eventos Tempo
+[9 of 9] Linking /home/carolina-dias/LI1/Projeto/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/x/worms-game/build/worms-game/worms-game

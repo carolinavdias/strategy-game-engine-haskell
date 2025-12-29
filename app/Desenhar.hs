@@ -365,14 +365,18 @@ desenharMinhocaJogo assets numMinhoca minhoca frameCount armaEquipada =
           numLinhas = 20
           larguraMapa = fromIntegral numColunas * tamanhoBloco
           alturaMapa = fromIntegral numLinhas * tamanhoBloco
-          offsetXMapa = -larguraMapa / 2
-          offsetYMapa = alturaMapa / 2 - 60
+          
+          -- USA OS MESMOS OFFSETS DO MAPA!
+          offsetX = -larguraMapa / 2 + 10
+          offsetY = alturaMapa / 2 - 20
           
           x = fromIntegral c * tamanhoBloco
           y = -fromIntegral l * tamanhoBloco
           
           sprite = escolherSpriteMinhoca assets numMinhoca (vidaMinhoca minhoca) frameCount armaEquipada
-      in Translate (offsetXMapa + x) (offsetYMapa + y) $ Scale 1.8 1.8 $ Pictures
+      in Scale 1.3 1.3 $  -- MESMO SCALE DO MAPA!
+         Translate offsetX offsetY $
+         Translate x y $ Scale 1.4 1.4 $ Pictures
            [ sprite
            , Scale 0.55 0.55 $ desenharBarraVidaMinhoca (vidaMinhoca minhoca)
            ]
@@ -479,11 +483,7 @@ desenharAnimacao assets (AnimExplosao (l, c) _ frame) =
       y = -fromIntegral l * tamanhoBloco + 300
   in Translate x y $ escolherFrameExplosao assets frame
 
-desenharAnimacao _ (AnimDano (l, c) dano tempo) =
-  let x = fromIntegral c * tamanhoBloco - 480
-      y = -fromIntegral l * tamanhoBloco + 300 + tempo * 20
-      alpha = round (tempo * 255)
-  in Translate x y $ Color (makeColorI 255 0 0 alpha) $ Scale 0.2 0.2 $ Text ("-" ++ show dano)
+desenharAnimacao _ (AnimDano (l, c) dano tempo) = Blank
 
 desenharAnimacao _ (AnimMovimento _ _ _ _) = Blank
 
