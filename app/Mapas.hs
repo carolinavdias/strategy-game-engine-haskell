@@ -1,6 +1,6 @@
 {-|
 Module      : Mapas
-Description : Coleção de mapas para o jogo (VERSÃO CORRIGIDA)
+Description : Coleção de mapas para o jogo 
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
