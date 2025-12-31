@@ -24,7 +24,7 @@ import Graphics.Gloss.Interface.Pure.Game
 import EstadoJogo
 import Assets
 
--- | Desenha o menu principal
+-- * Desenha o menu principal
 desenharMenu :: Assets -> EstadoMenu -> Picture
 desenharMenu assets estado = Pictures
   [ desenharBackground assets
@@ -37,19 +37,19 @@ desenharMenu assets estado = Pictures
 desenharBackground :: Assets -> Picture
 desenharBackground assets = 
   case menuBackground (menuAssets assets) of
-    Just bg -> bg  -- SEM SCALE! Imagem já é 1920x1200!
+    Just bg -> bg  -- ^ SEM SCALE! Imagem já é 1920x1200!
     Nothing -> Color (makeColorI 60 40 80 255) $ rectangleSolid 1920 1200
 
 -- Desenha o logo com animação de pulsar
 desenharLogo :: Assets -> Float -> Picture
 desenharLogo assets tempo =
-  let -- Pulsar suave: varia entre 0.95 e 1.05
-      escala = 1.90 + 0.05 * sin (tempo * 0.5)  -- 1.5 = velocidade (mais baixo = mais lento)
+  let -- ^ Pulsar suave: varia entre 0.95 e 1.05
+      escala = 1.90 + 0.05 * sin (tempo * 0.5)  -- ^ 1.5 = velocidade (mais baixo = mais lento)
   in case menuLogo (menuAssets assets) of
        Just logo -> Translate 0 320 $ Scale escala escala logo
        Nothing -> Translate 0 320 $ Color white $ Scale 0.5 0.5 $ Text "WORMS"
 
--- | Desenha os três botões do menu
+-- * Desenha os três botões do menu
 desenharBotoes :: Assets -> EstadoMenu -> Picture
 desenharBotoes assets estado = Pictures
   [ desenharBotao assets OpcaoPlay (opcaoSelecionadaMenu estado == OpcaoPlay) (0, -360)
@@ -67,33 +67,30 @@ desenharBotao assets opcao selecionado (x, y) = Translate x y botao
       OpcaoExit -> desenharBotaoExit assets selecionado
 
 -- | Desenha botão PLAY
--- falta criar button_play_glow.png no Canva com letras brilhantes para versão selecionada !!!
 desenharBotaoPlay :: Assets -> Bool -> Picture
 desenharBotaoPlay assets selecionado = imagem
   where
-    escala = if selecionado then 1.40 else 1.25  -- Aumenta quando selecionado
+    escala = if selecionado then 1.40 else 1.25  -- ^ Aumenta quando selecionado
     
     imagem = case buttonPlay (menuAssets assets) of
       Just img -> Scale escala escala $ img
       Nothing -> desenharBotaoFallback "PLAY GAME" selecionado (460, 140)
 
 -- | Desenha botão TUTORIAL
---criar button_tutorial_glow.png 
 desenharBotaoTutorial :: Assets -> Bool -> Picture
 desenharBotaoTutorial assets selecionado = imagem
   where
-    escala = if selecionado then 1.25 else 1.1  -- Aumenta quando selecionado
+    escala = if selecionado then 1.25 else 1.1  -- ^ Aumenta quando selecionado
     
     imagem = case buttonTutorial (menuAssets assets) of
       Just img -> Scale escala escala $ img
       Nothing -> desenharBotaoFallback "TUTORIAL" selecionado (400, 130)
 
 -- | Desenha botão EXIT
---criar button_exit_glow.png 
 desenharBotaoExit :: Assets -> Bool -> Picture
 desenharBotaoExit assets selecionado = imagem
   where
-    escala = if selecionado then 1.60 else 1.4  -- Aumenta quando selecionado
+    escala = if selecionado then 1.60 else 1.4  -- ^ Aumenta quando selecionado
     
     imagem = case buttonExit (menuAssets assets) of
       Just img -> Scale escala escala $ img
@@ -110,30 +107,30 @@ desenharBotaoFallback texto selecionado (w, h) = Pictures
     Text texto
   ]
 
--- | Processa input do teclado no menu
+-- * Processa input do teclado no menu
 eventoMenu :: Event -> EstadoMenu -> EstadoJogo
 eventoMenu evento estado = case evento of
-  -- Seta para baixo - próxima opção
+  -- ^ Seta para baixo - próxima opção
   EventKey (SpecialKey KeyDown) Down _ _ -> 
     Menu (estado { opcaoSelecionadaMenu = proximaOpcao (opcaoSelecionadaMenu estado) })
   
-  -- Seta para cima - opção anterior
+  -- ^ Seta para cima - opção anterior
   EventKey (SpecialKey KeyUp) Down _ _ -> 
     Menu (estado { opcaoSelecionadaMenu = opcaoAnterior (opcaoSelecionadaMenu estado) })
   
-  -- Tab - alterna opções
+  -- ^ Tab - alterna opções
   EventKey (SpecialKey KeyTab) Down _ _ ->
     Menu (estado { opcaoSelecionadaMenu = proximaOpcao (opcaoSelecionadaMenu estado) })
   
-  -- Enter - seleciona opção
+  -- ^ Enter - seleciona opção
   EventKey (SpecialKey KeyEnter) Down _ _ ->
     selecionarOpcao (opcaoSelecionadaMenu estado)
   
-  -- Espaço - seleciona opção
+  -- ^ Espaço - seleciona opção
   EventKey (SpecialKey KeySpace) Down _ _ ->
     selecionarOpcao (opcaoSelecionadaMenu estado)
   
-  -- Outros eventos - ignora
+  -- ^ Outros eventos - ignora
   _ -> Menu estado
 
 -- | Avança para a próxima opção do menu
@@ -155,13 +152,13 @@ selecionarOpcao OpcaoTutorial = Tutorial (EstadoTutorial 0 False)
 selecionarOpcao OpcaoExit = Sair 
 
 
--- | Atualiza animação do menu (efeito glow pulsante)
+-- * Atualiza animação do menu (efeito glow pulsante)
 atualizarMenu :: Float -> EstadoMenu -> EstadoJogo
 atualizarMenu dt estado = Menu (estado { animacaoMenu = animacaoMenu estado + dt * 5 })
 
--- | Desenha instruções discretas no canto superior direito
+-- * Desenha instruções discretas no canto superior direito
 desenharInstrucoesMenu :: Assets -> Picture
 desenharInstrucoesMenu assets =
   case modeInstructions (menuAssets assets) of
-    Just img -> Translate 720 480 $ Scale 0.5 0.5 $ img  -- Canto superior direito, pequeno
+    Just img -> Translate 720 480 $ Scale 0.5 0.5 $ img  -- ^ Canto superior direito, pequeno
     Nothing -> Blank

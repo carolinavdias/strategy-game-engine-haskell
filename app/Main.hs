@@ -38,19 +38,20 @@ import SelecaoModo
 import Mapas
 import Tutorial
 
--- Configuração da janela do jogo
+-- * Configurações Base
+-- | Configuração da janela do jogo
 window :: Display
 window = FullScreen
 
--- Cor de fundo
+-- |  Cor de fundo
 background :: Color
 background = makeColorI 135 206 235 255
 
--- Taxa de atualização
+-- | Taxa de atualização
 fps :: Int
 fps = 60
 
--- Função principal
+-- * Função principal
 main :: IO ()
 main = do
   putStrLn "Iniciando Worms..."
@@ -65,6 +66,7 @@ main = do
        (eventoComContador assets contadorMapas)
        (\dt estado -> return (atualizar assets dt estado))
 
+-- * Carregar imagens 
 -- Carregamento de todos os assets do jogo
 carregarAssets :: IO Assets
 carregarAssets = do
@@ -211,7 +213,7 @@ carregarAssets = do
     , tutorialAssets = TutorialAssets im1 im2 im3 im4 im5
     }
 
--- Carrega uma imagem PNG do disco
+-- | Carrega uma imagem PNG do disco
 carregarImagem :: FilePath -> String -> IO (Maybe Picture)
 carregarImagem path nome = do
   existe <- doesFileExist path
@@ -230,7 +232,7 @@ carregarImagem path nome = do
           putStrLn " OK"
           return (fromDynamicImage img)
 
--- Carrega imagem opcional sem mostrar erro
+-- | Carrega imagem opcional sem mostrar erro
 carregarImagemOpcional :: FilePath -> String -> IO (Maybe Picture)
 carregarImagemOpcional path nome = do
   existe <- doesFileExist path
@@ -238,7 +240,8 @@ carregarImagemOpcional path nome = do
     then return Nothing
     else carregarImagem path nome
 
--- Desenha o estado atual do jogo
+
+-- * Desenha o estado atual do jogo
 desenhar :: Assets -> EstadoJogo -> Picture
 desenhar assets estado = case estado of
   Menu estadoMenu -> desenharMenu assets estadoMenu
@@ -250,7 +253,7 @@ desenhar assets estado = case estado of
   Tutorial estadoTut -> desenharTutorial assets estadoTut
   Sair -> Blank 
 
--- EVENTOS COM CONTADOR
+-- * EVENTOS COM CONTADOR
 eventoComContador :: Assets -> IORef Int -> Event -> EstadoJogo -> IO EstadoJogo
 eventoComContador assets contadorRef ev estado = case estado of
   Menu estadoMenu -> return $ eventoMenu ev estadoMenu
@@ -262,7 +265,7 @@ eventoComContador assets contadorRef ev estado = case estado of
   Tutorial estadoTut -> return $ eventoTutorial ev estadoTut
   Sair -> exitSuccess 
 
--- EVENTOS NA SELEÇÃO COM CONTADOR
+-- | EVENTOS NA SELEÇÃO COM CONTADOR
 eventoSelecaoContador :: IORef Int -> Event -> EstadoSelecao -> IO EstadoJogo
 eventoSelecaoContador contadorRef evento estado = case evento of
   EventKey (SpecialKey KeyDown) Down _ _ ->
@@ -299,38 +302,38 @@ eventoSelecaoContador contadorRef evento estado = case evento of
   
   _ -> return $ SelecaoModo estado
 
--- EVENTOS NA SELEÇÃO DE MAPA (TREINO)
--- mapaSelecionado: 0-4 = mapas, 5 = voltar
+-- | EVENTOS NA SELEÇÃO DE MAPA (TREINO)
+-- ^ mapaSelecionado: 0-4 = mapas, 5 = voltar
 eventoSelecaoMapa :: Event -> EstadoSelecaoMapa -> EstadoJogo
 eventoSelecaoMapa evento estado = case evento of
-  -- Navegação com setas esquerda/direita (só entre mapas)
+  -- ^ Navegação com setas esquerda/direita (só entre mapas)
   EventKey (SpecialKey KeyRight) Down _ _ ->
     if mapaSelecionado estado == 5
-    then SelecaoMapaTreino estado  -- No voltar, não faz nada
+    then SelecaoMapaTreino estado  -- ^ No voltar, não faz nada
     else SelecaoMapaTreino (estado { mapaSelecionado = (mapaSelecionado estado + 1) `mod` 5 })
   
   EventKey (SpecialKey KeyLeft) Down _ _ ->
     if mapaSelecionado estado == 5
-    then SelecaoMapaTreino estado  -- No voltar, não faz nada
+    then SelecaoMapaTreino estado  -- ^ No voltar, não faz nada
     else SelecaoMapaTreino (estado { mapaSelecionado = (mapaSelecionado estado - 1 + 5) `mod` 5 })
   
-  -- Seta para CIMA: vai para o botão voltar
+  -- ^ Seta para CIMA: vai para o botão voltar
   EventKey (SpecialKey KeyUp) Down _ _ ->
     SelecaoMapaTreino (estado { mapaSelecionado = 5 })
   
-  -- Seta para BAIXO: vai para os mapas (meio = 2)
+  -- ^ Seta para BAIXO: vai para os mapas (meio = 2)
   EventKey (SpecialKey KeyDown) Down _ _ ->
     if mapaSelecionado estado == 5
-    then SelecaoMapaTreino (estado { mapaSelecionado = 2 })  -- Vai para o mapa do meio
-    else SelecaoMapaTreino estado  -- Já está nos mapas, não faz nada
+    then SelecaoMapaTreino (estado { mapaSelecionado = 2 })  -- ^ Vai para o mapa do meio
+    else SelecaoMapaTreino estado  -- ^ Já está nos mapas, não faz nada
   
-  -- Enter confirma seleção
+  -- ^ Enter confirma seleção
   EventKey (SpecialKey KeyEnter) Down _ _ ->
     if mapaSelecionado estado == 5
-    then SelecaoModo (EstadoSelecao Treino 0.0)  -- Voltar!
+    then SelecaoModo (EstadoSelecao Treino 0.0)  -- ^ Voltar!
     else iniciarTreinoComMapa (mapaSelecionado estado)
   
-  -- Escape ou X volta para seleção de modo
+  -- ^ Escape ou X volta para seleção de modo
   EventKey (SpecialKey KeyEsc) Down _ _ ->
     SelecaoModo (EstadoSelecao Treino 0.0)
   
@@ -342,13 +345,13 @@ eventoSelecaoMapa evento estado = case evento of
   
   _ -> SelecaoMapaTreino estado
 
--- Inicia treino com mapa específico
+-- | Inicia treino com mapa específico
 iniciarTreinoComMapa :: Int -> EstadoJogo
 iniciarTreinoComMapa idx = 
   let mapa = selecionarMapa idx
   in Jogando (criarPartidaComMapa Treino (criarEstadoTreino mapa) idx)
 
--- EVENTOS DE VITÓRIA COM CONTADOR
+-- | EVENTOS DE VITÓRIA COM CONTADOR
 eventoVictoryContador :: IORef Int -> Event -> EstadoFinal -> IO EstadoJogo
 eventoVictoryContador contadorRef (EventKey (Char 'r') Down _ _) estado = do
   contador <- readIORef contadorRef
@@ -393,14 +396,14 @@ eventoVictoryContador contadorRef (EventKey (SpecialKey KeyEnter) Down _ _) esta
 
 eventoVictoryContador _ _ estado = return $ Victory estado
 
--- FUNÇÃO AUXILIAR: Inicia jogo com mapa específico
+-- * FUNÇÃO AUXILIAR: Inicia jogo com mapa específico
 iniciarComMapa :: ModoJogo -> MapaCompleto -> Int -> EstadoJogo
 iniciarComMapa Voltar _ _ = Menu (EstadoMenu OpcaoPlay 0.0)
 iniciarComMapa Treino mapa idx = Jogando (criarPartidaComMapa Treino (criarEstadoTreino mapa) idx)
 iniciarComMapa modo mapa idx = Jogando (criarPartidaComMapa modo (criarEstadoDoMapa mapa) idx)
 
 
--- Atualiza o estado do jogo ao longo do tempo
+-- * Atualiza o estado do jogo ao longo do tempo
 atualizar :: Assets -> Float -> EstadoJogo -> EstadoJogo
 atualizar assets dt estado = case estado of
   Menu estadoMenu -> atualizarMenu dt estadoMenu

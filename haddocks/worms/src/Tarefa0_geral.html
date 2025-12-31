@@ -14,7 +14,7 @@ M&#243;dulo que define fun&#231;&#245;es gen&#233;ricas sobre listas e matrizes.
 </span><span id="line-14"></span><span class="hs-comment">-- Em nota&#231;&#227;o matem&#225;tica, &#233; geralmente representada por:</span><span>
 </span><span id="line-15"></span><span class="hs-comment">--</span><span>
 </span><span id="line-16"></span><span class="hs-comment">--  &lt;&lt;https://haslab.github.io/Teaching/LI1/2526/img/matriz.png&gt;&gt;</span><span>
-</span><span id="line-17"></span><span class="hs-keyword">type</span><span> </span><span id="Matriz"><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-var">Matriz</span></a></span></span><span> </span><span id="local-6989586621679037138"><span class="annot"><a href="#local-6989586621679037138"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037138"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">type</span><span> </span><span id="Matriz"><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-var">Matriz</span></a></span></span><span> </span><span id="local-6989586621679037133"><span class="annot"><a href="#local-6989586621679037133"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037133"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
 </span><span id="line-18"></span><span>
 </span><span id="line-19"></span><span class="hs-comment">-- | Uma posi&#231;&#227;o numa matriz &#233; dada como um par (/linha/,/colunha/).</span><span>
 </span><span id="line-20"></span><span class="hs-comment">-- As coordenadas s&#227;o dois n&#250;meros naturais e come&#231;am com (0,0) no canto superior esquerdo, com as linhas incrementando para baixo e as colunas incrementando para a direita.</span><span>
@@ -29,7 +29,7 @@ M&#243;dulo que define fun&#231;&#245;es gen&#233;ricas sobre listas e matrizes.
 </span><span id="line-29"></span><span class="hs-comment">--</span><span>
 </span><span id="line-30"></span><span class="hs-comment">-- &lt;&lt;https://haslab.github.io/Teaching/LI1/2526/img/rosadosventos.jpg&gt;&gt;</span><span>
 </span><span id="line-31"></span><span class="hs-keyword">data</span><span> </span><span id="Direcao"><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-var">Direcao</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Norte"><span class="annot"><a href="Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Nordeste"><span class="annot"><a href="Tarefa0_geral.html#Nordeste"><span class="hs-identifier hs-var">Nordeste</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Este"><span class="annot"><a href="Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Sudeste"><span class="annot"><a href="Tarefa0_geral.html#Sudeste"><span class="hs-identifier hs-var">Sudeste</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Sul"><span class="annot"><a href="Tarefa0_geral.html#Sul"><span class="hs-identifier hs-var">Sul</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Sudoeste"><span class="annot"><a href="Tarefa0_geral.html#Sudoeste"><span class="hs-identifier hs-var">Sudoeste</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Oeste"><span class="annot"><a href="Tarefa0_geral.html#Oeste"><span class="hs-identifier hs-var">Oeste</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Noroeste"><span class="annot"><a href="Tarefa0_geral.html#Noroeste"><span class="hs-identifier hs-var">Noroeste</span></a></span></span><span>
-</span><span id="line-32"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037149"><span id="local-6989586621679037151"><span class="annot"><span class="annottext">Direcao -&gt; Direcao -&gt; Bool
+</span><span id="line-32"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037144"><span id="local-6989586621679037146"><span class="annot"><span class="annottext">Direcao -&gt; Direcao -&gt; Bool
 (Direcao -&gt; Direcao -&gt; Bool)
 -&gt; (Direcao -&gt; Direcao -&gt; Bool) -&gt; Eq Direcao
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -37,7 +37,7 @@ $c== :: Direcao -&gt; Direcao -&gt; Bool
 == :: Direcao -&gt; Direcao -&gt; Bool
 $c/= :: Direcao -&gt; Direcao -&gt; Bool
 /= :: Direcao -&gt; Direcao -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037158"><span id="local-6989586621679037160"><span id="local-6989586621679037162"><span id="local-6989586621679037166"><span id="local-6989586621679037169"><span id="local-6989586621679037172"><span id="local-6989586621679037175"><span class="annot"><span class="annottext">Eq Direcao
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037153"><span id="local-6989586621679037155"><span id="local-6989586621679037157"><span id="local-6989586621679037161"><span id="local-6989586621679037164"><span id="local-6989586621679037167"><span id="local-6989586621679037170"><span class="annot"><span class="annottext">Eq Direcao
 Eq Direcao =&gt;
 (Direcao -&gt; Direcao -&gt; Ordering)
 -&gt; (Direcao -&gt; Direcao -&gt; Bool)
@@ -74,7 +74,7 @@ $cmax :: Direcao -&gt; Direcao -&gt; Direcao
 max :: Direcao -&gt; Direcao -&gt; Direcao
 $cmin :: Direcao -&gt; Direcao -&gt; Direcao
 min :: Direcao -&gt; Direcao -&gt; Direcao
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037179"><span id="local-6989586621679037181"><span id="local-6989586621679037185"><span class="annot"><span class="annottext">Int -&gt; Direcao -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037174"><span id="local-6989586621679037176"><span id="local-6989586621679037180"><span class="annot"><span class="annottext">Int -&gt; Direcao -&gt; ShowS
 [Direcao] -&gt; ShowS
 Direcao -&gt; String
 (Int -&gt; Direcao -&gt; ShowS)
@@ -87,7 +87,7 @@ $cshow :: Direcao -&gt; String
 show :: Direcao -&gt; String
 $cshowList :: [Direcao] -&gt; ShowS
 showList :: [Direcao] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037189"><span id="local-6989586621679037193"><span id="local-6989586621679037196"><span id="local-6989586621679037207"><span class="annot"><span class="annottext">ReadPrec [Direcao]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037184"><span id="local-6989586621679037188"><span id="local-6989586621679037191"><span id="local-6989586621679037202"><span class="annot"><span class="annottext">ReadPrec [Direcao]
 ReadPrec Direcao
 Int -&gt; ReadS Direcao
 ReadS [Direcao]
@@ -107,7 +107,7 @@ $creadPrec :: ReadPrec Direcao
 readPrec :: ReadPrec Direcao
 $creadListPrec :: ReadPrec [Direcao]
 readListPrec :: ReadPrec [Direcao]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037211"><span id="local-6989586621679037218"><span id="local-6989586621679037224"><span id="local-6989586621679037233"><span id="local-6989586621679037235"><span id="local-6989586621679037239"><span id="local-6989586621679037243"><span id="local-6989586621679037246"><span class="annot"><span class="annottext">Int -&gt; Direcao
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037206"><span id="local-6989586621679037213"><span id="local-6989586621679037219"><span id="local-6989586621679037228"><span id="local-6989586621679037230"><span id="local-6989586621679037234"><span id="local-6989586621679037238"><span id="local-6989586621679037241"><span class="annot"><span class="annottext">Int -&gt; Direcao
 Direcao -&gt; Int
 Direcao -&gt; [Direcao]
 Direcao -&gt; Direcao
@@ -153,71 +153,71 @@ enumFromThenTo :: Direcao -&gt; Direcao -&gt; Direcao -&gt; [Direcao]
 </span><span id="line-34"></span><span class="annot"><span class="hs-comment">-- * Fun&#231;&#245;es n&#227;o-recursivas.</span></span><span>
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="annot"><span class="hs-comment">-- | Verifica se o indice pertence &#224; lista.</span></span><span>
-</span><span id="line-37"></span><span id="local-6989586621679037068"><span class="annot"><a href="Tarefa0_geral.html#eIndiceListaValido"><span class="hs-identifier hs-type">eIndiceListaValido</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037068"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
+</span><span id="line-37"></span><span id="local-6989586621679037063"><span class="annot"><a href="Tarefa0_geral.html#eIndiceListaValido"><span class="hs-identifier hs-type">eIndiceListaValido</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037063"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
 </span><span id="line-38"></span><span id="eIndiceListaValido"><span class="annot"><span class="annottext">eIndiceListaValido :: forall a. Int -&gt; [a] -&gt; Bool
-</span><a href="Tarefa0_geral.html#eIndiceListaValido"><span class="hs-identifier hs-var hs-var">eIndiceListaValido</span></a></span></span><span> </span><span id="local-6989586621679037255"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037255"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679037256"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037256"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037255"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Tarefa0_geral.html#eIndiceListaValido"><span class="hs-identifier hs-var hs-var">eIndiceListaValido</span></a></span></span><span> </span><span id="local-6989586621679037250"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037250"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679037251"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679037251"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037250"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037255"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037250"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037256"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><a href="#local-6989586621679037251"><span class="hs-identifier hs-var">l</span></a></span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="hs-comment">-- | Calcula a dimens&#227;o de uma matriz.</span><span>
 </span><span id="line-41"></span><span class="hs-comment">--</span><span>
 </span><span id="line-42"></span><span class="hs-comment">-- __N:__ Note que n&#227;o existem matrizes de dimens&#227;o /m * 0/ ou /0 * n/, e que qualquer matriz vazia deve ter dimens&#227;o /0 * 0/.</span><span>
-</span><span id="line-43"></span><span id="local-6989586621679037072"><span class="annot"><a href="Tarefa0_geral.html#dimensaoMatriz"><span class="hs-identifier hs-type">dimensaoMatriz</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037072"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Dimensao"><span class="hs-identifier hs-type">Dimensao</span></a></span></span><span>
+</span><span id="line-43"></span><span id="local-6989586621679037067"><span class="annot"><a href="Tarefa0_geral.html#dimensaoMatriz"><span class="hs-identifier hs-type">dimensaoMatriz</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037067"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Dimensao"><span class="hs-identifier hs-type">Dimensao</span></a></span></span><span>
 </span><span id="line-44"></span><span id="dimensaoMatriz"><span class="annot"><span class="annottext">dimensaoMatriz :: forall a. Matriz a -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#dimensaoMatriz"><span class="hs-identifier hs-var hs-var">dimensaoMatriz</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span class="annot"><a href="Tarefa0_geral.html#dimensaoMatriz"><span class="hs-identifier hs-var">dimensaoMatriz</span></a></span><span> </span><span id="local-6989586621679037265"><span class="annot"><span class="annottext">[[a]]
-</span><a href="#local-6989586621679037265"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[a]] -&gt; Int
+</span><span id="line-45"></span><span class="annot"><a href="Tarefa0_geral.html#dimensaoMatriz"><span class="hs-identifier hs-var">dimensaoMatriz</span></a></span><span> </span><span id="local-6989586621679037260"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679037260"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[a]] -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[[a]]
-</span><a href="#local-6989586621679037265"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">,</span><span class="annot"><span class="annottext">[a] -&gt; Int
+</span><a href="#local-6989586621679037260"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">,</span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[a]] -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[[a]]
-</span><a href="#local-6989586621679037265"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037260"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>
 </span><span id="line-47"></span><span class="annot"><span class="hs-comment">-- | Verifica se a posi&#231;&#227;o pertence &#224; matriz.</span></span><span>
-</span><span id="line-48"></span><span id="local-6989586621679037077"><span class="annot"><a href="Tarefa0_geral.html#ePosicaoMatrizValida"><span class="hs-identifier hs-type">ePosicaoMatrizValida</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037077"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span> </span><span>
+</span><span id="line-48"></span><span id="local-6989586621679037072"><span class="annot"><a href="Tarefa0_geral.html#ePosicaoMatrizValida"><span class="hs-identifier hs-type">ePosicaoMatrizValida</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037072"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span> </span><span>
 </span><span id="line-49"></span><span id="ePosicaoMatrizValida"><span class="annot"><span class="annottext">ePosicaoMatrizValida :: forall a. Dimensao -&gt; Matriz a -&gt; Bool
-</span><a href="Tarefa0_geral.html#ePosicaoMatrizValida"><span class="hs-identifier hs-var hs-var">ePosicaoMatrizValida</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037278"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037278"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037279"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037279"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037280"><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037280"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037278"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="Tarefa0_geral.html#ePosicaoMatrizValida"><span class="hs-identifier hs-var hs-var">ePosicaoMatrizValida</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037273"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037273"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037274"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037274"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037275"><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037275"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037273"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037278"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037273"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037280"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679037275"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037279"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037274"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037279"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037274"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
@@ -225,92 +225,92 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Matriz a -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037280"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037275"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-50"></span><span>
 </span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | Mover uma posi&#231;&#227;o uma unidade no sentido de uma dire&#231;&#227;o.</span></span><span>
 </span><span id="line-52"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-type">movePosicao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span>
 </span><span id="line-53"></span><span id="movePosicao"><span class="annot"><span class="annottext">movePosicao :: Direcao -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var hs-var">movePosicao</span></a></span></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037282"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037282"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037283"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037283"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037282"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037277"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037277"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037278"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037278"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037277"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037283"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037278"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-54"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Sul"><span class="hs-identifier hs-var">Sul</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037284"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037284"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037285"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037285"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037284"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Sul"><span class="hs-identifier hs-var">Sul</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037279"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037279"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037280"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037280"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037279"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037285"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037280"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-55"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037287"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037287"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037288"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037288"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037287"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037288"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037282"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037282"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037283"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037283"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037282"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037283"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-56"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Oeste"><span class="hs-identifier hs-var">Oeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037289"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037289"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037290"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037290"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037289"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037290"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Oeste"><span class="hs-identifier hs-var">Oeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037284"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037284"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037285"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037285"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037284"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037285"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-57"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Nordeste"><span class="hs-identifier hs-var">Nordeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037291"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037291"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037292"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037292"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037291"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Nordeste"><span class="hs-identifier hs-var">Nordeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037286"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037286"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037287"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037287"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037286"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037292"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037287"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-58"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Sudeste"><span class="hs-identifier hs-var">Sudeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037293"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037293"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037294"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037294"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037293"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Sudeste"><span class="hs-identifier hs-var">Sudeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037288"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037288"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037289"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037289"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037288"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037294"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037289"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-59"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Noroeste"><span class="hs-identifier hs-var">Noroeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037295"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037295"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037296"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037296"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037295"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Noroeste"><span class="hs-identifier hs-var">Noroeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037290"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037290"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037291"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037291"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037290"><span class="hs-identifier hs-var">l</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037296"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037291"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-60"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="Tarefa0_geral.html#Sudoeste"><span class="hs-identifier hs-var">Sudoeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037297"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037297"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037298"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037298"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037297"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#Sudoeste"><span class="hs-identifier hs-var">Sudoeste</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037292"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037292"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037293"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037293"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037292"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037298"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037293"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
@@ -320,44 +320,44 @@ forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span id="line-64"></span><span class="hs-comment">-- __N:__ Considere uma janela retangular com origem no canto superior esquerdo definida como uma matriz. A fun&#231;&#227;o recebe a dimensao da janela.</span><span>
 </span><span id="line-65"></span><span class="annot"><a href="Tarefa0_geral.html#movePosicaoJanela"><span class="hs-identifier hs-type">movePosicaoJanela</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Dimensao"><span class="hs-identifier hs-type">Dimensao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span>
 </span><span id="line-66"></span><span id="movePosicaoJanela"><span class="annot"><span class="annottext">movePosicaoJanela :: Dimensao -&gt; Direcao -&gt; Dimensao -&gt; Dimensao
-</span><a href="Tarefa0_geral.html#movePosicaoJanela"><span class="hs-identifier hs-var hs-var">movePosicaoJanela</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037300"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037300"><span class="hs-identifier hs-var">maxL</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037301"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037301"><span class="hs-identifier hs-var">maxC</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037302"><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037302"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span id="local-6989586621679037303"><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037303"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
-</span><span id="line-67"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679037304"><span class="annot"><span class="annottext">novaPosicao :: Dimensao
-</span><a href="#local-6989586621679037304"><span class="hs-identifier hs-var hs-var">novaPosicao</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
+</span><a href="Tarefa0_geral.html#movePosicaoJanela"><span class="hs-identifier hs-var hs-var">movePosicaoJanela</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037295"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037295"><span class="hs-identifier hs-var">maxL</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037296"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037296"><span class="hs-identifier hs-var">maxC</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037297"><span class="annot"><span class="annottext">Direcao
+</span><a href="#local-6989586621679037297"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span id="local-6989586621679037298"><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037298"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-67"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679037299"><span class="annot"><span class="annottext">novaPosicao :: Dimensao
+</span><a href="#local-6989586621679037299"><span class="hs-identifier hs-var hs-var">novaPosicao</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037302"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037303"><span class="hs-identifier hs-var">pos</span></a></span><span>
-</span><span id="line-68"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679037305"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037305"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037306"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037306"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037304"><span class="hs-identifier hs-var">novaPosicao</span></a></span><span>
+</span><a href="#local-6989586621679037297"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037298"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-68"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679037300"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037300"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037301"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037301"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037299"><span class="hs-identifier hs-var">novaPosicao</span></a></span><span>
 </span><span id="line-69"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037305"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037300"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037305"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037300"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037300"><span class="hs-identifier hs-var">maxL</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679037295"><span class="hs-identifier hs-var">maxL</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037306"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037301"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037306"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037301"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037301"><span class="hs-identifier hs-var">maxC</span></a></span><span>
+</span><a href="#local-6989586621679037296"><span class="hs-identifier hs-var">maxC</span></a></span><span>
 </span><span id="line-70"></span><span>        </span><span class="hs-keyword">then</span><span>  </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037304"><span class="hs-identifier hs-var">novaPosicao</span></a></span><span>
+</span><a href="#local-6989586621679037299"><span class="hs-identifier hs-var">novaPosicao</span></a></span><span>
 </span><span id="line-71"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037303"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><a href="#local-6989586621679037298"><span class="hs-identifier hs-var">pos</span></a></span><span>
 </span><span id="line-72"></span><span>
 </span><span id="line-73"></span><span class="hs-comment">-- | Converte uma posi&#231;&#227;o no referencial em que a origem &#233; no canto superior esquerdo da janela numa posi&#231;&#227;o em que a origem passa a estar no centro da janela.</span><span>
 </span><span id="line-74"></span><span class="hs-comment">--</span><span>
@@ -365,24 +365,24 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-76"></span><span>
 </span><span id="line-77"></span><span class="annot"><a href="Tarefa0_geral.html#origemAoCentro"><span class="hs-identifier hs-type">origemAoCentro</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Dimensao"><span class="hs-identifier hs-type">Dimensao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span>
 </span><span id="line-78"></span><span id="origemAoCentro"><span class="annot"><span class="annottext">origemAoCentro :: Dimensao -&gt; Dimensao -&gt; Dimensao
-</span><a href="Tarefa0_geral.html#origemAoCentro"><span class="hs-identifier hs-var hs-var">origemAoCentro</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037308"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037308"><span class="hs-identifier hs-var">lt</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679037309"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037309"><span class="hs-identifier hs-var">ct</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037310"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037310"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037311"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037311"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037310"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="Tarefa0_geral.html#origemAoCentro"><span class="hs-identifier hs-var hs-var">origemAoCentro</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037303"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037303"><span class="hs-identifier hs-var">lt</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679037304"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037304"><span class="hs-identifier hs-var">ct</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037305"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037305"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037306"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037306"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037305"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">div</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037308"><span class="hs-identifier hs-var">lt</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037303"><span class="hs-identifier hs-var">lt</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037311"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037306"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">div</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037309"><span class="hs-identifier hs-var">ct</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037304"><span class="hs-identifier hs-var">ct</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>
 </span><span id="line-80"></span><span>
@@ -396,120 +396,120 @@ forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><span id="line-88"></span><span>
 </span><span id="line-89"></span><span class="annot"><a href="Tarefa0_geral.html#rodaPosicaoDirecao"><span class="hs-identifier hs-type">rodaPosicaoDirecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span class="hs-special">,</span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span class="hs-special">,</span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-90"></span><span id="rodaPosicaoDirecao"><span class="annot"><span class="annottext">rodaPosicaoDirecao :: (Dimensao, Direcao) -&gt; (Dimensao, Direcao)
-</span><a href="Tarefa0_geral.html#rodaPosicaoDirecao"><span class="hs-identifier hs-var hs-var">rodaPosicaoDirecao</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037314"><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037314"><span class="hs-identifier hs-var">pos</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="Tarefa0_geral.html#rodaPosicaoDirecao"><span class="hs-identifier hs-var hs-var">rodaPosicaoDirecao</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037309"><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037309"><span class="hs-identifier hs-var">pos</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Direcao
 </span><a href="Tarefa0_geral.html#Noroeste"><span class="hs-identifier hs-var">Noroeste</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
 </span><a href="Tarefa0_geral.html#Noroeste"><span class="hs-identifier hs-var">Noroeste</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037314"><span class="hs-identifier hs-var">pos</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="#local-6989586621679037309"><span class="hs-identifier hs-var">pos</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Direcao
 </span><a href="Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-91"></span><span class="annot"><a href="Tarefa0_geral.html#rodaPosicaoDirecao"><span class="hs-identifier hs-var">rodaPosicaoDirecao</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037315"><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037315"><span class="hs-identifier hs-var">pos</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037316"><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037316"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
+</span><span id="line-91"></span><span class="annot"><a href="Tarefa0_geral.html#rodaPosicaoDirecao"><span class="hs-identifier hs-var">rodaPosicaoDirecao</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037310"><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037310"><span class="hs-identifier hs-var">pos</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037311"><span class="annot"><span class="annottext">Direcao
+</span><a href="#local-6989586621679037311"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037316"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037315"><span class="hs-identifier hs-var">pos</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; Direcao
+</span><a href="#local-6989586621679037311"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037310"><span class="hs-identifier hs-var">pos</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; Direcao
 forall a. Enum a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">succ</span></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037316"><span class="hs-identifier hs-var">dir</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037311"><span class="hs-identifier hs-var">dir</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-92"></span><span>
 </span><span id="line-93"></span><span class="annot"><span class="hs-comment">-- * Fun&#231;&#245;es recursivas.</span></span><span>
 </span><span id="line-94"></span><span>
 </span><span id="line-95"></span><span class="hs-comment">-- | Devolve o elemento num dado &#237;ndce de uma lista.</span><span>
 </span><span id="line-96"></span><span class="hs-comment">--</span><span>
 </span><span id="line-97"></span><span class="hs-comment">-- __N:__ Retorna @Nothing@ se o &#237;ndice n&#227;o existir.</span><span>
-</span><span id="line-98"></span><span id="local-6989586621679037081"><span class="annot"><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-type">encontraIndiceLista</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037081"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679037081"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-98"></span><span id="local-6989586621679037076"><span class="annot"><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-type">encontraIndiceLista</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037076"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679037076"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-99"></span><span id="encontraIndiceLista"><span class="annot"><span class="annottext">encontraIndiceLista :: forall a. Int -&gt; [a] -&gt; Maybe a
 </span><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-var hs-var">encontraIndiceLista</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-100"></span><span class="annot"><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-var">encontraIndiceLista</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037323"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037323"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[a]
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037318"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037318"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[a]
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037323"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-101"></span><span class="annot"><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-var">encontraIndiceLista</span></a></span><span> </span><span id="local-6989586621679037324"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037324"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><span class="hs-identifier">_</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037325"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037325"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Maybe a
+</span><a href="#local-6989586621679037318"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-101"></span><span class="annot"><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-var">encontraIndiceLista</span></a></span><span> </span><span id="local-6989586621679037319"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037319"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037320"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679037320"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Maybe a
 forall a. Int -&gt; [a] -&gt; Maybe a
 </span><a href="Tarefa0_geral.html#encontraIndiceLista"><span class="hs-identifier hs-var">encontraIndiceLista</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037324"><span class="hs-identifier hs-var">a</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037319"><span class="hs-identifier hs-var">a</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037325"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679037320"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-102"></span><span>
 </span><span id="line-103"></span><span class="hs-comment">-- | Modifica um elemento num dado &#237;ndice.</span><span>
 </span><span id="line-104"></span><span class="hs-comment">--</span><span>
 </span><span id="line-105"></span><span class="hs-comment">-- __N:__ Devolve a pr&#243;pria lista se o elemento n&#227;o existir.</span><span>
-</span><span id="line-106"></span><span id="local-6989586621679037084"><span class="annot"><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-type">atualizaIndiceLista</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679037084"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037084"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037084"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-106"></span><span id="local-6989586621679037079"><span class="annot"><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-type">atualizaIndiceLista</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679037079"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037079"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679037079"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-107"></span><span id="atualizaIndiceLista"><span class="annot"><span class="annottext">atualizaIndiceLista :: forall a. Int -&gt; a -&gt; [a] -&gt; [a]
 </span><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var hs-var">atualizaIndiceLista</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">a
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-108"></span><span class="annot"><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var">atualizaIndiceLista</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><span class="hs-number">0</span></span><span> </span><span id="local-6989586621679037331"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037331"><span class="hs-identifier hs-var">novo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><span class="hs-identifier">_</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037332"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037332"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037331"><span class="hs-identifier hs-var">novo</span></a></span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><span class="hs-number">0</span></span><span> </span><span id="local-6989586621679037326"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037326"><span class="hs-identifier hs-var">novo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037327"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679037327"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037326"><span class="hs-identifier hs-var">novo</span></a></span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037332"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-109"></span><span class="annot"><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var">atualizaIndiceLista</span></a></span><span> </span><span id="local-6989586621679037333"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037333"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679037334"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037334"><span class="hs-identifier hs-var">novo</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037335"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037335"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037336"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037336"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037335"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679037327"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-109"></span><span class="annot"><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var">atualizaIndiceLista</span></a></span><span> </span><span id="local-6989586621679037328"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037328"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679037329"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037329"><span class="hs-identifier hs-var">novo</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037330"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037330"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037331"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679037331"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037330"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; a -&gt; [a] -&gt; [a]
 forall a. Int -&gt; a -&gt; [a] -&gt; [a]
 </span><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var">atualizaIndiceLista</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037333"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679037328"><span class="hs-identifier hs-var">i</span></a></span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037334"><span class="hs-identifier hs-var">novo</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037336"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679037329"><span class="hs-identifier hs-var">novo</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679037331"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-110"></span><span>
 </span><span id="line-111"></span><span class="hs-comment">-- | Devolve o elemento numa dada posi&#231;&#227;o de uma matriz.</span><span>
 </span><span id="line-112"></span><span class="hs-comment">--</span><span>
 </span><span id="line-113"></span><span class="hs-comment">-- __N:__ Retorna @Nothing@ se a posi&#231;&#227;o n&#227;o existir.</span><span>
-</span><span id="line-114"></span><span id="local-6989586621679037086"><span class="annot"><a href="Tarefa0_geral.html#encontraPosicaoMatriz"><span class="hs-identifier hs-type">encontraPosicaoMatriz</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037086"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679037086"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-114"></span><span id="local-6989586621679037081"><span class="annot"><a href="Tarefa0_geral.html#encontraPosicaoMatriz"><span class="hs-identifier hs-type">encontraPosicaoMatriz</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037081"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679037081"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-115"></span><span id="encontraPosicaoMatriz"><span class="annot"><span class="annottext">encontraPosicaoMatriz :: forall a. Dimensao -&gt; Matriz a -&gt; Maybe a
-</span><a href="Tarefa0_geral.html#encontraPosicaoMatriz"><span class="hs-identifier hs-var hs-var">encontraPosicaoMatriz</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037352"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037352"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037353"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037353"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037354"><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037354"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span>
+</span><a href="Tarefa0_geral.html#encontraPosicaoMatriz"><span class="hs-identifier hs-var hs-var">encontraPosicaoMatriz</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037347"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037347"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037348"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037348"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037349"><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037349"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span>
 </span><span id="line-116"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037352"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037347"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037353"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037348"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-117"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037352"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037347"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037354"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679037349"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-118"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037353"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037348"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
@@ -517,55 +517,55 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Matriz a -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037354"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679037349"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-119"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037354"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int -&gt; [a]
+</span><a href="#local-6989586621679037349"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037352"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int -&gt; a
+</span><a href="#local-6989586621679037347"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int -&gt; a
 forall a. HasCallStack =&gt; [a] -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037353"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037348"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-120"></span><span>
 </span><span id="line-121"></span><span>
 </span><span id="line-122"></span><span>
 </span><span id="line-123"></span><span class="hs-comment">-- | Modifica um elemento numa dada posi&#231;&#227;o de uma matriz.</span><span>
 </span><span id="line-124"></span><span class="hs-comment">--</span><span>
 </span><span id="line-125"></span><span class="hs-comment">-- __N:__ Devolve a pr&#243;pria matriz se o elemento n&#227;o existir.</span><span>
-</span><span id="line-126"></span><span id="local-6989586621679037089"><span class="annot"><a href="Tarefa0_geral.html#atualizaPosicaoMatriz"><span class="hs-identifier hs-type">atualizaPosicaoMatriz</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679037089"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037089"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037089"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-126"></span><span id="local-6989586621679037084"><span class="annot"><a href="Tarefa0_geral.html#atualizaPosicaoMatriz"><span class="hs-identifier hs-type">atualizaPosicaoMatriz</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679037084"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037084"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037084"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-127"></span><span id="atualizaPosicaoMatriz"><span class="annot"><span class="annottext">atualizaPosicaoMatriz :: forall a. Dimensao -&gt; a -&gt; Matriz a -&gt; Matriz a
-</span><a href="Tarefa0_geral.html#atualizaPosicaoMatriz"><span class="hs-identifier hs-var hs-var">atualizaPosicaoMatriz</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037370"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037371"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037371"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037372"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037372"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679037373"><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span>
+</span><a href="Tarefa0_geral.html#atualizaPosicaoMatriz"><span class="hs-identifier hs-var hs-var">atualizaPosicaoMatriz</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037365"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037365"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037366"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037366"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679037367"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037367"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679037368"><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span>
 </span><span id="line-128"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037365"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037371"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037366"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-129"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037365"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-130"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037371"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037366"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
@@ -573,75 +573,75 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Matriz a -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-131"></span><span>    </span><span class="hs-glyph">|</span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; Matriz a -&gt; Matriz a
 forall a. Int -&gt; a -&gt; [a] -&gt; [a]
 </span><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var">atualizaIndiceLista</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; a -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679037365"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; a -&gt; [a] -&gt; [a]
 forall a. Int -&gt; a -&gt; [a] -&gt; [a]
 </span><a href="Tarefa0_geral.html#atualizaIndiceLista"><span class="hs-identifier hs-var">atualizaIndiceLista</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037371"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679037372"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int -&gt; [a]
+</span><a href="#local-6989586621679037366"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679037367"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Matriz a -&gt; Int -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Matriz a
-</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679037365"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Matriz a
+</span><a href="#local-6989586621679037368"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-132"></span><span>
 </span><span id="line-133"></span><span class="annot"><span class="hs-comment">-- | Aplica uma sequ&#234;ncia de movimenta&#231;&#245;es a uma posi&#231;&#227;o, pela ordem em que ocorrem na lista.</span></span><span>
 </span><span id="line-134"></span><span class="annot"><a href="Tarefa0_geral.html#moveDirecoesPosicao"><span class="hs-identifier hs-type">moveDirecoesPosicao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span>
 </span><span id="line-135"></span><span id="moveDirecoesPosicao"><span class="annot"><span class="annottext">moveDirecoesPosicao :: [Direcao] -&gt; Dimensao -&gt; Dimensao
-</span><a href="Tarefa0_geral.html#moveDirecoesPosicao"><span class="hs-identifier hs-var hs-var">moveDirecoesPosicao</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span id="local-6989586621679037375"><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037375"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037375"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-136"></span><span class="annot"><a href="Tarefa0_geral.html#moveDirecoesPosicao"><span class="hs-identifier hs-var">moveDirecoesPosicao</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037376"><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037376"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037377"><span class="annot"><span class="annottext">[Direcao]
-</span><a href="#local-6989586621679037377"><span class="hs-identifier hs-var">dirs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037378"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037378"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037379"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037379"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Direcao] -&gt; Dimensao -&gt; Dimensao
+</span><a href="Tarefa0_geral.html#moveDirecoesPosicao"><span class="hs-identifier hs-var hs-var">moveDirecoesPosicao</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span id="local-6989586621679037370"><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037370"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-136"></span><span class="annot"><a href="Tarefa0_geral.html#moveDirecoesPosicao"><span class="hs-identifier hs-var">moveDirecoesPosicao</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037371"><span class="annot"><span class="annottext">Direcao
+</span><a href="#local-6989586621679037371"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037372"><span class="annot"><span class="annottext">[Direcao]
+</span><a href="#local-6989586621679037372"><span class="hs-identifier hs-var">dirs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037373"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679037374"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037374"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Direcao] -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#moveDirecoesPosicao"><span class="hs-identifier hs-var">moveDirecoesPosicao</span></a></span><span> </span><span class="annot"><span class="annottext">[Direcao]
-</span><a href="#local-6989586621679037377"><span class="hs-identifier hs-var">dirs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
+</span><a href="#local-6989586621679037372"><span class="hs-identifier hs-var">dirs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037376"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037378"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679037379"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679037371"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037373"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679037374"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-137"></span><span>
 </span><span id="line-138"></span><span class="annot"><span class="hs-comment">-- | Aplica a mesma movimenta&#231;&#227;o a uma lista de posi&#231;&#245;es.</span></span><span>
 </span><span id="line-139"></span><span class="annot"><a href="Tarefa0_geral.html#moveDirecaoPosicoes"><span class="hs-identifier hs-type">moveDirecaoPosicoes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-140"></span><span id="moveDirecaoPosicoes"><span class="annot"><span class="annottext">moveDirecaoPosicoes :: Direcao -&gt; [Dimensao] -&gt; [Dimensao]
 </span><a href="Tarefa0_geral.html#moveDirecaoPosicoes"><span class="hs-identifier hs-var hs-var">moveDirecaoPosicoes</span></a></span></span><span> </span><span class="annot"><span class="annottext">Direcao
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-141"></span><span class="annot"><a href="Tarefa0_geral.html#moveDirecaoPosicoes"><span class="hs-identifier hs-var">moveDirecaoPosicoes</span></a></span><span> </span><span id="local-6989586621679037381"><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037381"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037382"><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037382"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037383"><span class="annot"><span class="annottext">[Dimensao]
-</span><a href="#local-6989586621679037383"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
+</span><span id="line-141"></span><span class="annot"><a href="Tarefa0_geral.html#moveDirecaoPosicoes"><span class="hs-identifier hs-var">moveDirecaoPosicoes</span></a></span><span> </span><span id="local-6989586621679037376"><span class="annot"><span class="annottext">Direcao
+</span><a href="#local-6989586621679037376"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037377"><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037377"><span class="hs-identifier hs-var">x</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679037378"><span class="annot"><span class="annottext">[Dimensao]
+</span><a href="#local-6989586621679037378"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; Dimensao -&gt; Dimensao
 </span><a href="Tarefa0_geral.html#movePosicao"><span class="hs-identifier hs-var">movePosicao</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037381"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
-</span><a href="#local-6989586621679037382"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao -&gt; [Dimensao] -&gt; [Dimensao]
+</span><a href="#local-6989586621679037376"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao
+</span><a href="#local-6989586621679037377"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Dimensao -&gt; [Dimensao] -&gt; [Dimensao]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Direcao -&gt; [Dimensao] -&gt; [Dimensao]
 </span><a href="Tarefa0_geral.html#moveDirecaoPosicoes"><span class="hs-identifier hs-var">moveDirecaoPosicoes</span></a></span><span> </span><span class="annot"><span class="annottext">Direcao
-</span><a href="#local-6989586621679037381"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">[Dimensao]
-</span><a href="#local-6989586621679037383"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679037376"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">[Dimensao]
+</span><a href="#local-6989586621679037378"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-142"></span><span>
 </span><span id="line-143"></span><span class="hs-comment">-- | Verifica se uma matriz &#233; v&#225;lida, no sentido em que modela um rect&#226;ngulo.</span><span>
 </span><span id="line-144"></span><span class="hs-comment">--</span><span>
 </span><span id="line-145"></span><span class="hs-comment">-- __N:__ Todas as linhas devem ter o mesmo n&#250;mero de colunas. </span><span>
-</span><span id="line-146"></span><span id="local-6989586621679037091"><span class="annot"><a href="Tarefa0_geral.html#eMatrizValida"><span class="hs-identifier hs-type">eMatrizValida</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037091"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
+</span><span id="line-146"></span><span id="local-6989586621679037086"><span class="annot"><a href="Tarefa0_geral.html#eMatrizValida"><span class="hs-identifier hs-type">eMatrizValida</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Matriz"><span class="hs-identifier hs-type">Matriz</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679037086"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
 </span><span id="line-147"></span><span id="eMatrizValida"><span class="annot"><span class="annottext">eMatrizValida :: forall a. Matriz a -&gt; Bool
 </span><a href="Tarefa0_geral.html#eMatrizValida"><span class="hs-identifier hs-var hs-var">eMatrizValida</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span>
-</span><span id="line-148"></span><span class="annot"><a href="Tarefa0_geral.html#eMatrizValida"><span class="hs-identifier hs-var">eMatrizValida</span></a></span><span> </span><span id="local-6989586621679037391"><span class="annot"><span class="annottext">[[a]]
-</span><a href="#local-6989586621679037391"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([a] -&gt; Bool) -&gt; [[a]] -&gt; Bool
+</span><span id="line-148"></span><span class="annot"><a href="Tarefa0_geral.html#eMatrizValida"><span class="hs-identifier hs-var">eMatrizValida</span></a></span><span> </span><span id="local-6989586621679037386"><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679037386"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([a] -&gt; Bool) -&gt; [[a]] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
-</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679037393"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037393"><span class="hs-identifier hs-var">linha</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
+</span><span class="hs-identifier hs-var">all</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679037388"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679037388"><span class="hs-identifier hs-var">linha</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679037393"><span class="hs-identifier hs-var">linha</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679037388"><span class="hs-identifier hs-var">linha</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
 forall a. [a] -&gt; Int
@@ -649,6 +649,6 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[a]] -&gt; [a]
 forall a. HasCallStack =&gt; [a] -&gt; a
 </span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[[a]]
-</span><a href="#local-6989586621679037391"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[a]]
-</span><a href="#local-6989586621679037391"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><a href="#local-6989586621679037386"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[a]]
+</span><a href="#local-6989586621679037386"><span class="hs-identifier hs-var">m</span></a></span><span>
 </span><span id="line-149"></span></pre></body></html>

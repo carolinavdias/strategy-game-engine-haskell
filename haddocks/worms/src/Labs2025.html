@@ -23,7 +23,7 @@ M&#243;dulo com os tipos de dados que v&#227;o ser utilizados para modelar as ta
 </span><span id="line-23"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Terra"><span class="annot"><a href="Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span></span><span>
 </span><span id="line-24"></span><span>    </span><span class="annot"><span class="hs-comment">-- | Terreno opaco e indestrutivel.</span></span><span>
 </span><span id="line-25"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Pedra"><span class="annot"><a href="Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span></span><span>
-</span><span id="line-26"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037438"><span id="local-6989586621679037440"><span class="annot"><span class="annottext">Terreno -&gt; Terreno -&gt; Bool
+</span><span id="line-26"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037433"><span id="local-6989586621679037435"><span class="annot"><span class="annottext">Terreno -&gt; Terreno -&gt; Bool
 (Terreno -&gt; Terreno -&gt; Bool)
 -&gt; (Terreno -&gt; Terreno -&gt; Bool) -&gt; Eq Terreno
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -31,7 +31,7 @@ $c== :: Terreno -&gt; Terreno -&gt; Bool
 == :: Terreno -&gt; Terreno -&gt; Bool
 $c/= :: Terreno -&gt; Terreno -&gt; Bool
 /= :: Terreno -&gt; Terreno -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037447"><span id="local-6989586621679037449"><span id="local-6989586621679037451"><span id="local-6989586621679037455"><span id="local-6989586621679037458"><span id="local-6989586621679037461"><span id="local-6989586621679037464"><span class="annot"><span class="annottext">Eq Terreno
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037442"><span id="local-6989586621679037444"><span id="local-6989586621679037446"><span id="local-6989586621679037450"><span id="local-6989586621679037453"><span id="local-6989586621679037456"><span id="local-6989586621679037459"><span class="annot"><span class="annottext">Eq Terreno
 Eq Terreno =&gt;
 (Terreno -&gt; Terreno -&gt; Ordering)
 -&gt; (Terreno -&gt; Terreno -&gt; Bool)
@@ -68,7 +68,7 @@ $cmax :: Terreno -&gt; Terreno -&gt; Terreno
 max :: Terreno -&gt; Terreno -&gt; Terreno
 $cmin :: Terreno -&gt; Terreno -&gt; Terreno
 min :: Terreno -&gt; Terreno -&gt; Terreno
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037468"><span id="local-6989586621679037470"><span id="local-6989586621679037474"><span class="annot"><span class="annottext">Int -&gt; Terreno -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037463"><span id="local-6989586621679037465"><span id="local-6989586621679037469"><span class="annot"><span class="annottext">Int -&gt; Terreno -&gt; ShowS
 [Terreno] -&gt; ShowS
 Terreno -&gt; String
 (Int -&gt; Terreno -&gt; ShowS)
@@ -81,7 +81,7 @@ $cshow :: Terreno -&gt; String
 show :: Terreno -&gt; String
 $cshowList :: [Terreno] -&gt; ShowS
 showList :: [Terreno] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037478"><span id="local-6989586621679037482"><span id="local-6989586621679037485"><span id="local-6989586621679037492"><span class="annot"><span class="annottext">ReadPrec [Terreno]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037473"><span id="local-6989586621679037477"><span id="local-6989586621679037480"><span id="local-6989586621679037487"><span class="annot"><span class="annottext">ReadPrec [Terreno]
 ReadPrec Terreno
 Int -&gt; ReadS Terreno
 ReadS [Terreno]
@@ -101,7 +101,7 @@ $creadPrec :: ReadPrec Terreno
 readPrec :: ReadPrec Terreno
 $creadListPrec :: ReadPrec [Terreno]
 readListPrec :: ReadPrec [Terreno]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037496"><span id="local-6989586621679037504"><span id="local-6989586621679037510"><span id="local-6989586621679037520"><span id="local-6989586621679037522"><span id="local-6989586621679037526"><span id="local-6989586621679037530"><span id="local-6989586621679037534"><span class="annot"><span class="annottext">Int -&gt; Terreno
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037491"><span id="local-6989586621679037499"><span id="local-6989586621679037505"><span id="local-6989586621679037515"><span id="local-6989586621679037517"><span id="local-6989586621679037521"><span id="local-6989586621679037525"><span id="local-6989586621679037529"><span class="annot"><span class="annottext">Int -&gt; Terreno
 Terreno -&gt; Int
 Terreno -&gt; [Terreno]
 Terreno -&gt; Terreno
@@ -149,7 +149,7 @@ enumFromThenTo :: Terreno -&gt; Terreno -&gt; Terreno -&gt; [Terreno]
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="annot"><span class="hs-comment">-- | Os diversos tipos de arma dispon&#237;veis para uma minhoca.</span></span><span>
 </span><span id="line-32"></span><span class="hs-keyword">data</span><span> </span><span id="TipoArma"><span class="annot"><a href="Labs2025.html#TipoArma"><span class="hs-identifier hs-var">TipoArma</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Jetpack"><span class="annot"><a href="Labs2025.html#Jetpack"><span class="hs-identifier hs-var">Jetpack</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Escavadora"><span class="annot"><a href="Labs2025.html#Escavadora"><span class="hs-identifier hs-var">Escavadora</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Bazuca"><span class="annot"><a href="Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Mina"><span class="annot"><a href="Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Dinamite"><span class="annot"><a href="Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span></span><span>
-</span><span id="line-33"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037544"><span id="local-6989586621679037546"><span class="annot"><span class="annottext">TipoArma -&gt; TipoArma -&gt; Bool
+</span><span id="line-33"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037539"><span id="local-6989586621679037541"><span class="annot"><span class="annottext">TipoArma -&gt; TipoArma -&gt; Bool
 (TipoArma -&gt; TipoArma -&gt; Bool)
 -&gt; (TipoArma -&gt; TipoArma -&gt; Bool) -&gt; Eq TipoArma
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -157,7 +157,7 @@ $c== :: TipoArma -&gt; TipoArma -&gt; Bool
 == :: TipoArma -&gt; TipoArma -&gt; Bool
 $c/= :: TipoArma -&gt; TipoArma -&gt; Bool
 /= :: TipoArma -&gt; TipoArma -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037552"><span id="local-6989586621679037554"><span id="local-6989586621679037556"><span id="local-6989586621679037560"><span id="local-6989586621679037563"><span id="local-6989586621679037566"><span id="local-6989586621679037569"><span class="annot"><span class="annottext">Eq TipoArma
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037547"><span id="local-6989586621679037549"><span id="local-6989586621679037551"><span id="local-6989586621679037555"><span id="local-6989586621679037558"><span id="local-6989586621679037561"><span id="local-6989586621679037564"><span class="annot"><span class="annottext">Eq TipoArma
 Eq TipoArma =&gt;
 (TipoArma -&gt; TipoArma -&gt; Ordering)
 -&gt; (TipoArma -&gt; TipoArma -&gt; Bool)
@@ -194,7 +194,7 @@ $cmax :: TipoArma -&gt; TipoArma -&gt; TipoArma
 max :: TipoArma -&gt; TipoArma -&gt; TipoArma
 $cmin :: TipoArma -&gt; TipoArma -&gt; TipoArma
 min :: TipoArma -&gt; TipoArma -&gt; TipoArma
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037572"><span id="local-6989586621679037574"><span id="local-6989586621679037578"><span class="annot"><span class="annottext">Int -&gt; TipoArma -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037567"><span id="local-6989586621679037569"><span id="local-6989586621679037573"><span class="annot"><span class="annottext">Int -&gt; TipoArma -&gt; ShowS
 [TipoArma] -&gt; ShowS
 TipoArma -&gt; String
 (Int -&gt; TipoArma -&gt; ShowS)
@@ -207,7 +207,7 @@ $cshow :: TipoArma -&gt; String
 show :: TipoArma -&gt; String
 $cshowList :: [TipoArma] -&gt; ShowS
 showList :: [TipoArma] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037581"><span id="local-6989586621679037585"><span id="local-6989586621679037588"><span id="local-6989586621679037595"><span class="annot"><span class="annottext">ReadPrec [TipoArma]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037576"><span id="local-6989586621679037580"><span id="local-6989586621679037583"><span id="local-6989586621679037590"><span class="annot"><span class="annottext">ReadPrec [TipoArma]
 ReadPrec TipoArma
 Int -&gt; ReadS TipoArma
 ReadS [TipoArma]
@@ -227,7 +227,7 @@ $creadPrec :: ReadPrec TipoArma
 readPrec :: ReadPrec TipoArma
 $creadListPrec :: ReadPrec [TipoArma]
 readListPrec :: ReadPrec [TipoArma]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037598"><span id="local-6989586621679037604"><span id="local-6989586621679037610"><span id="local-6989586621679037618"><span id="local-6989586621679037620"><span id="local-6989586621679037623"><span id="local-6989586621679037627"><span id="local-6989586621679037631"><span class="annot"><span class="annottext">Int -&gt; TipoArma
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037593"><span id="local-6989586621679037599"><span id="local-6989586621679037605"><span id="local-6989586621679037613"><span id="local-6989586621679037615"><span id="local-6989586621679037618"><span id="local-6989586621679037622"><span id="local-6989586621679037626"><span class="annot"><span class="annottext">Int -&gt; TipoArma
 TipoArma -&gt; Int
 TipoArma -&gt; [TipoArma]
 TipoArma -&gt; TipoArma
@@ -276,7 +276,7 @@ enumFromThenTo :: TipoArma -&gt; TipoArma -&gt; TipoArma -&gt; [TipoArma]
 </span><span id="line-38"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="Viva"><span class="annot"><a href="Labs2025.html#Viva"><span class="hs-identifier hs-var">Viva</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-39"></span><span>    </span><span class="annot"><span class="hs-comment">-- | Est&#225; morta.</span></span><span>
 </span><span id="line-40"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Morta"><span class="annot"><a href="Labs2025.html#Morta"><span class="hs-identifier hs-var">Morta</span></a></span></span><span>
-</span><span id="line-41"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037636"><span id="local-6989586621679037639"><span class="annot"><span class="annottext">VidaMinhoca -&gt; VidaMinhoca -&gt; Bool
+</span><span id="line-41"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037631"><span id="local-6989586621679037634"><span class="annot"><span class="annottext">VidaMinhoca -&gt; VidaMinhoca -&gt; Bool
 (VidaMinhoca -&gt; VidaMinhoca -&gt; Bool)
 -&gt; (VidaMinhoca -&gt; VidaMinhoca -&gt; Bool) -&gt; Eq VidaMinhoca
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -284,7 +284,7 @@ $c== :: VidaMinhoca -&gt; VidaMinhoca -&gt; Bool
 == :: VidaMinhoca -&gt; VidaMinhoca -&gt; Bool
 $c/= :: VidaMinhoca -&gt; VidaMinhoca -&gt; Bool
 /= :: VidaMinhoca -&gt; VidaMinhoca -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037645"><span id="local-6989586621679037648"><span id="local-6989586621679037651"><span id="local-6989586621679037655"><span id="local-6989586621679037658"><span id="local-6989586621679037661"><span id="local-6989586621679037664"><span class="annot"><span class="annottext">Eq VidaMinhoca
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037640"><span id="local-6989586621679037643"><span id="local-6989586621679037646"><span id="local-6989586621679037650"><span id="local-6989586621679037653"><span id="local-6989586621679037656"><span id="local-6989586621679037659"><span class="annot"><span class="annottext">Eq VidaMinhoca
 Eq VidaMinhoca =&gt;
 (VidaMinhoca -&gt; VidaMinhoca -&gt; Ordering)
 -&gt; (VidaMinhoca -&gt; VidaMinhoca -&gt; Bool)
@@ -321,7 +321,7 @@ $cmax :: VidaMinhoca -&gt; VidaMinhoca -&gt; VidaMinhoca
 max :: VidaMinhoca -&gt; VidaMinhoca -&gt; VidaMinhoca
 $cmin :: VidaMinhoca -&gt; VidaMinhoca -&gt; VidaMinhoca
 min :: VidaMinhoca -&gt; VidaMinhoca -&gt; VidaMinhoca
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037667"><span id="local-6989586621679037671"><span id="local-6989586621679037675"><span class="annot"><span class="annottext">Int -&gt; VidaMinhoca -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037662"><span id="local-6989586621679037666"><span id="local-6989586621679037670"><span class="annot"><span class="annottext">Int -&gt; VidaMinhoca -&gt; ShowS
 [VidaMinhoca] -&gt; ShowS
 VidaMinhoca -&gt; String
 (Int -&gt; VidaMinhoca -&gt; ShowS)
@@ -336,7 +336,7 @@ $cshow :: VidaMinhoca -&gt; String
 show :: VidaMinhoca -&gt; String
 $cshowList :: [VidaMinhoca] -&gt; ShowS
 showList :: [VidaMinhoca] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037678"><span id="local-6989586621679037682"><span id="local-6989586621679037685"><span id="local-6989586621679037694"><span class="annot"><span class="annottext">ReadPrec [VidaMinhoca]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037673"><span id="local-6989586621679037677"><span id="local-6989586621679037680"><span id="local-6989586621679037689"><span class="annot"><span class="annottext">ReadPrec [VidaMinhoca]
 ReadPrec VidaMinhoca
 Int -&gt; ReadS VidaMinhoca
 ReadS [VidaMinhoca]
@@ -382,7 +382,7 @@ readListPrec :: ReadPrec [VidaMinhoca]
 </span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="dinamiteMinhoca"><span class="annot"><span class="annottext">Minhoca -&gt; Int
 </span><a href="Labs2025.html#dinamiteMinhoca"><span class="hs-identifier hs-var hs-var">dinamiteMinhoca</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-59"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037705"><span id="local-6989586621679037717"><span class="annot"><span class="annottext">Minhoca -&gt; Minhoca -&gt; Bool
+</span><span id="line-60"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037700"><span id="local-6989586621679037712"><span class="annot"><span class="annottext">Minhoca -&gt; Minhoca -&gt; Bool
 (Minhoca -&gt; Minhoca -&gt; Bool)
 -&gt; (Minhoca -&gt; Minhoca -&gt; Bool) -&gt; Eq Minhoca
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -390,7 +390,7 @@ $c== :: Minhoca -&gt; Minhoca -&gt; Bool
 == :: Minhoca -&gt; Minhoca -&gt; Bool
 $c/= :: Minhoca -&gt; Minhoca -&gt; Bool
 /= :: Minhoca -&gt; Minhoca -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037725"><span id="local-6989586621679037737"><span id="local-6989586621679037748"><span id="local-6989586621679037752"><span id="local-6989586621679037755"><span id="local-6989586621679037758"><span id="local-6989586621679037761"><span class="annot"><span class="annottext">Eq Minhoca
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037720"><span id="local-6989586621679037732"><span id="local-6989586621679037743"><span id="local-6989586621679037747"><span id="local-6989586621679037750"><span id="local-6989586621679037753"><span id="local-6989586621679037756"><span class="annot"><span class="annottext">Eq Minhoca
 Eq Minhoca =&gt;
 (Minhoca -&gt; Minhoca -&gt; Ordering)
 -&gt; (Minhoca -&gt; Minhoca -&gt; Bool)
@@ -427,7 +427,7 @@ $cmax :: Minhoca -&gt; Minhoca -&gt; Minhoca
 max :: Minhoca -&gt; Minhoca -&gt; Minhoca
 $cmin :: Minhoca -&gt; Minhoca -&gt; Minhoca
 min :: Minhoca -&gt; Minhoca -&gt; Minhoca
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037767"><span id="local-6989586621679037780"><span id="local-6989586621679037784"><span class="annot"><span class="annottext">Int -&gt; Minhoca -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037762"><span id="local-6989586621679037775"><span id="local-6989586621679037779"><span class="annot"><span class="annottext">Int -&gt; Minhoca -&gt; ShowS
 [Minhoca] -&gt; ShowS
 Minhoca -&gt; String
 (Int -&gt; Minhoca -&gt; ShowS)
@@ -440,7 +440,7 @@ $cshow :: Minhoca -&gt; String
 show :: Minhoca -&gt; String
 $cshowList :: [Minhoca] -&gt; ShowS
 showList :: [Minhoca] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037789"><span id="local-6989586621679037793"><span id="local-6989586621679037796"><span id="local-6989586621679037825"><span class="annot"><span class="annottext">ReadPrec [Minhoca]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037784"><span id="local-6989586621679037788"><span id="local-6989586621679037791"><span id="local-6989586621679037820"><span class="annot"><span class="annottext">ReadPrec [Minhoca]
 ReadPrec Minhoca
 Int -&gt; ReadS Minhoca
 ReadS [Minhoca]
@@ -500,7 +500,7 @@ readListPrec :: ReadPrec [Minhoca]
 </span><span id="line-91"></span><span>        </span><span class="hs-special">,</span><span> </span><span id="explodeBarril"><span class="annot"><span class="annottext">Objeto -&gt; Bool
 </span><a href="Labs2025.html#explodeBarril"><span class="hs-identifier hs-var hs-var">explodeBarril</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-92"></span><span>        </span><span class="hs-special">}</span><span>
-</span><span id="line-93"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037842"><span id="local-6989586621679037855"><span class="annot"><span class="annottext">Objeto -&gt; Objeto -&gt; Bool
+</span><span id="line-93"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037837"><span id="local-6989586621679037850"><span class="annot"><span class="annottext">Objeto -&gt; Objeto -&gt; Bool
 (Objeto -&gt; Objeto -&gt; Bool)
 -&gt; (Objeto -&gt; Objeto -&gt; Bool) -&gt; Eq Objeto
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -508,7 +508,7 @@ $c== :: Objeto -&gt; Objeto -&gt; Bool
 == :: Objeto -&gt; Objeto -&gt; Bool
 $c/= :: Objeto -&gt; Objeto -&gt; Bool
 /= :: Objeto -&gt; Objeto -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037861"><span id="local-6989586621679037874"><span id="local-6989586621679037885"><span id="local-6989586621679037889"><span id="local-6989586621679037892"><span id="local-6989586621679037895"><span id="local-6989586621679037898"><span class="annot"><span class="annottext">Eq Objeto
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037856"><span id="local-6989586621679037869"><span id="local-6989586621679037880"><span id="local-6989586621679037884"><span id="local-6989586621679037887"><span id="local-6989586621679037890"><span id="local-6989586621679037893"><span class="annot"><span class="annottext">Eq Objeto
 Eq Objeto =&gt;
 (Objeto -&gt; Objeto -&gt; Ordering)
 -&gt; (Objeto -&gt; Objeto -&gt; Bool)
@@ -545,7 +545,7 @@ $cmax :: Objeto -&gt; Objeto -&gt; Objeto
 max :: Objeto -&gt; Objeto -&gt; Objeto
 $cmin :: Objeto -&gt; Objeto -&gt; Objeto
 min :: Objeto -&gt; Objeto -&gt; Objeto
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037901"><span id="local-6989586621679037916"><span id="local-6989586621679037920"><span class="annot"><span class="annottext">Int -&gt; Objeto -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037896"><span id="local-6989586621679037911"><span id="local-6989586621679037915"><span class="annot"><span class="annottext">Int -&gt; Objeto -&gt; ShowS
 [Objeto] -&gt; ShowS
 Objeto -&gt; String
 (Int -&gt; Objeto -&gt; ShowS)
@@ -558,7 +558,7 @@ $cshow :: Objeto -&gt; String
 show :: Objeto -&gt; String
 $cshowList :: [Objeto] -&gt; ShowS
 showList :: [Objeto] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037923"><span id="local-6989586621679037927"><span id="local-6989586621679037930"><span id="local-6989586621679037963"><span class="annot"><span class="annottext">ReadPrec [Objeto]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037918"><span id="local-6989586621679037922"><span id="local-6989586621679037925"><span id="local-6989586621679037958"><span class="annot"><span class="annottext">ReadPrec [Objeto]
 ReadPrec Objeto
 Int -&gt; ReadS Objeto
 ReadS [Objeto]
@@ -592,7 +592,7 @@ readListPrec :: ReadPrec [Objeto]
 </span><span id="line-102"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="minhocasEstado"><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
 </span><a href="Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var hs-var">minhocasEstado</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-103"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-104"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037970"><span id="local-6989586621679037979"><span class="annot"><span class="annottext">Estado -&gt; Estado -&gt; Bool
+</span><span id="line-104"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679037965"><span id="local-6989586621679037974"><span class="annot"><span class="annottext">Estado -&gt; Estado -&gt; Bool
 (Estado -&gt; Estado -&gt; Bool)
 -&gt; (Estado -&gt; Estado -&gt; Bool) -&gt; Eq Estado
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -600,7 +600,7 @@ $c== :: Estado -&gt; Estado -&gt; Bool
 == :: Estado -&gt; Estado -&gt; Bool
 $c/= :: Estado -&gt; Estado -&gt; Bool
 /= :: Estado -&gt; Estado -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037986"><span id="local-6989586621679037995"><span id="local-6989586621679038003"><span id="local-6989586621679038007"><span id="local-6989586621679038010"><span id="local-6989586621679038013"><span id="local-6989586621679038016"><span class="annot"><span class="annottext">Eq Estado
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679037981"><span id="local-6989586621679037990"><span id="local-6989586621679037998"><span id="local-6989586621679038002"><span id="local-6989586621679038005"><span id="local-6989586621679038008"><span id="local-6989586621679038011"><span class="annot"><span class="annottext">Eq Estado
 Eq Estado =&gt;
 (Estado -&gt; Estado -&gt; Ordering)
 -&gt; (Estado -&gt; Estado -&gt; Bool)
@@ -637,7 +637,7 @@ $cmax :: Estado -&gt; Estado -&gt; Estado
 max :: Estado -&gt; Estado -&gt; Estado
 $cmin :: Estado -&gt; Estado -&gt; Estado
 min :: Estado -&gt; Estado -&gt; Estado
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038021"><span id="local-6989586621679038031"><span id="local-6989586621679038035"><span class="annot"><span class="annottext">Int -&gt; Estado -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038016"><span id="local-6989586621679038026"><span id="local-6989586621679038030"><span class="annot"><span class="annottext">Int -&gt; Estado -&gt; ShowS
 [Estado] -&gt; ShowS
 Estado -&gt; String
 (Int -&gt; Estado -&gt; ShowS)
@@ -650,7 +650,7 @@ $cshow :: Estado -&gt; String
 show :: Estado -&gt; String
 $cshowList :: [Estado] -&gt; ShowS
 showList :: [Estado] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038039"><span id="local-6989586621679038043"><span id="local-6989586621679038046"><span id="local-6989586621679038064"><span class="annot"><span class="annottext">ReadPrec [Estado]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038034"><span id="local-6989586621679038038"><span id="local-6989586621679038041"><span id="local-6989586621679038059"><span class="annot"><span class="annottext">ReadPrec [Estado]
 ReadPrec Estado
 Int -&gt; ReadS Estado
 ReadS [Estado]
@@ -678,7 +678,7 @@ readListPrec :: ReadPrec [Estado]
 </span><span id="line-109"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="Dispara"><span class="annot"><a href="Labs2025.html#Dispara"><span class="hs-identifier hs-var">Dispara</span></a></span></span><span> </span><span class="annot"><a href="Labs2025.html#TipoArma"><span class="hs-identifier hs-type">TipoArma</span></a></span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span>
 </span><span id="line-110"></span><span>    </span><span class="annot"><span class="hs-comment">-- | Mover-se numa dada dire&#231;&#227;o.</span></span><span>
 </span><span id="line-111"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Move"><span class="annot"><a href="Labs2025.html#Move"><span class="hs-identifier hs-var">Move</span></a></span></span><span> </span><span class="annot"><a href="Tarefa0_geral.html#Direcao"><span class="hs-identifier hs-type">Direcao</span></a></span><span>
-</span><span id="line-112"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679038070"><span id="local-6989586621679038075"><span class="annot"><span class="annottext">Jogada -&gt; Jogada -&gt; Bool
+</span><span id="line-112"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679038065"><span id="local-6989586621679038070"><span class="annot"><span class="annottext">Jogada -&gt; Jogada -&gt; Bool
 (Jogada -&gt; Jogada -&gt; Bool)
 -&gt; (Jogada -&gt; Jogada -&gt; Bool) -&gt; Eq Jogada
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -686,7 +686,7 @@ $c== :: Jogada -&gt; Jogada -&gt; Bool
 == :: Jogada -&gt; Jogada -&gt; Bool
 $c/= :: Jogada -&gt; Jogada -&gt; Bool
 /= :: Jogada -&gt; Jogada -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038081"><span id="local-6989586621679038086"><span id="local-6989586621679038091"><span id="local-6989586621679038095"><span id="local-6989586621679038098"><span id="local-6989586621679038101"><span id="local-6989586621679038104"><span class="annot"><span class="annottext">Eq Jogada
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038076"><span id="local-6989586621679038081"><span id="local-6989586621679038086"><span id="local-6989586621679038090"><span id="local-6989586621679038093"><span id="local-6989586621679038096"><span id="local-6989586621679038099"><span class="annot"><span class="annottext">Eq Jogada
 Eq Jogada =&gt;
 (Jogada -&gt; Jogada -&gt; Ordering)
 -&gt; (Jogada -&gt; Jogada -&gt; Bool)
@@ -723,7 +723,7 @@ $cmax :: Jogada -&gt; Jogada -&gt; Jogada
 max :: Jogada -&gt; Jogada -&gt; Jogada
 $cmin :: Jogada -&gt; Jogada -&gt; Jogada
 min :: Jogada -&gt; Jogada -&gt; Jogada
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038107"><span id="local-6989586621679038114"><span id="local-6989586621679038118"><span class="annot"><span class="annottext">Int -&gt; Jogada -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038102"><span id="local-6989586621679038109"><span id="local-6989586621679038113"><span class="annot"><span class="annottext">Int -&gt; Jogada -&gt; ShowS
 [Jogada] -&gt; ShowS
 Jogada -&gt; String
 (Int -&gt; Jogada -&gt; ShowS)
@@ -736,7 +736,7 @@ $cshow :: Jogada -&gt; String
 show :: Jogada -&gt; String
 $cshowList :: [Jogada] -&gt; ShowS
 showList :: [Jogada] -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038121"><span id="local-6989586621679038125"><span id="local-6989586621679038128"><span id="local-6989586621679038140"><span class="annot"><span class="annottext">ReadPrec [Jogada]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span id="local-6989586621679038116"><span id="local-6989586621679038120"><span id="local-6989586621679038123"><span id="local-6989586621679038135"><span class="annot"><span class="annottext">ReadPrec [Jogada]
 ReadPrec Jogada
 Int -&gt; ReadS Jogada
 ReadS [Jogada]

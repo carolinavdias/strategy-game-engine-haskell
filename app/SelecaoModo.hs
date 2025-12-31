@@ -27,7 +27,7 @@ import Assets
 import Labs2025
 import Mapas
 
--- Desenha a tela de seleção de modo
+-- * Desenha a tela de seleção de modo
 desenharSelecao :: Assets -> EstadoSelecao -> Picture
 desenharSelecao assets estado = Pictures
   [ desenharBackgroundSelecao assets
@@ -36,14 +36,14 @@ desenharSelecao assets estado = Pictures
   , desenharInstrucoesSelecao assets 
   ]
 
--- Background escurecido
+-- * Background escurecido
 desenharBackgroundSelecao :: Assets -> Picture
 desenharBackgroundSelecao assets =
   case modeBackground (menuAssets assets) of
     Just bg -> bg
     Nothing -> Color (makeColorI 40 30 60 200) $ rectangleSolid 1920 1200
 
--- Título "ESCOLHE UM MODO"
+-- | Título "ESCOLHE UM MODO"
 desenharTituloSelecao :: Assets -> Picture
 desenharTituloSelecao assets =
   case modeTitle (menuAssets assets) of
@@ -53,7 +53,7 @@ desenharTituloSelecao assets =
                Scale 0.4 0.4 $ 
                Text "ESCOLHE UM MODO"
 
--- Desenha os 3 modos mais botão voltar como opção navegável
+-- * Desenha os 3 modos mais botão voltar como opção navegável
 desenharModos :: Assets -> EstadoSelecao -> Picture
 desenharModos assets estado = Pictures
   [ desenharModo2P assets (modoSelecionado estado == DoisJogadores) (-450, -60)
@@ -62,7 +62,7 @@ desenharModos assets estado = Pictures
   , desenharBotaoVoltarSelecionavel assets (modoSelecionado estado == Voltar)
   ]
 
--- Modo 2 Jogadores
+-- | Modo 2 Jogadores
 desenharModo2P :: Assets -> Bool -> (Float, Float) -> Picture
 desenharModo2P assets selecionado (x, y) = Translate x y $ Pictures
   [ feedback selecionado
@@ -80,7 +80,7 @@ desenharModo2P assets selecionado (x, y) = Translate x y $ Pictures
                     rectangleSolid 420 520
     feedback False = Blank
 
--- Modo VS Bot
+-- | Modo VS Bot
 desenharModoBot :: Assets -> Bool -> (Float, Float) -> Picture
 desenharModoBot assets selecionado (x, y) = Translate x y $ Pictures
   [ feedback selecionado
@@ -98,7 +98,7 @@ desenharModoBot assets selecionado (x, y) = Translate x y $ Pictures
                     rectangleSolid 420 520
     feedback False = Blank
 
--- Modo Treino
+-- | Modo Treino
 desenharModoTraining :: Assets -> Bool -> (Float, Float) -> Picture
 desenharModoTraining assets selecionado (x, y) = Translate x y $ Pictures
   [ feedback selecionado
@@ -116,7 +116,10 @@ desenharModoTraining assets selecionado (x, y) = Translate x y $ Pictures
                     rectangleSolid 420 520
     feedback False = Blank
 
--- Botão voltar como opção selecionável e navegável
+
+-- * Outros Botões 
+
+-- | Botão voltar como opção selecionável e navegável
 desenharBotaoVoltarSelecionavel :: Assets -> Bool -> Picture
 desenharBotaoVoltarSelecionavel assets selecionado = Translate (-850) 480 $ Pictures
   [ feedback selecionado
@@ -135,14 +138,16 @@ desenharBotaoVoltarSelecionavel assets selecionado = Translate (-850) 480 $ Pict
     feedback True = Color (makeColorI 255 255 255 60) $ circleSolid 80
     feedback False = Blank
 
--- Instruções discretas no canto superior direito
+-- | Instruções discretas no canto superior direito
 desenharInstrucoesSelecao :: Assets -> Picture
 desenharInstrucoesSelecao assets =
   case modeInstructions (menuAssets assets) of
     Just img -> Translate 720 480 $ Scale 0.5 0.5 $ img
     Nothing -> Blank
 
--- Processa input na seleção de modo
+-- * Eventos 
+
+-- | Processa input na seleção de modo
 eventoSelecao :: Event -> EstadoSelecao -> EstadoJogo
 eventoSelecao evento estado = case evento of
   EventKey (SpecialKey KeyDown) Down _ _ ->
@@ -168,33 +173,33 @@ eventoSelecao evento estado = case evento of
   
   _ -> SelecaoModo estado
 
--- Avança para o próximo modo
+-- | Avança para o próximo modo
 proximoModo :: ModoJogo -> ModoJogo
 proximoModo DoisJogadores = VsBot
 proximoModo VsBot = Treino
 proximoModo Treino = Voltar
 proximoModo Voltar = DoisJogadores
 
--- Volta para o modo anterior
+-- | Volta para o modo anterior
 modoAnterior :: ModoJogo -> ModoJogo
 modoAnterior DoisJogadores = Voltar
 modoAnterior VsBot = DoisJogadores
 modoAnterior Treino = VsBot
 modoAnterior Voltar = Treino
 
--- Inicia uma partida no modo selecionado ou volta ao menu
+-- | Inicia uma partida no modo selecionado ou volta ao menu
 iniciarJogoComMapa :: ModoJogo -> MapaCompleto -> EstadoJogo
 iniciarJogoComMapa Voltar _ = Menu (EstadoMenu OpcaoPlay 0.0)
 iniciarJogoComMapa modo mapaEscolhido = 
   Jogando (criarPartida modo (criarEstadoDoMapa mapaEscolhido))
 
--- Esta função agora é só um placeholder - será chamada do Main.hs
+-- * Esta função agora é só um placeholder - será chamada do Main.hs
 iniciarJogo :: ModoJogo -> EstadoJogo
 iniciarJogo Voltar = Menu (EstadoMenu OpcaoPlay 0.0)
 iniciarJogo modo = 
-  -- Usa o mapa clássico como fallback
+  -- ^ Usa o mapa clássico como fallback
   Jogando (criarPartida modo (criarEstadoDoMapa (todosOsMapas !! 0)))
 
--- Atualiza animação da seleção
+-- * Atualiza animação da seleção
 atualizarSelecao :: Float -> EstadoSelecao -> EstadoJogo
 atualizarSelecao dt estado = SelecaoModo (estado { animacaoGlowSelecao = animacaoGlowSelecao estado + dt * 5 })

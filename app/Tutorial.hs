@@ -115,7 +115,7 @@ desenharBotaoAnterior assets paginaAtual =
 desenharBotaoProximo :: Assets -> Int -> Picture
 desenharBotaoProximo assets paginaAtual =
   if paginaAtual == totalPaginas - 1
-  then Blank  -- Não mostra na última página
+  then Blank  -- ^ Não mostra na última página
   else Translate 600 (-450) $ 
        case buttonBack (menuAssets assets) of
          Just img -> Scale 1.0 1.0 $ Rotate 180 $ img
@@ -133,7 +133,7 @@ desenharBotaoMenu assets selecionado =
                then Color (makeColorI 255 255 100 200) $ rectangleSolid 200 80
                else Blank
   in Pictures
-       [ brilho  -- Destaque quando selecionado
+       [ brilho  -- ^ Destaque quando selecionado
        , case buttonMenu (uiAssets assets) of
            Just img -> Scale escala escala $ img
            Nothing -> Pictures
@@ -149,15 +149,15 @@ desenharBotaoMenu assets selecionado =
 -- | Processa eventos no tutorial
 eventoTutorialCompleto :: Event -> EstadoTutorial -> EstadoJogo
 eventoTutorialCompleto evento estado = case evento of
-  -- Seta para CIMA - Seleciona botão Menu
+  -- ^ Seta para CIMA - Seleciona botão Menu
   EventKey (SpecialKey KeyUp) Down _ _ ->
     Tutorial (estado { menuSelecionado = True })
   
-  -- Seta para BAIXO - Desseleciona botão Menu (volta para navegação)
+  -- ^ Seta para BAIXO - Desseleciona botão Menu (volta para navegação)
   EventKey (SpecialKey KeyDown) Down _ _ ->
     Tutorial (estado { menuSelecionado = False })
   
-  -- ENTER - Executa ação baseada na seleção
+  -- ^ ENTER - Executa ação baseada na seleção
   EventKey (SpecialKey KeyEnter) Down _ _ ->
     if menuSelecionado estado
     then Menu (EstadoMenu OpcaoPlay 0.0)  -- Volta ao menu
@@ -165,31 +165,31 @@ eventoTutorialCompleto evento estado = case evento of
          then Tutorial (estado { paginaTutorial = paginaTutorial estado + 1 })  -- Próxima página
          else Menu (EstadoMenu OpcaoPlay 0.0)  -- Última página, volta ao menu
   
-  -- Atalho X - Volta direto ao menu
+  -- ^ Atalho X - Volta direto ao menu
   EventKey (Char 'x') Down _ _ -> Menu (EstadoMenu OpcaoPlay 0.0)
   EventKey (Char 'X') Down _ _ -> Menu (EstadoMenu OpcaoPlay 0.0)
   EventKey (SpecialKey KeyEsc) Down _ _ -> Menu (EstadoMenu OpcaoPlay 0.0)
   
-  -- Página anterior (só se menu não estiver selecionado)
+  -- ^ Página anterior (só se menu não estiver selecionado)
   EventKey (SpecialKey KeyLeft) Down _ _ ->
     if not (menuSelecionado estado) && paginaTutorial estado > 0
     then Tutorial (estado { paginaTutorial = paginaTutorial estado - 1, menuSelecionado = False })
     else Tutorial estado
   
-  -- Próxima página (só se menu não estiver selecionado)
+  -- ^ Próxima página (só se menu não estiver selecionado)
   EventKey (SpecialKey KeyRight) Down _ _ ->
     if not (menuSelecionado estado) && paginaTutorial estado < totalPaginas - 1
     then Tutorial (estado { paginaTutorial = paginaTutorial estado + 1, menuSelecionado = False })
     else Tutorial estado
   
-  -- Atalhos numéricos (1-5 para ir direto à página)
+  -- ^ Atalhos numéricos (1-5 para ir direto à página)
   EventKey (Char '1') Down _ _ -> Tutorial (estado { paginaTutorial = 0, menuSelecionado = False })
   EventKey (Char '2') Down _ _ -> Tutorial (estado { paginaTutorial = 1, menuSelecionado = False })
   EventKey (Char '3') Down _ _ -> Tutorial (estado { paginaTutorial = 2, menuSelecionado = False })
   EventKey (Char '4') Down _ _ -> Tutorial (estado { paginaTutorial = 3, menuSelecionado = False })
   EventKey (Char '5') Down _ _ -> Tutorial (estado { paginaTutorial = 4, menuSelecionado = False })
   
-  -- Ignora outros eventos
+  -- ^ Ignora outros eventos
   _ -> Tutorial estado
 
 --------------------------------------------------------------------------------
@@ -198,4 +198,4 @@ eventoTutorialCompleto evento estado = case evento of
 -- | Atualiza estado do tutorial (para animações)
 atualizarTutorial :: Float -> EstadoTutorial -> EstadoJogo
 atualizarTutorial dt estado = 
-  Tutorial estado  -- Sem animações por agora
+  Tutorial estado  -- ^ Sem animações por agora

@@ -55,22 +55,22 @@ eventoJogoPausado evento partida = case evento of
 -- | Processa eventos durante jogo não pausado
 eventoJogoAtivo :: Event -> EstadoPartida -> EstadoJogo
 eventoJogoAtivo evento partida = case evento of
-  -- Pausa
+  -- ^ Pausa
   EventKey (Char 'p') Down _ _ -> Jogando (partida { pausado = True })
   EventKey (Char 'P') Down _ _ -> Jogando (partida { pausado = True })
   
-  -- Voltar (X)
+  -- ^ Voltar (X)
   EventKey (Char 'x') Down _ _ -> voltarDoJogo partida
   EventKey (Char 'X') Down _ _ -> voltarDoJogo partida
     
-  -- Passar turno
+  -- ^ Passar turno
   EventKey (SpecialKey KeySpace) Down _ _ -> Jogando (passarTurnoComReset partida)
   
-  -- Menu de armas
+  -- ^ Menu de armas
   EventKey (Char 'q') Down _ _ -> toggleMenuArmas partida
   EventKey (Char 'Q') Down _ _ -> toggleMenuArmas partida
   
-  -- Outros eventos para jogadores
+  -- ^  Outros eventos para jogadores
   _ -> processarEventoJogador evento partida
 
 -- | Passa turno e desativa modo voo

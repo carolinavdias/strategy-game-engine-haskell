@@ -37,7 +37,7 @@ import Labs2025
 data EstadoJogo
   = Menu EstadoMenu              -- ^ Menu principal
   | SelecaoModo EstadoSelecao    -- ^ Seleção de modo de jogo
-  | SelecaoMapaTreino EstadoSelecaoMapa  -- ^ NOVO: Seleção de mapa para treino
+  | SelecaoMapaTreino EstadoSelecaoMapa  -- ^  Seleção de mapa para treino
   | Jogando EstadoPartida        -- ^ Partida em curso
   | GameOver EstadoFinal         -- ^ Fim de jogo (derrota)
   | Victory EstadoFinal          -- ^ Fim de jogo (vitória)
@@ -79,7 +79,7 @@ data ModoJogo
   deriving (Show, Eq)
 
 --------------------------------------------------------------------------------
--- * NOVO: Seleção de Mapa (Treino)
+-- * Seleção de Mapa 
 
 -- | Estado da seleção de mapa para treino
 data EstadoSelecaoMapa = EstadoSelecaoMapa
