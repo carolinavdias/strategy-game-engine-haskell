@@ -4,7 +4,17 @@ Description : Lógica do menu principal.
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Implementa a navegação no menu, desenho dos botões e transições.
+Este módulo implementa o menu principal da aplicação.
+
+Funcionalidades:
+
+* Opções navegáveis: Play, Tutorial, Exit
+* Feedback visual com animações de escala
+* Suporte para teclado (setas, Enter, Espaço, Tab)
+* Animação suave do logótipo
+
+O menu serve como ponto central de navegação
+para todas as outras funcionalidades do jogo.
 -}
 
 module Menu where

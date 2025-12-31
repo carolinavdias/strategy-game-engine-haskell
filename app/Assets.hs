@@ -4,7 +4,19 @@ Description : Gestão de recursos gráficos
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Estrutura para armazenar todas as imagens e recursos do jogo.
+Este módulo controla a evolução temporal do jogo.
+
+Responsabilidades:
+
+* Gestão do timer de turnos
+* Alternância entre jogadores
+* Execução automática do bot
+* Integração da física (Tarefa3)
+* Garantia de estados válidos (vida, morte, vitória)
+
+Inclui soluções específicas para mecânicas
+como o Jetpack, sem modificar a física base.
+
 -}
 
 module Assets where

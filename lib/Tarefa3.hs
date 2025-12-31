@@ -136,25 +136,24 @@ avancaObjeto estado _ objeto
             in Left (Disparo novaPos novaDirecao Dinamite novoTempo dono)
         
         -- MINA: cai se no ar, ativa quando inimigo na área
-        (Disparo pos _ Mina tempo dono) ->
-            let posAbaixo = posicaoAbaixoDe pos
+        (Disparo pos _ Mina _ dono) ->
+            let mapa = mapaEstado estado
+                posAbaixo = posicaoAbaixoDe pos
                 noAr = ePosicaoMapaLivre posAbaixo (mapaEstado estado) &&
+                       encontraPosicaoMatriz posAbaixo mapa == Just Ar &&
                        not (posicaoTemBarril posAbaixo estado) &&
                        not (posicaoTemMinhoca posAbaixo estado)
                 
                 novaPos = if noAr then posAbaixo else pos
                 
                 -- Ativa quando inimigo entra na área
-                deveAtivar = case tempo of
-                    Nothing -> existeInimigoNaArea novaPos dono 3 estado
-                    Just _ -> False
+                deveAtivar = existeInimigoNaArea novaPos dono 3 estado
                 
-                novoTempo = case tempo of
-                    Just n | n > 0 -> Just (n - 1)
-                    Nothing | deveAtivar -> Just 0
-                    other -> other
+                posDono = obterPosicaoDono dono (minhocasEstado estado)
                 
-            in Left (Disparo novaPos Norte Mina novoTempo dono)
+            in if deveAtivar
+               then Right (calculaDanosExcluindoDono (Disparo novaPos Norte Mina Nothing dono) posDono)
+               else Left  (Disparo novaPos Norte Mina Nothing dono)
         
         other -> Left other
 
@@ -221,7 +220,7 @@ diametroExplosao :: Objeto -> Int
 diametroExplosao (Disparo _ _ Dinamite _ _) = 7
 diametroExplosao (Barril _ _)               = 5
 diametroExplosao (Disparo _ _ Bazuca _ _)   = 5
-diametroExplosao (Disparo _ _ Mina _ _)     = 3
+diametroExplosao (Disparo _ _ Mina _ _)     = 5
 diametroExplosao _                          = 0
 
 custoPonderado :: (Int, Int) -> Int

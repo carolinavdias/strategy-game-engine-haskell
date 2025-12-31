@@ -4,25 +4,19 @@ Description : Atualização temporal e sistema de turnos
 Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Este módulo gere a evolução temporal do jogo, incluindo:
+Este módulo controla a evolução temporal do jogo.
 
-  * Atualização do timer de turno
-  * Execução de jogadas do bot
-  * Aplicação de física (gravidade, explosões)
-  * Verificação de condições de vitória
+Responsabilidades:
 
-== Sistema de Turnos
+* Gestão do timer de turnos
+* Alternância entre jogadores
+* Execução automática do bot
+* Integração da física (Tarefa3)
+* Garantia de estados válidos (vida, morte, vitória)
 
-Cada jogador tem 30 segundos por turno. O turno passa automaticamente quando:
+Inclui soluções específicas para mecânicas
+como o Jetpack, sem modificar a física base.
 
-  * O tempo acaba
-  * O jogador dispara uma arma ofensiva (Bazuca\/Dinamite\/Mina)
-  * O jogador passa manualmente (Space)
-
-== Modo Voo (Jetpack)
-
-Quando o Jetpack está ativo, a gravidade não afeta a minhoca.
-Isto permite voar livremente até trocar de arma ou acabar o combustível.
 -}
 module Tempo where
 

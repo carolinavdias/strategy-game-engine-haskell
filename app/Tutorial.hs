@@ -4,7 +4,18 @@ Description : Sistema de tutorial com múltiplas páginas
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Tutorial interativo com navegação entre páginas e imagens
+Este módulo implementa o tutorial interativo do jogo.
+
+Funcionalidades:
+
+* 5 páginas de instruções visuais
+* Navegação horizontal e vertical
+* Indicador visual de progresso
+* Atalhos numéricos para acesso direto
+
+Permite que novos jogadores aprendam
+as mecânicas sem recorrer a documentação externa.
+
 -}
 
 module Tutorial where

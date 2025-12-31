@@ -3,6 +3,18 @@ Module      : Main
 Description : Ponto de entrada do jogo Worms
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
+
+Este módulo contém a função principal do jogo.
+
+Responsabilidades principais:
+
+* Inicialização do estado inicial do jogo
+* Carregamento dos assets gráficos
+* Arranque do ciclo principal do Gloss
+* Ligação entre lógica, desenho e eventos
+
+Este módulo não contém lógica de jogo, funcionando apenas
+como orquestrador dos vários subsistemas.
 -}
 
 module Main where

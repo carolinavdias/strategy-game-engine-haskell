@@ -3,33 +3,18 @@ Module      : Mapas
 Description : Coleção de mapas para o jogo
 Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
-Maintainer  : l1g053@uminho.pt
-Stability   : experimental
-Portability : portable
 
-= Introdução
+Este módulo contém a coleção de mapas disponíveis no jogo.
 
-Este módulo contém uma coleção de 5 mapas diversos e estratégicos para o jogo.
-Cada mapa inclui o terreno, barris iniciais e posições das minhocas.
+Características:
 
-= Estrutura dos Mapas
+* 5 mapas únicos com layouts distintos
+* Estrutura consistente (pedra, ar, terra e água)
+* Bordas sempre indestrutíveis
+* Função de rotação automática de mapas
 
-Todos os mapas seguem uma estrutura comum:
-
-  * __Linha 0__: Teto de Pedra
-  * __Linhas 1-9__: Ar (área de jogo)
-  * __Linhas 10-17__: Terra (chão principal)
-  * __Linhas 18-19__: Água (base do mapa)
-
-As bordas laterais (colunas 1 e 34) são sempre de Pedra.
-
-= Posicionamento
-
-As minhocas e barris são posicionados de forma a:
-
-  * Estarem em posições válidas (terreno Ar)
-  * Terem Terra ou outro suporte por baixo
-  * Permitirem jogabilidade estratégica
+No modo Treino, permite a seleção manual do mapa,
+mantendo o mesmo mapa em caso de restart.
 -}
 module Mapas where
 

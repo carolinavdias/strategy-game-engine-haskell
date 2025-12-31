@@ -4,7 +4,18 @@ Description : Seleção do modo de jogo.
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Tela para escolher entre 2 Jogadores, VS Bot ou Treino.
+Este módulo implementa o ecrã de seleção de modos.
+
+Modos disponíveis:
+
+* 2 Jogadores
+* VS Bot
+* Treino
+* Voltar ao menu
+
+Cada opção é totalmente navegável com teclado,
+mantendo consistência com o resto da interface.
+
 -}
 
 module SelecaoModo where

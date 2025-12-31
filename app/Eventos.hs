@@ -4,35 +4,19 @@ Description : Processamento de eventos do jogo
 Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Este módulo processa todos os eventos de input do jogo, incluindo:
+Este módulo trata todos os eventos de entrada.
 
-  * Navegação nos menus
-  * Movimento das minhocas
-  * Seleção e disparo de armas
-  * Sistema de turnos
+Funcionalidades:
 
-== Controlos
+* Navegação em menus
+* Controlo de movimento
+* Seleção e uso de armas
+* Teclas de atalho (restart, voltar, seleção direta)
 
-=== Jogador 1 (Verde)
-
-  * __WASD__ — Mover (ou voar\/escavar se Jetpack\/Escavadora selecionados)
-  * __1-5__ — Selecionar arma (1=Bazuca, 2=Dinamite, 3=Mina, 4=Escavadora, 5=Jetpack)
-  * __C__ — Disparar arma ofensiva (Bazuca\/Dinamite\/Mina)
-  * __Q__ — Abrir menu de armas
-
-=== Jogador 2 (Azul)
-
-  * __IJKL__ — Mover (ou voar\/escavar)
-  * __6-0__ — Selecionar arma
-  * __M__ — Disparar
-  * __Q__ — Abrir menu de armas
-
-=== Geral
-
-  * __P__ — Pausar\/Resumir
-  * __X__ — Voltar ao menu
-  * __Space__ — Passar turno
+O comportamento das teclas varia conforme
+o estado atual do jogo.
 -}
+
 module Eventos where
 
 import Graphics.Gloss.Interface.Pure.Game

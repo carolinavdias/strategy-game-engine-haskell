@@ -3,6 +3,20 @@ Module      : Desenhar
 Description : Renderização visual do jogo
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
+
+Este módulo é responsável por todo o desenho visual do jogo.
+
+Inclui:
+
+* Desenho do mapa e entidades
+* HUD adaptativo consoante o modo de jogo
+* Animações de movimento e explosões
+* Menus contextuais de armas
+* Feedback visual (cores, escalas, destaques)
+
+O desenho é totalmente separado da lógica,
+seguindo uma arquitetura limpa e modular.
+
 -}
 
 module Desenhar 
@@ -23,7 +37,9 @@ import Menu (desenharMenu)
 import SelecaoModo (desenharSelecao)
 import Tutorial
 
--- Função principal de renderização do jogo
+-- | Função principal de renderização.
+-- Recebe os assets carregados e o estado atual da partida,
+-- produzindo a imagem completa a desenhar no ecrã.
 desenha :: Assets -> EstadoPartida -> Picture
 desenha assets partida = Pictures
   [ desenharBackground assets
@@ -66,7 +82,7 @@ desenharHUDCompleto assets partida
       , desenharTimer assets partida
       ]
 
--- NOVO: Info do jogador 1 para modo Treino (mostra "TREINO" em vez de "JOGADOR 1")
+--  Info do jogador 1 para modo Treino (mostra "TREINO" em vez de "JOGADOR 1")
 desenharInfoJogador1Treino :: Assets -> EstadoPartida -> Picture
 desenharInfoJogador1Treino assets partida =
   let minhocas = minhocasEstado (estadoWorms partida)
@@ -664,9 +680,9 @@ desenharAnimacao _ _ (AnimMovimento _ _ _ _) = Blank
 
 escolherFrameExplosao :: Assets -> Int -> Picture
 escolherFrameExplosao assets frame
-  | frame == 0 = getPicOr (explosao1 $ objetoAssets assets) (Color red $ circleSolid 30)
-  | frame == 1 = getPicOr (explosao2 $ objetoAssets assets) (Color orange $ circleSolid 40)
-  | otherwise = getPicOr (explosao3 $ objetoAssets assets) (Color yellow $ circleSolid 30)
+  | frame == 0 = Scale 1.5 1.5 $ getPicOr (explosao1 $ objetoAssets assets) (Color red $ circleSolid 45)
+  | frame == 1 = getPicOr (explosao2 $ objetoAssets assets) (Color orange $ circleSolid 60)
+  | otherwise = getPicOr (explosao3 $ objetoAssets assets) (Color yellow $ circleSolid 45)
 
 -- Telas de vitória e game over
 desenharVictory :: Assets -> EstadoFinal -> Picture

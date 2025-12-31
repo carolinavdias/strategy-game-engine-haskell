@@ -4,7 +4,17 @@ Description : Bot para o jogo Worms
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Bot que faz uma sequência de jogadas variadas.
+Este módulo implementa o bot adversário.
+
+A tática utilizada é cíclica e determinística:
+
+* Ciclo de 12 jogadas
+* Alternância entre movimento e ataque
+* Utilização de todas as armas disponíveis
+* Comportamento previsível e testável
+
+O Bot não analisa o terreno nem a posição do inimigo,
+por decisão consciente de simplicidade e equilíbrio.
 -}
 
 module Tarefa4 where

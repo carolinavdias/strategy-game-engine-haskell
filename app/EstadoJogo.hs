@@ -4,8 +4,26 @@ Description : Estados do jogo e estruturas de dados
 Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
-Este módulo define todas as estruturas de dados que representam o estado do jogo
-em diferentes fases: menu, seleção de modo, partida ativa, vitória, etc.
+Este módulo define o tipo 'EstadoJogo', que representa
+todos os ecrãs possíveis da aplicação.
+
+Estados principais:
+
+* Menu
+* Seleção de Modo
+* Seleção de Mapa (Treino)
+* Jogo em curso
+* Vitória / Game Over
+* Tutorial
+
+Cada estado encapsula os dados necessários para:
+
+* Desenho independente
+* Processamento de eventos específico
+* Transições de navegação seguras
+
+A utilização de tipos algébricos garante que apenas
+transições válidas podem ocorrer.
 -}
 module EstadoJogo where
 
