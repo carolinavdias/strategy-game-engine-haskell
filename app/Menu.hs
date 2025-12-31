@@ -18,7 +18,7 @@ import Assets
 desenharMenu :: Assets -> EstadoMenu -> Picture
 desenharMenu assets estado = Pictures
   [ desenharBackground assets
-  , desenharLogo assets
+  , desenharLogo assets (animacaoMenu estado)
   , desenharBotoes assets estado
   , desenharInstrucoesMenu assets 
   ]
@@ -30,15 +30,14 @@ desenharBackground assets =
     Just bg -> bg  -- SEM SCALE! Imagem já é 1920x1200!
     Nothing -> Color (makeColorI 60 40 80 255) $ rectangleSolid 1920 1200
 
--- | Desenha o logo WORMS
-desenharLogo :: Assets -> Picture
-desenharLogo assets =
-  case menuLogo (menuAssets assets) of
-    Just logo -> Translate 0 320 $ Scale 2 2 $ logo
-    Nothing -> Translate 0 320 $ 
-               Scale 5.0 5.0 $ 
-               Color white $ 
-               Text "WORMS"
+-- Desenha o logo com animação de pulsar
+desenharLogo :: Assets -> Float -> Picture
+desenharLogo assets tempo =
+  let -- Pulsar suave: varia entre 0.95 e 1.05
+      escala = 1.90 + 0.05 * sin (tempo * 0.5)  -- 1.5 = velocidade (mais baixo = mais lento)
+  in case menuLogo (menuAssets assets) of
+       Just logo -> Translate 0 320 $ Scale escala escala logo
+       Nothing -> Translate 0 320 $ Color white $ Scale 0.5 0.5 $ Text "WORMS"
 
 -- | Desenha os três botões do menu
 desenharBotoes :: Assets -> EstadoMenu -> Picture
