@@ -9,6 +9,7 @@ module Desenhar
   ( desenha
   , desenharMenu
   , desenharSelecao
+  , desenharSelecaoMapa
   , desenharGameOver
   , desenharVictory
   , desenharTutorial
@@ -34,9 +35,10 @@ desenha assets partida = Pictures
       (jogadorAtual partida) 
       (armaSelecionadaP1 partida) 
       (armaSelecionadaP2 partida)
+      (modoPartida partida)  -- NOVO: passa modo para desenhar robô
   , desenharAnimacoes assets (mapaEstado $ estadoWorms partida) (animacoes partida)
   , desenharMolduraPedra assets
-  , desenharMinhocasLaterais assets
+  , desenharMinhocasLaterais assets (modoPartida partida)  -- NOVO: passa modo
   , desenharHUDCompleto assets partida
   , desenharMenusArmas assets partida
   , desenharTextosControlos assets
@@ -51,12 +53,31 @@ desenharMolduraPedra assets =
     Nothing -> Blank
 
 -- Interface de jogo completa
+-- MODIFICADO: No modo Treino, não mostra info jogador 2 nem timer
 desenharHUDCompleto :: Assets -> EstadoPartida -> Picture
-desenharHUDCompleto assets partida = Pictures
-  [ desenharInfoJogador1 assets partida
-  , desenharInfoJogador2 assets partida
-  , desenharTimer assets partida
-  ]
+desenharHUDCompleto assets partida
+  | modoPartida partida == Treino = Pictures
+      [ desenharInfoJogador1Treino assets partida  -- Só info do jogador verde
+      ]
+  | otherwise = Pictures
+      [ desenharInfoJogador1 assets partida
+      , desenharInfoJogador2 assets partida
+      , desenharTimer assets partida
+      ]
+
+-- NOVO: Info do jogador 1 para modo Treino (mostra "TREINO" em vez de "JOGADOR 1")
+desenharInfoJogador1Treino :: Assets -> EstadoPartida -> Picture
+desenharInfoJogador1Treino assets partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      minhocasVerdes = [(i, m) | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
+  in case minhocasVerdes of
+       ((_, minhoca):_) -> Translate (-790) 520 $ Pictures
+         [ case textTreino (uiAssets assets) of  -- USA IMAGEM!
+             Just img -> Scale 1.3 1.3 img
+             Nothing -> Color white $ Scale 0.2 0.2 $ Text "TREINO"
+         , Translate (-50) (-70) $ desenharBarraVida assets (vidaMinhoca minhoca)
+         ]
+       [] -> Blank
 
 desenharInfoJogador1 :: Assets -> EstadoPartida -> Picture
 desenharInfoJogador1 assets partida =
@@ -64,7 +85,7 @@ desenharInfoJogador1 assets partida =
       minhocasVerdes = [(i, m) | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
   in case minhocasVerdes of
        ((_, minhoca):_) -> Translate (-790) 520 $ Pictures
-         [ desenharTextoJogador assets True
+         [ desenharTextoJogador assets True (modoPartida partida)
          , Translate (-50) (-70) $ desenharBarraVida assets (vidaMinhoca minhoca)
          ]
        [] -> Blank
@@ -75,20 +96,24 @@ desenharInfoJogador2 assets partida =
       minhocasAzuis = [(i, m) | (i, m) <- zip [0..] minhocas, odd i, minhocaViva m]
   in case minhocasAzuis of
        ((_, minhoca):_) -> Translate 780 520 $ Pictures
-         [ desenharTextoJogador assets False
+         [ desenharTextoJogador assets False (modoPartida partida)
          , Translate (60) (-70) $ desenharBarraVida assets (vidaMinhoca minhoca)
          ]
        [] -> Blank
 
-desenharTextoJogador :: Assets -> Bool -> Picture
-desenharTextoJogador assets isJogador1 =
+-- MODIFICADO: Mostra "BOT" em vez de "JOGADOR 2" no modo VsBot
+desenharTextoJogador :: Assets -> Bool -> ModoJogo -> Picture
+desenharTextoJogador assets isJogador1 modo =
   let textoImg = if isJogador1 
                  then textPlayer1 (uiAssets assets)
                  else textPlayer2 (uiAssets assets)
+      -- No modo VsBot, jogador 2 é o Bot
+      textoFallback = if isJogador1 
+                      then "JOGADOR 1" 
+                      else if modo == VsBot then "BOT" else "JOGADOR 2"
   in case textoImg of
        Just img -> Scale 1.4 1.4 $ img
-       Nothing -> Color white $ Scale 0.15 0.15 $ 
-                  Text (if isJogador1 then "JOGADOR 1" else "JOGADOR 2")
+       Nothing -> Color white $ Scale 0.15 0.15 $ Text textoFallback
 
 desenharBarraVida :: Assets -> VidaMinhoca -> Picture
 desenharBarraVida assets Morta = escolherBarraHP assets 0
@@ -96,15 +121,15 @@ desenharBarraVida assets (Viva hp) = escolherBarraHP assets hp
 
 escolherBarraHP :: Assets -> Int -> Picture
 escolherBarraHP assets hp
-  | hp >= 100 = getBarraOr assets (hpBar100 $ uiAssets assets) 100
-  | hp >= 80  = getBarraOr assets (hpBar80 $ uiAssets assets) 80
-  | hp >= 60  = getBarraOr assets (hpBar60 $ uiAssets assets) 60
-  | hp >= 40  = getBarraOr assets (hpBar40 $ uiAssets assets) 40
-  | hp >= 20  = getBarraOr assets (hpBar20 $ uiAssets assets) 20
-  | otherwise = getBarraOr assets (hpBar0 $ uiAssets assets) 0
+  | hp >= 100 = getBarraOr assets (hpBar100 $ uiAssets assets) hp
+  | hp >= 80  = getBarraOr assets (hpBar80 $ uiAssets assets) hp
+  | hp >= 60  = getBarraOr assets (hpBar60 $ uiAssets assets) hp
+  | hp >= 40  = getBarraOr assets (hpBar40 $ uiAssets assets) hp
+  | hp >= 20  = getBarraOr assets (hpBar20 $ uiAssets assets) hp
+  | otherwise = getBarraOr assets (hpBar0 $ uiAssets assets) hp
 
 getBarraOr :: Assets -> Maybe Picture -> Int -> Picture
-getBarraOr _ (Just img) _ = Scale 1.5 1.5 $ img
+getBarraOr _ (Just img) _ = Scale 1.5 1.5 img
 getBarraOr _ Nothing hp = Pictures
   [ Color (greyN 0.2) $ rectangleSolid 140 30
   , Color (corPorHP hp) $ rectangleSolid (fromIntegral hp * 1.3) 25
@@ -145,12 +170,23 @@ desenharNumeroTimer segundos tempoTotal =
        , Color cor $ Translate 2 2 $ Scale tamanho tamanho $ Text texto
        ]
 
--- Minhocas decorativas laterais
-desenharMinhocasLaterais :: Assets -> Picture
-desenharMinhocasLaterais assets = Pictures
-  [ desenharMinhocaLateralVerde assets
-  , desenharMinhocaLateralAzul assets
-  ]
+-- MODIFICADO: Minhocas decorativas laterais
+desenharMinhocasLaterais :: Assets -> ModoJogo -> Picture
+desenharMinhocasLaterais assets modo
+  | modo == Treino = Pictures
+      [ desenharMinhocaTreinoLateral assets  -- Treino na esquerda, nada na direita
+      ]
+  | otherwise = Pictures
+      [ desenharMinhocaLateralVerde assets
+      , desenharMinhocaLateralAzul assets modo
+      ]
+
+-- NOVO: Minhoca de treino na lateral ESQUERDA (mesma posição da verde)
+desenharMinhocaTreinoLateral :: Assets -> Picture
+desenharMinhocaTreinoLateral assets =
+  case wormTrainingBig (spriteAssets assets) of
+    Just img -> Translate (-825) (-350) $ Scale 2.1 2.1 $ img
+    Nothing -> Translate (-830) (-350) $ Color white $ Scale 0.15 0.15 $ Text "TREINO"
 
 desenharMinhocaLateralVerde :: Assets -> Picture
 desenharMinhocaLateralVerde assets =
@@ -158,18 +194,78 @@ desenharMinhocaLateralVerde assets =
     Just img -> Translate (-830) 200 $ Scale 2.4 2.4 $ img
     Nothing -> Blank
 
-desenharMinhocaLateralAzul :: Assets -> Picture
-desenharMinhocaLateralAzul assets =
-  case wormBlueBig (spriteAssets assets) of
-    Just img -> Translate 820 200 $ Scale 2.5 2.5 $ img
-    Nothing -> Blank
+-- MODIFICADO: Mostra robô no modo VsBot!
+desenharMinhocaLateralAzul :: Assets -> ModoJogo -> Picture
+desenharMinhocaLateralAzul assets modo =
+  let sprite = if modo == VsBot
+               then robotBig (spriteAssets assets)  -- Robô!
+               else wormBlueBig (spriteAssets assets)  -- Minhoca
+      fallback = if modo == VsBot
+                 then desenharRobotFallback  -- Robô simples
+                 else Blank
+  in case sprite of
+       Just img -> Translate 820 200 $ Scale 2.5 2.5 $ img
+       Nothing -> Translate 820 200 $ Scale 2.5 2.5 $ fallback
+
+-- Robô fallback (quando não há imagem)
+desenharRobotFallback :: Picture
+desenharRobotFallback = Pictures
+  [ -- Corpo
+    Color (makeColorI 100 100 120 255) $ rectangleSolid 30 35
+  , -- Cabeça
+    Translate 0 25 $ Color (makeColorI 120 120 140 255) $ rectangleSolid 25 20
+  , -- Olhos (LEDs vermelhos)
+    Translate (-6) 27 $ Color red $ circleSolid 4
+  , Translate 6 27 $ Color red $ circleSolid 4
+  , -- Antena
+    Translate 0 38 $ Color (makeColorI 80 80 80 255) $ rectangleSolid 3 10
+  , Translate 0 45 $ Color red $ circleSolid 3
+  , -- Braços
+    Translate (-18) 5 $ Color (makeColorI 80 80 100 255) $ rectangleSolid 8 20
+  , Translate 18 5 $ Color (makeColorI 80 80 100 255) $ rectangleSolid 8 20
+  , -- Pernas
+    Translate (-8) (-25) $ Color (makeColorI 80 80 100 255) $ rectangleSolid 8 15
+  , Translate 8 (-25) $ Color (makeColorI 80 80 100 255) $ rectangleSolid 8 15
+  ]
 
 -- Sistema de menus de armas
+-- MODIFICADO: No modo Treino, só menu verde na posição DIREITA
 desenharMenusArmas :: Assets -> EstadoPartida -> Picture
-desenharMenusArmas assets partida = Pictures
-  [ desenharLadoEsquerdo assets partida
-  , desenharLadoDireito assets partida
-  ]
+desenharMenusArmas assets partida
+  | modoPartida partida == Treino = Pictures
+      [ desenharLadoEsquerdoTreino assets partida  -- Menu verde na DIREITA
+      ]
+  | otherwise = Pictures
+      [ desenharLadoEsquerdo assets partida
+      , desenharLadoDireito assets partida
+      ]
+
+-- NOVO: Lado para modo Treino (menu verde na posição DIREITA)
+desenharLadoEsquerdoTreino :: Assets -> EstadoPartida -> Picture
+desenharLadoEsquerdoTreino assets partida =
+  if menuArmasAbertoP1 partida
+  then desenharMenuArmasEsquerdaNaPosicaoDireita assets partida
+  else desenharBotaoArmasVerdeNaPosicaoDireita assets
+
+-- NOVO: Botão de armas verde na posição DIREITA (860)
+desenharBotaoArmasVerdeNaPosicaoDireita :: Assets -> Picture
+desenharBotaoArmasVerdeNaPosicaoDireita assets =
+  case buttonWeaponsGreen (uiAssets assets) of
+    Just img -> Translate 860 (-90) $ Scale 1.3 1.3 $ img
+    Nothing -> Translate 860 (-90) $ Pictures
+      [ Color green $ rectangleSolid 120 120
+      , Color white $ Scale 0.15 0.15 $ Text "Q"
+      ]
+
+-- NOVO: Menu de armas verde na posição DIREITA
+desenharMenuArmasEsquerdaNaPosicaoDireita :: Assets -> EstadoPartida -> Picture
+desenharMenuArmasEsquerdaNaPosicaoDireita assets partida =
+  let minhocas = minhocasEstado (estadoWorms partida)
+      minhocasVerdes = [(i, m) | (i, m) <- zip [0..] minhocas, even i, minhocaViva m]
+  in case minhocasVerdes of
+       ((_, minhoca):_) -> Translate 820 (-150) $  -- Posição direita!
+         desenharListaArmas assets minhoca (armaSelecionadaP1 partida) True
+       [] -> Blank
 
 desenharLadoEsquerdo :: Assets -> EstadoPartida -> Picture
 desenharLadoEsquerdo assets partida =
@@ -181,7 +277,7 @@ desenharLadoDireito :: Assets -> EstadoPartida -> Picture
 desenharLadoDireito assets partida =
   if menuArmasAbertoP2 partida
   then desenharMenuArmasDireita assets partida
-  else desenharBotaoArmasAzul assets
+  else desenharBotaoArmasAzul assets (modoPartida partida)  -- Passa modo!
 
 desenharBotaoArmasVerde :: Assets -> Picture
 desenharBotaoArmasVerde assets =
@@ -192,14 +288,21 @@ desenharBotaoArmasVerde assets =
       , Color white $ Scale 0.15 0.15 $ Text "Q"
       ]
 
-desenharBotaoArmasAzul :: Assets -> Picture
-desenharBotaoArmasAzul assets =
-  case buttonWeaponsBlue (uiAssets assets) of
-    Just img -> Translate 860 (-90) $ Scale 1.3 1.3 $ img
-    Nothing -> Translate 860 (-90) $ Pictures
-      [ Color cyan $ rectangleSolid 120 120
-      , Color white $ Scale 0.15 0.15 $ Text "Q"
-      ]
+-- MODIFICADO: Mostra botão do robô no modo VsBot
+desenharBotaoArmasAzul :: Assets -> ModoJogo -> Picture
+desenharBotaoArmasAzul assets modo =
+  let btnImg = if modo == VsBot
+               then buttonWeaponsRobot (uiAssets assets)  -- Botão do robô!
+               else buttonWeaponsBlue (uiAssets assets)   -- Botão azul normal
+      fallbackColor = if modo == VsBot 
+                      then makeColorI 100 100 120 255  -- Cinza metálico para robô
+                      else cyan
+  in case btnImg of
+       Just img -> Translate 860 (-90) $ Scale 1.3 1.3 $ img
+       Nothing -> Translate 860 (-90) $ Pictures
+         [ Color fallbackColor $ rectangleSolid 120 120
+         , Color white $ Scale 0.15 0.15 $ Text "Q"
+         ]
 
 desenharMenuArmasEsquerda :: Assets -> EstadoPartida -> Picture
 desenharMenuArmasEsquerda assets partida =
@@ -348,29 +451,31 @@ escolherImagemTerreno assets Pedra =
 
 escolherImagemTerreno _ _ = Blank
 
--- Renderização de minhocas no jogo
-desenharMinhocasJogo :: Assets -> Mapa -> [Minhoca] -> Int -> Int -> Maybe TipoArma -> Maybe TipoArma -> Picture
-desenharMinhocasJogo assets mapa minhocas frameCount jogadorAtual armaP1 armaP2 =
+-- MODIFICADO: Renderização de minhocas no jogo (recebe modo)
+desenharMinhocasJogo :: Assets -> Mapa -> [Minhoca] -> Int -> Int -> Maybe TipoArma -> Maybe TipoArma -> ModoJogo -> Picture
+desenharMinhocasJogo assets mapa minhocas frameCount jogadorAtualNum armaP1 armaP2 modo =
   Pictures
     [ desenharMinhocaJogo assets mapa i minhoca
         (getFrameParaMinhoca i)
         (getArmaParaMinhoca i)
+        modo  -- Passa modo!
     | (i, minhoca) <- zip [0..] minhocas
     , posicaoMinhoca minhoca /= Nothing
     ]
     where
     getFrameParaMinhoca numMinhoca
-      | even numMinhoca && jogadorAtual == 0 = frameCount
-      | odd  numMinhoca && jogadorAtual == 1 = frameCount
+      | even numMinhoca && jogadorAtualNum == 0 = frameCount
+      | odd  numMinhoca && jogadorAtualNum == 1 = frameCount
       | otherwise = 0
 
     getArmaParaMinhoca numMinhoca
-      | even numMinhoca && jogadorAtual == 0 = armaP1
-      | odd  numMinhoca && jogadorAtual == 1 = armaP2
+      | even numMinhoca && jogadorAtualNum == 0 = armaP1
+      | odd  numMinhoca && jogadorAtualNum == 1 = armaP2
       | otherwise = Nothing
 
-desenharMinhocaJogo :: Assets -> Mapa -> Int -> Minhoca -> Int -> Maybe TipoArma -> Picture
-desenharMinhocaJogo assets mapa numMinhoca minhoca frameCount armaEquipada =
+-- MODIFICADO: Desenha minhoca ou robô dependendo do modo
+desenharMinhocaJogo :: Assets -> Mapa -> Int -> Minhoca -> Int -> Maybe TipoArma -> ModoJogo -> Picture
+desenharMinhocaJogo assets mapa numMinhoca minhoca frameCount armaEquipada modo =
   case posicaoMinhoca minhoca of
     Nothing -> Blank
     Just (l, c) ->
@@ -389,7 +494,7 @@ desenharMinhocaJogo assets mapa numMinhoca minhoca frameCount armaEquipada =
 
           sprite =
             escolherSpriteMinhoca assets numMinhoca
-              (vidaMinhoca minhoca) frameCount armaEquipada
+              (vidaMinhoca minhoca) frameCount armaEquipada modo  -- Passa modo!
 
       in Scale 1.3 1.3 $
          Translate offsetX offsetY $
@@ -401,17 +506,18 @@ desenharMinhocaJogo assets mapa numMinhoca minhoca frameCount armaEquipada =
                desenharBarraVidaMinhoca (vidaMinhoca minhoca)
              ]
 
--- Seleciona sprite apropriado baseado em estado e animação
-escolherSpriteMinhoca :: Assets -> Int -> VidaMinhoca -> Int -> Maybe TipoArma -> Picture
-escolherSpriteMinhoca assets numMinhoca Morta _ _ = 
+-- Seleciona sprite apropriado (minhoca azul mantém-se no mapa, mesmo em VsBot)
+escolherSpriteMinhoca :: Assets -> Int -> VidaMinhoca -> Int -> Maybe TipoArma -> ModoJogo -> Picture
+escolherSpriteMinhoca _ _ Morta _ _ _ = 
   Color (greyN 0.5) $ circleSolid 8
 
-escolherSpriteMinhoca assets numMinhoca (Viva _) frameCount armaEquipada
-  | even numMinhoca = escolherSpriteVerde
-  | otherwise = escolherSpriteAzul
+escolherSpriteMinhoca assets numMinhoca (Viva _) frameCount armaEquipada _modo
+  | even numMinhoca = escolherSpriteVerde  -- Minhoca verde
+  | otherwise = escolherSpriteAzul          -- Minhoca azul (sempre!)
   where
     sprites = spriteAssets assets
     
+    -- Sprites da minhoca verde
     escolherSpriteVerde = case armaEquipada of
       Just Bazuca -> getOr (wormGreenBazuca sprites) fallbackVerde
       Just Dinamite -> getOr (wormGreenDinamite sprites) fallbackVerde
@@ -420,6 +526,7 @@ escolherSpriteMinhoca assets numMinhoca (Viva _) frameCount armaEquipada
       Just Jetpack -> getOr (wormGreenJetpack sprites) fallbackVerde
       Nothing -> escolherAnimacaoVerde
     
+    -- Sprites da minhoca azul (sempre minhoca, mesmo em VsBot)
     escolherSpriteAzul = case armaEquipada of
       Just Bazuca -> getOr (wormBlueBazuca sprites) fallbackAzul
       Just Dinamite -> getOr (wormBlueDinamite sprites) fallbackAzul
@@ -428,16 +535,19 @@ escolherSpriteMinhoca assets numMinhoca (Viva _) frameCount armaEquipada
       Just Jetpack -> getOr (wormBlueJetpack sprites) fallbackAzul
       Nothing -> escolherAnimacaoAzul
     
+    -- Animações da minhoca verde
     escolherAnimacaoVerde
       | frameCount == 0 = getOr (minhocaVerdeIdle sprites) fallbackVerde
       | even (frameCount `div` 10) = getOr (minhocaVerdeWalk1 sprites) fallbackVerde
       | otherwise = getOr (minhocaVerdeWalk2 sprites) fallbackVerde
     
+    -- Animações da minhoca azul
     escolherAnimacaoAzul
       | frameCount == 0 = getOr (minhocaAzulIdle sprites) fallbackAzul
       | even (frameCount `div` 10) = getOr (minhocaAzulWalk1 sprites) fallbackAzul
       | otherwise = getOr (minhocaAzulWalk2 sprites) fallbackAzul
     
+    -- Fallbacks
     fallbackVerde = Color green $ circleSolid 16
     fallbackAzul = Color cyan $ circleSolid 16
     
@@ -457,7 +567,7 @@ desenharBarraVidaMinhoca (Viva vida) = Translate 0 45 $ Pictures
 
 minhocaViva :: Minhoca -> Bool
 minhocaViva m = case vidaMinhoca m of
-  Viva _ -> True
+  Viva hp -> hp >= 1  -- Vida tem que ser pelo menos 1
   Morta -> False
 
 -- Renderização de objetos do jogo
@@ -487,7 +597,7 @@ desenharObjeto assets mapa (Barril (l, c) prestes) =
       Translate x y $
       Pictures [sprite, aviso]
 
-desenharObjeto assets mapa (Disparo (l, c) dir arma _ _) =
+desenharObjeto assets mapa (Disparo (l, c) dir arma tempo_ _) =
  let
       numLinhas  = length mapa
       numColunas = if null mapa then 0 else length (head mapa)
@@ -501,16 +611,20 @@ desenharObjeto assets mapa (Disparo (l, c) dir arma _ _) =
       x = fromIntegral c * tamanhoBloco
       y = -fromIntegral l * tamanhoBloco
 
-      sprite = desenharDisparo assets arma dir
+      sprite = desenharDisparo assets arma dir tempo_
   in
       Translate offsetX offsetY $
       Translate x y $
       sprite
 
-desenharDisparo :: Assets -> TipoArma -> Direcao -> Picture
-desenharDisparo assets tipo dir =
+desenharDisparo :: Assets -> TipoArma -> Direcao -> Maybe Int -> Picture
+desenharDisparo assets tipo dir tempo =
   let angulo = anguloParaDirecao dir
-  in Rotate angulo $ getIconeArma assets tipo
+      -- Mina pulsa quando tempo <= 3
+      escala = case (tipo, tempo) of
+        (Mina, Just t) | t <= 3 -> 1.0 + 0.3 * abs (sin (fromIntegral t * 5))  -- Pulsa!
+        _ -> 1.0
+  in Rotate angulo $ Scale escala escala $ getIconeArma assets tipo
 
 anguloParaDirecao :: Direcao -> Float
 anguloParaDirecao Norte = 90
@@ -524,7 +638,7 @@ anguloParaDirecao Sudoeste = -135
 
 -- Sistema de animações
 desenharAnimacoes :: Assets -> Mapa -> [AnimacaoAtiva] -> Picture
-desenharAnimacoes assets  mapa animacoes = Pictures [desenharAnimacao assets mapa anim | anim <- animacoes]
+desenharAnimacoes assets  mapa anims = Pictures [desenharAnimacao assets mapa anim | anim <- anims]
 
 desenharAnimacao :: Assets -> Mapa -> AnimacaoAtiva -> Picture
 desenharAnimacao assets mapa (AnimExplosao (l, c) _ frame) =
@@ -607,3 +721,81 @@ desenharPausaSeNecessario True = Pictures
   , Translate (-200) (-80) $ Color (greyN 0.8) $ Scale 0.25 0.25 $ Text "P - Continuar"
   , Translate (-200) (-120) $ Color (greyN 0.8) $ Scale 0.25 0.25 $ Text "X - VOLTAR"
   ]
+
+-- Desenha ecrã de seleção de mapa
+desenharSelecaoMapa :: Assets -> EstadoSelecaoMapa -> Picture
+desenharSelecaoMapa assets estado = Pictures
+  [ -- Background
+    case mapSelectionBackground (backgroundAssets assets) of
+      Just bg -> bg
+      Nothing -> Color (makeColorI 50 50 80 255) $ rectangleSolid 1920 1200
+  
+  -- Título "ESCOLHE O MAPA"
+  , Translate 0 340 $ case textEscolheMapa (mapSelectionAssets assets) of
+      Just img -> Scale 1 1 img
+      Nothing -> Color white $ Scale 0.3 0.3 $ Text "ESCOLHE O MAPA"
+  
+  -- Ícones dos mapas
+  , desenharIconesMapas assets (mapaSelecionado estado)
+  
+  -- Botão voltar (SELECIONÁVEL! índice 5)
+  , desenharBotaoVoltarMapa assets (mapaSelecionado estado == 5)
+  
+  -- Instruções (canto superior direito)
+  , Translate 720 520 $ case modeInstructions (menuAssets assets) of
+      Just img -> Scale 0.5 0.5 img
+      Nothing -> Blank
+  ]
+
+-- Botão voltar IGUAL ao do ecrã de modos
+desenharBotaoVoltarMapa :: Assets -> Bool -> Picture
+desenharBotaoVoltarMapa assets selecionado = Translate (-850) 520 $ Pictures
+  [ feedback
+  , botao
+  ]
+  where
+    escala = if selecionado then 1.3 else 1.0
+    
+    botao = case buttonBack (menuAssets assets) of
+      Just img -> Scale escala escala img
+      Nothing -> Pictures
+                   [ Color red $ circleSolid 50
+                   , Color white $ Scale 0.3 0.3 $ Text "<"
+                   ]
+    
+    feedback = if selecionado 
+               then Color (makeColorI 255 255 255 60) $ circleSolid 80
+               else Blank
+
+-- Desenha os 5 ícones dos mapas lado a lado (SEM números, SEM pulsar)
+desenharIconesMapas :: Assets -> Int -> Picture
+desenharIconesMapas assets selecionado = Pictures
+  [ desenharIconeMapa 0 selecionado (mapIconClassico $ mapSelectionAssets assets)
+  , desenharIconeMapa 1 selecionado (mapIconMontanhas $ mapSelectionAssets assets)
+  , desenharIconeMapa 2 selecionado (mapIconLago $ mapSelectionAssets assets)
+  , desenharIconeMapa 3 selecionado (mapIconPedreira $ mapSelectionAssets assets)
+  , desenharIconeMapa 4 selecionado (mapIconIlhas $ mapSelectionAssets assets)
+  ]
+
+-- Desenha um ícone de mapa (SEM número, SEM animação pulsar)
+desenharIconeMapa :: Int -> Int -> Maybe Picture -> Picture
+desenharIconeMapa idx selecionado mImg =
+  let -- Posição X: distribuídos de -500 a 500
+      posX = fromIntegral (idx - 2) * 250  -- -500, -250, 0, 250, 500
+      
+      -- Escala: maior se selecionado (SEM pulsar!)
+      estaSelecionado = idx == selecionado
+      escalaFinal = if estaSelecionado then 2.6 else 2.1
+      
+      -- Brilho amarelo se selecionado
+      brilho = if estaSelecionado
+               then Color (makeColorI 255 255 0 100) $ circleSolid 100
+               else Blank
+      
+      -- Ícone ou fallback
+      icone = case mImg of
+        Just img -> Scale escalaFinal escalaFinal img
+        Nothing -> Scale escalaFinal escalaFinal $ 
+          Color (makeColorI 100 150 100 255) $ rectangleSolid 150 150
+      
+  in Translate posX (-50) $ Pictures [brilho, icone]  -- Mais para baixo!
