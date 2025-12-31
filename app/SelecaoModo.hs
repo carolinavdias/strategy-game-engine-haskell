@@ -58,7 +58,7 @@ desenharModo2P assets selecionado (x, y) = Translate x y $ Pictures
   , personagens
   ]
   where
-    escala = if selecionado then 1.2 else 0.9
+    escala = if selecionado then 1.1 else 0.9
     
     personagens = case modeButton2P (menuAssets assets) of
       Just img -> Scale escala escala $ img
@@ -76,7 +76,7 @@ desenharModoBot assets selecionado (x, y) = Translate x y $ Pictures
   , personagens
   ]
   where
-    escala = if selecionado then 1.2 else 0.9
+    escala = if selecionado then 1.1 else 0.9
     
     personagens = case modeButtonBot (menuAssets assets) of
       Just img -> Scale escala escala $ img
@@ -94,7 +94,7 @@ desenharModoTraining assets selecionado (x, y) = Translate x y $ Pictures
   , personagens
   ]
   where
-    escala = if selecionado then 1.2 else 0.9
+    escala = if selecionado then 1.1 else 0.9
     
     personagens = case modeButtonTraining (menuAssets assets) of
       Just img -> Scale escala escala $ img
