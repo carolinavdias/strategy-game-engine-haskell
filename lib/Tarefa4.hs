@@ -1,65 +1,54 @@
--- tarefa4 - Bot Inteligente ;)
-{-
+{-|
 Module      : Tarefa4
-Description : Bot inteligente que não se mata.
+Description : Bot inteligente com sistema de rotação e maximização de dano
 Copyright   : Carolina Dias e Leonor Sousa, 2025
 License     : GPL-3
 
- Implementação do Bot Inteligente
+Implementação do Bot Inteligente
 
 == Arquitetura
 
 O bot foi implementado com três componentes principais:
 
 1. __Função Principal__: 'tatica' executa 100 jogadas sequenciais, 
-   avançando o estado do jogo a cada turno
+   usando um sistema de memória para alternar entre minhocas
 
-2. __Geração de Jogadas Seguras__: 'geraJogadasSeguras' cria jogadas que:
-   
-   * Evitam água e buracos
-   * Verificam segurança de explosões com raio hexagonal
-   * Consideram disponibilidade de armas no inventário
+2. __Sistema de Rotação__: Round-robin que garante distribuição
+   justa das jogadas entre todas as minhocas vivas
 
-3. __Sistema de Avaliação__: 'avaliaJogadaInteligente' pontua cada jogada:
-   
-   * Dinamite: 500 pts (distância ≤ 5)
-   * Bazuca: 450 pts (distância 5-9)
-   * Movimentos: 350-700 pts + bónus de aproximação (300 pts)
-   * Penalização: -100000 pts para jogadas perigosas
+3. __Maximização de Dano__: Calcula o dano esperado para cada
+   arma em cada direção e escolhe a ação mais destrutiva
 
-== Problema: Falha na Priorização
+== Estratégia
 
-__O bot não funciona corretamente devido a conflitos no sistema de pontuação:__
+* Localiza o inimigo mais próximo usando distância Manhattan
+* Calcula dano esperado de cada arma (Bazuca, Dinamite, Mina)
+* Se consegue causar dano, ataca
+* Se não consegue, aproxima-se do inimigo
+* Sem inimigos, entra em modo exploração (destrói terreno = pontos!)
 
-* Os bónus direcionais (350-700) excedem o bónus de aproximação (300),
-  levando a movimentos subótimos que ignoram posicionamento tático
+== Sistema de Armas
 
-* Pontuações de armas competem desequilibradamente com movimentos,
-  resultando em subutilização de armas mesmo em situações favoráveis
+| Arma      | Diâmetro | Comportamento              |
+|-----------|----------|----------------------------|
+| Bazuca    | 5        | Viaja em linha reta        |
+| Dinamite  | 7        | Colocada adjacente         |
+| Mina      | 3        | Colocada adjacente         |
 
-* Ausência de ponderação dinâmica baseada no contexto do jogo
-  (vida restante, número de adversários, urgência da situação)
+== Fórmula de Dano
 
-* Granularidade excessiva (diferenças de 50 pts) cria hierarquia
-  artificial de direções que sobrepõe-se a objetivos táticos
-
-__Consequências:__ O bot favorece direções específicas independentemente 
-da estratégia, toma decisões baseadas em critérios secundários e 
-não maximiza eficácia em combate.
-
-__Solução Necessária:__ Rebalancear pontuações, eliminar bónus arbitrários,
-implementar ponderação dinâmica e estabelecer hierarquia clara:
-sobrevivência > ataque eficaz > movimento tático > exploração.
+@
+dano = (diâmetro - custo) * 10
+custo(dx, dy) = 2 * max(|dx|, |dy|) + min(|dx|, |dy|)
+@
 -}
-
 
 module Tarefa4 where
 
-
 import Data.Either (partitionEithers)
-import Data.List (minimumBy, maximumBy, sortBy)
+import Data.List (maximumBy)
+import Data.Maybe (fromMaybe)
 import Data.Ord (comparing)
-import Data.Maybe (isJust, fromMaybe, catMaybes)
 
 import Labs2025
 import Tarefa2
@@ -68,313 +57,216 @@ import Tarefa3
 --------------------------------------------------------------------------------
 -- * FUNÇÃO PRINCIPAL
 
--- | Função principal da Tarefa 4. Retorna uma lista de jogadas inteligentes.
-tatica :: Estado -> [(NumMinhoca, Jogada)]
-tatica e = reverse $ snd $ foldl avancaTatica (e, []) [0..99]
+-- | Memória do bot: índice da próxima minhoca a jogar
+type Memoria = Int
 
--- | Aplica uma sequência de jogadas a um estado, avançando o tempo entre jogadas.
-avancaTatica :: (Estado, [(NumMinhoca, Jogada)]) -> Ticks -> (Estado, [(NumMinhoca, Jogada)])
-avancaTatica (e, js) tick = (avancaJogada j e, j:js)
-    where j = jogadaTatica tick e
+-- | Função principal da Tarefa 4. Retorna lista de 100 jogadas inteligentes.
+tatica :: Estado -> [(NumMinhoca, Jogada)]
+tatica e = reverse $ extraiJogadas $ foldl avancaTatica (e, [], 0) [0..99]
+  where
+    extraiJogadas (_, js, _) = js
+
+-- | Aplica uma jogada e avança o estado, mantendo memória
+avancaTatica :: (Estado, [(NumMinhoca, Jogada)], Memoria) -> Ticks -> (Estado, [(NumMinhoca, Jogada)], Memoria)
+avancaTatica (e, js, mem) tick = (avancaJogada j e, j:js, novaMem)
+  where
+    (j, novaMem) = jogadaTaticaComMem tick mem e
 
 -- | Aplica uma jogada de uma minhoca a um estado, e avança o tempo.
 avancaJogada :: (NumMinhoca, Jogada) -> Estado -> Estado
 avancaJogada (i, j) e@(Estado _ objetos minhocas) = foldr aplicaDanos e'' danoss''
-    where
+  where
     e'@(Estado mapa' objetos' minhocas') = efetuaJogada i j e
     minhocas'' = map (avancaMinhocaJogada e') (zip3 [0..] minhocas minhocas')
     (objetos'', danoss'') = partitionEithers $ map (avancaObjetoJogada (e' { minhocasEstado = minhocas''}) objetos) (zip [0..] objetos')
     e'' = Estado mapa' objetos'' minhocas''
 
+-- | Avança minhoca se não mudou de posição
 avancaMinhocaJogada :: Estado -> (NumMinhoca, Minhoca, Minhoca) -> Minhoca
-avancaMinhocaJogada e (i, minhoca, minhoca') = if posicaoMinhoca minhoca == posicaoMinhoca minhoca'
+avancaMinhocaJogada e (i, minhoca, minhoca') = 
+    if posicaoMinhoca minhoca == posicaoMinhoca minhoca'
     then avancaMinhoca e i minhoca'
     else minhoca'
 
+-- | Avança objeto se já existia
 avancaObjetoJogada :: Estado -> [Objeto] -> (NumObjeto, Objeto) -> Either Objeto Danos
-avancaObjetoJogada e objetos (i, objeto') = if elem objeto' objetos
+avancaObjetoJogada e objetos (i, objeto') = 
+    if objeto' `elem` objetos
     then avancaObjeto e i objeto'
     else Left objeto'
 
 --------------------------------------------------------------------------------
--- * ESTRATÉGIA INTELIGENTE DO BOT
+-- * ESTRATÉGIA DO BOT
 
-type Pontuacao = Int
-type Distancia = Int
-
--- | Para um número de ticks, dado um estado, determina a próxima jogada do BOT.
+-- | Interface para o jogo visual (sem memória)
 jogadaTatica :: Ticks -> Estado -> (NumMinhoca, Jogada)
-jogadaTatica tick estado =
-    let minhocas = minhocasEstado estado
-        num = tick `mod` length minhocas
-        minhoca = minhocas !! num
-    in escolheMelhorJogadaInteligente tick num minhoca estado
+jogadaTatica tick estado = fst $ jogadaTaticaComMem tick (tick `mod` totalMinhocas) estado
+  where
+    totalMinhocas = max 1 (length (minhocasEstado estado))
 
--- | Escolhe a melhor jogada considerando SEGURANÇA e ESTRATÉGIA
-escolheMelhorJogadaInteligente :: Ticks -> NumMinhoca -> Minhoca -> Estado -> (NumMinhoca, Jogada)
-escolheMelhorJogadaInteligente t num minhoca estado =
-    case posicaoMinhoca minhoca of
-        Nothing -> (num, Move Este)
-        Just pos ->
-            let -- Encontra todos os adversários
-                adversarios = encontraAdversarios num estado
-                
-                -- Gera todas as jogadas possíveis
-                jogadasPossiveis = geraJogadasSeguras num minhoca pos estado
-                
-                -- Se não há adversários, só se move
-                jogadas = if null adversarios
-                          then [Move d | d <- [Norte, Sul, Este, Oeste]]
-                          else jogadasPossiveis
-                
-                -- Avalia cada jogada considerando distância ao adversário mais próximo
-                avaliadas = [(j, avaliaJogadaInteligente j num pos adversarios estado) 
-                           | j <- jogadas]
-                
-                -- Escolhe a melhor (maior pontuação)
-                -- Escolhe a melhor (maior pontuação)
-                melhor = if null avaliadas
-                         then 
-                            -- Fallback inteligente: tenta direções diferentes baseado em ticks
-                            let dirs = [Norte, Sul, Este, Oeste]
-                                dirIdx = fromIntegral t `mod` length dirs
-                            in (num, Move (dirs !! dirIdx))
-                         else 
-                            let best = maximumBy (comparing snd) avaliadas
-                            in (num, fst best)
-                
-            in melhor
+-- | Determina a próxima jogada usando sistema de memória/rotação
+jogadaTaticaComMem :: Ticks -> Memoria -> Estado -> ((NumMinhoca, Jogada), Memoria)
+jogadaTaticaComMem tick mem estado = 
+    case encontraMinhocaAtiva mem minhocas of
+        Nothing -> ((0, Move Norte), mem)  -- Fallback
+        Just (idx, minhoca) -> 
+            let novaMem = (idx + 1) `mod` totalMinhocas
+                pos = fromMaybe (0, 0) (posicaoMinhoca minhoca)
+                inimigo = encontraInimigoMaisProximo idx pos minhocas
+                jogada = decideAcao tick minhoca pos inimigo estado
+            in ((idx, jogada), novaMem)
+  where
+    minhocas = minhocasEstado estado
+    totalMinhocas = length minhocas
 
 --------------------------------------------------------------------------------
--- * GERAÇÃO DE JOGADAS SEGURAS
+-- * LOCALIZAÇÃO DE MINHOCAS
 
--- | Gera jogadas que NÃO matam o próprio bot
-geraJogadasSeguras :: NumMinhoca -> Minhoca -> Posicao -> Estado -> [Jogada]
-geraJogadasSeguras num minhoca pos estado =
-    let -- Direções com ordem que favorece exploração variada
-        direcoes = [Norte, Oeste, Sul, Nordeste, Noroeste, Sudeste, Sudoeste, Este]
-        mapa = mapaEstado estado
-        
-        -- Movimentos: só permite se a posição destino for válida E segura
-        movs = [Move d | d <- direcoes, 
-                let destino = calculaPosicaoDestino pos d,
-                posValida destino mapa,
-                terrenoNaPos destino mapa /= Agua]
-        
-        armas = [Dispara Jetpack d    | d <- direcoes, jetpackMinhoca minhoca > 0] ++
-                [Dispara Dinamite d   | d <- direcoes, dinamiteMinhoca minhoca > 0] ++
-                [Dispara Bazuca d     | d <- direcoes, bazucaMinhoca minhoca > 0] ++
-                [Dispara Escavadora d | d <- direcoes, escavadoraMinhoca minhoca > 0]
-    in armas ++ movs
+-- | Encontra a primeira minhoca ativa a partir do índice dado (round-robin)
+encontraMinhocaAtiva :: Int -> [Minhoca] -> Maybe (NumMinhoca, Minhoca)
+encontraMinhocaAtiva inicio minhocas =
+    case filter minhocaValida (ordenadas ++ anteriores) of
+        (x:_) -> Just x
+        []    -> Nothing
+  where
+    indexadas = zip [0..] minhocas
+    (anteriores, ordenadas) = splitAt inicio indexadas
+    
+    minhocaValida :: (Int, Minhoca) -> Bool
+    minhocaValida (_, m) = case (vidaMinhoca m, posicaoMinhoca m) of
+        (Viva v, Just _) -> v > 0
+        _ -> False
 
+-- | Encontra o inimigo mais próximo usando distância Manhattan
+encontraInimigoMaisProximo :: NumMinhoca -> Posicao -> [Minhoca] -> Maybe (NumMinhoca, Posicao)
+encontraInimigoMaisProximo meuIdx minhaPos minhocas =
+    case inimigosVivos of
+        [] -> Nothing
+        xs -> Just $ minimumBy (comparing (\(_, p) -> distancia minhaPos p)) xs
+  where
+    inimigosVivos = 
+        [ (i, pos)
+        | (i, m) <- zip [0..] minhocas
+        , i /= meuIdx
+        , estaViva m
+        , Just pos <- [posicaoMinhoca m]
+        ]
+    
+    minimumBy :: (a -> a -> Ordering) -> [a] -> a
+    minimumBy _ [x] = x
+    minimumBy cmp (x:xs) = foldl (\acc y -> if cmp acc y == GT then y else acc) x xs
+    minimumBy _ [] = error "Lista vazia"
 
-
--- | Verifica se um movimento é seguro (não cai em água ou buraco)
-movimentoSeguro :: Posicao -> Direcao -> Estado -> Bool
-movimentoSeguro pos dir estado =
-    let novaPos = calculaPosicaoDestino pos dir
-        mapa = mapaEstado estado
-    in posValida novaPos mapa &&
-       (terrenoNaPos novaPos mapa == Ar || terrenoNaPos novaPos mapa == Terra) && -- ^ Permite considerar Terra como destino (o motor do jogo resolve o bloqueio)
-       not (temBarril novaPos estado)
-
-
--- | Verifica se um disparo é seguro usando o raio hexagonal correto
-disparoSeguroHex :: Posicao -> Direcao -> Int -> NumMinhoca -> Estado -> Bool
-disparoSeguroHex posBot dir diametro numBot estado =
-    let posDisparo = calculaPosicaoDestino posBot dir
-        raio = diametro `div` 2
-        
-        -- Verifica todas as posições dentro do raio hexagonal de explosão
-        posicoesExplosao = posicoesNoRaioHex posDisparo raio diametro
-        
-        -- O bot está na área de explosão?
-        botNaExplosao = posBot `elem` posicoesExplosao
-        
-        -- Outras minhocas do bot (ímpares) estão na explosão?
-        minhocas = minhocasEstado estado
-        aliados = [(i, m) | (i, m) <- zip [0..] minhocas, 
-                   odd i, i /= numBot, estaViva m]
-        
-        aliadosEmPerigo = any (\(_, m) -> 
-            case posicaoMinhoca m of
-                Just p -> p `elem` posicoesExplosao
-                Nothing -> False) aliados
-        
-    in not botNaExplosao && not aliadosEmPerigo
-
--- | Calcula todas as posições dentro do raio hexagonal de uma explosão
-posicoesNoRaioHex :: Posicao -> Int -> Int -> [Posicao]
-posicoesNoRaioHex (l, c) raio diametro =
-    [ (l + dl, c + dc)
-    | dl <- [-raio..raio]
-    , dc <- [-raio..raio]
-    , let custo = 2 * max (abs dl) (abs dc) + min (abs dl) (abs dc)
-    , (diametro - custo) > 0
-    ]--------------------------------------------------------------------------------
--- * AVALIAÇÃO INTELIGENTE DE JOGADAS
-
--- | Avalia uma jogada considerando distância aos adversários e segurança
-avaliaJogadaInteligente :: Jogada -> NumMinhoca -> Posicao -> [(NumMinhoca, Posicao)] -> Estado -> Pontuacao
-avaliaJogadaInteligente jogada num posBot adversarios estado =
-    let adversarioMaisProximo = if null adversarios then Nothing 
-                                else Just $ minimumBy (comparing (\(_, p) -> distancia posBot p)) adversarios
-        distanciaAdv = case adversarioMaisProximo of
-                         Just (_, p) -> distancia posBot p
-                         Nothing -> 100
-    in case jogada of
-        -- Dinamite: só útil se inimigo perto
-        Dispara Dinamite dir -> 
-            if distanciaAdv <= 5 then 500 else 50
-        
-        -- Bazuca: média distância
-        Dispara Bazuca dir -> 
-            if distanciaAdv >= 5 && distanciaAdv <= 9 then 450 else 50
-        
-        -- Escavadora: BAIXA prioridade - só se estiver preso
-        Dispara Escavadora dir ->
-            let posDisparo = calculaPosicaoDestino posBot dir
-                mapa = mapaEstado estado
-            in if terrenoNaPos posDisparo mapa == Terra && bloqueado posBot dir estado
-               then 100  -- Só se estiver mesmo bloqueado
-               else 10
-        
-        -- Mina: baixa prioridade
-        Dispara Mina dir -> 30
-        
-        -- Jetpack: mobilidade
-        Dispara Jetpack dir -> 200
-        
-        -- MOVIMENTOS: ALTA PRIORIDADE
-        Move dir ->
-            let novaPos = calculaPosicaoDestino posBot dir
-                mapa = mapaEstado estado
-            in if not (posValida novaPos mapa) || terrenoNaPos novaPos mapa == Agua || temBarril novaPos estado
-               then -100000
-               else 
-                   let novaDistancia = case adversarioMaisProximo of
-                                         Just (_, p) -> distancia novaPos p
-                                         Nothing -> 100
-                       -- Bônus se aproxima do inimigo
-                       bonusAproxima = if null adversarios 
-                                      then 0
-                                      else if novaDistancia < distanciaAdv 
-                                           then 300
-                                           else 0
-                       -- Bônus por direção (variedade)
-                       bonusDir = case dir of
-                           Norte    -> 700
-                           Oeste    -> 650
-                           Sul      -> 600
-                           Nordeste -> 550
-                           Noroeste -> 500
-                           Sudeste  -> 450
-                           Sudoeste -> 400
-                           Este     -> 350
-                   in bonusDir + bonusAproxima
-        
-        _ -> 1
 --------------------------------------------------------------------------------
--- * FUNÇÕES DE UTILIDADE
+-- * DECISÃO DE AÇÃO
 
--- | Encontra todos os adversários vivos
-encontraAdversarios :: NumMinhoca -> Estado -> [(NumMinhoca, Posicao)]
-encontraAdversarios numAtual estado =
-    [ (i, pos) 
-    | (i, m) <- zip [0..] (minhocasEstado estado)
-    , i /= numAtual
-    , estaViva m
-    , Just pos <- [posicaoMinhoca m]
-    ]
+-- | Decide a melhor ação: atacar, aproximar ou explorar
+decideAcao :: Ticks -> Minhoca -> Posicao -> Maybe (NumMinhoca, Posicao) -> Estado -> Jogada
+decideAcao tick minhoca minhaPos alvo estado =
+    case alvo of
+        Nothing -> explorar tick minhaPos minhoca  -- Sem inimigos: explorar
+        Just (_, posInimigo) ->
+            let (melhorAcao, dano) = encontraMelhorAtaque minhoca minhaPos posInimigo
+            in if dano > 0
+               then melhorAcao  -- Consegue causar dano: ataca!
+               else Move (direcaoParaAlvo minhaPos posInimigo)  -- Aproxima-se
 
--- | Verifica se uma minhoca está viva
-estaViva :: Minhoca -> Bool
-estaViva m = case vidaMinhoca m of
-    Viva _ -> True
-    Morta -> False
+-- | Modo exploração: usa armas para destruir terreno (dá pontos!)
+explorar :: Ticks -> Posicao -> Minhoca -> Jogada
+explorar tick (l, c) minhoca
+    | dinamiteMinhoca minhoca > 0 = Dispara Dinamite dir  -- Maior área
+    | minaMinhoca minhoca > 0     = Dispara Mina dir
+    | bazucaMinhoca minhoca > 0   = Dispara Bazuca dir
+    | otherwise                   = Move dir
+  where
+    -- Alterna direção baseado em tick e posição para não ficar preso
+    direcoes = [Norte, Este, Sul, Oeste]
+    dir = direcoes !! ((tick + l + c) `mod` 4)
+
+--------------------------------------------------------------------------------
+-- * SISTEMA DE COMBATE
+
+-- | Encontra o melhor ataque considerando todas as armas e direções
+encontraMelhorAtaque :: Minhoca -> Posicao -> Posicao -> (Jogada, Int)
+encontraMelhorAtaque minhoca minhaPos posInimigo =
+    if null ataquesPossiveis
+    then (Move Norte, 0)
+    else maximumBy (comparing snd) ataquesPossiveis
+  where
+    direcoes = [Norte, Sul, Este, Oeste]
+    
+    ataquesPossiveis = 
+        [ (Dispara Bazuca dir, calculaDanoBazuca minhaPos dir posInimigo)
+        | dir <- direcoes, bazucaMinhoca minhoca > 0
+        ] ++
+        [ (Dispara Dinamite dir, calculaDanoDinamite minhaPos dir posInimigo)
+        | dir <- direcoes, dinamiteMinhoca minhoca > 0
+        ] ++
+        [ (Dispara Mina dir, calculaDanoMina minhaPos dir posInimigo)
+        | dir <- direcoes, minaMinhoca minhoca > 0
+        ]
+
+-- | Calcula dano da Bazuca (diâmetro 5, viaja em linha reta)
+calculaDanoBazuca :: Posicao -> Direcao -> Posicao -> Int
+calculaDanoBazuca (l1, c1) dir (li, ci)
+    -- Bazuca só atinge se inimigo estiver alinhado na direção do disparo
+    | dir == Norte && c1 == ci && li < l1 = calculaDanoExplosao 5 (li, ci) (li, ci)
+    | dir == Sul   && c1 == ci && li > l1 = calculaDanoExplosao 5 (li, ci) (li, ci)
+    | dir == Este  && l1 == li && ci > c1 = calculaDanoExplosao 5 (li, ci) (li, ci)
+    | dir == Oeste && l1 == li && ci < c1 = calculaDanoExplosao 5 (li, ci) (li, ci)
+    | otherwise = 0
+
+-- | Calcula dano da Dinamite (diâmetro 7, colocada adjacente)
+calculaDanoDinamite :: Posicao -> Direcao -> Posicao -> Int
+calculaDanoDinamite minhaPos dir posInimigo = 
+    calculaDanoExplosao 7 posExplosao posInimigo
+  where
+    posExplosao = moveNaDirecao minhaPos dir
+
+-- | Calcula dano da Mina (diâmetro 3, colocada adjacente)
+calculaDanoMina :: Posicao -> Direcao -> Posicao -> Int
+calculaDanoMina minhaPos dir posInimigo = 
+    calculaDanoExplosao 3 posExplosao posInimigo
+  where
+    posExplosao = moveNaDirecao minhaPos dir
+
+-- | Calcula dano de explosão usando fórmula do jogo
+-- dano = (diâmetro - custo) * 10
+calculaDanoExplosao :: Int -> Posicao -> Posicao -> Int
+calculaDanoExplosao diametro (expL, expC) (alvL, alvC)
+    | dano > 0  = dano
+    | otherwise = 0
+  where
+    dl = alvL - expL
+    dc = alvC - expC
+    custo = 2 * max (abs dl) (abs dc) + min (abs dl) (abs dc)
+    dano = (diametro - custo) * 10
+
+--------------------------------------------------------------------------------
+-- * FUNÇÕES AUXILIARES
+
+-- | Move uma posição na direção dada
+moveNaDirecao :: Posicao -> Direcao -> Posicao
+moveNaDirecao (l, c) Norte = (l - 1, c)
+moveNaDirecao (l, c) Sul   = (l + 1, c)
+moveNaDirecao (l, c) Este  = (l, c + 1)
+moveNaDirecao (l, c) Oeste = (l, c - 1)
+moveNaDirecao (l, c) _     = (l, c)  -- Diagonais não suportadas em combate
+
+-- | Calcula direção para ir de A para B
+direcaoParaAlvo :: Posicao -> Posicao -> Direcao
+direcaoParaAlvo (l1, c1) (l2, c2)
+    | l1 > l2   = Norte  -- Alvo está acima
+    | l1 < l2   = Sul    -- Alvo está abaixo
+    | c1 < c2   = Este   -- Alvo está à direita
+    | otherwise = Oeste  -- Alvo está à esquerda
 
 -- | Calcula distância Manhattan entre duas posições
 distancia :: Posicao -> Posicao -> Int
 distancia (l1, c1) (l2, c2) = abs (l1 - l2) + abs (c1 - c2)
 
--- | Calcula a próxima posição dada uma direção
-calculaPosicaoDestino :: Posicao -> Direcao -> Posicao
-calculaPosicaoDestino (l, c) dir = case dir of
-    Norte -> (l - 1, c)
-    Sul -> (l + 1, c)
-    Este -> (l, c + 1)
-    Oeste -> (l, c - 1)
-    Nordeste -> (l - 1, c + 1)
-    Noroeste -> (l - 1, c - 1)
-    Sudeste -> (l + 1, c + 1)
-    Sudoeste -> (l + 1, c - 1)
-
--- | Conta quantos blocos de Terra seriam destruídos numa explosão
-contaTerraEmExplosao :: Posicao -> Int -> Mapa -> Int
-contaTerraEmExplosao (l, c) diametro mapa =
-    let raio = diametro `div` 2
-    in length [ ()
-              | dl <- [-raio..raio]
-              , dc <- [-raio..raio]
-              , let pos = (l + dl, c + dc)
-              , let custo = 2 * max (abs dl) (abs dc) + min (abs dl) (abs dc)
-              , (diametro - custo) > 0
-              , posValida pos mapa
-              , terrenoNaPos pos mapa == Terra
-              ]
-
--- | Verifica se uma posição está dentro dos limites do mapa
-posValida :: Posicao -> Mapa -> Bool
-posValida (l, c) mapa =
-    l >= 0 && l < length mapa && 
-    c >= 0 && c < length (head mapa)
-
--- | Obtém o terreno numa dada posição do mapa
-terrenoNaPos :: Posicao -> Mapa -> Terreno
-terrenoNaPos (l, c) mapa 
-    | posValida (l, c) mapa = (mapa !! l) !! c
-    | otherwise = Ar
-
-caminhoLivre :: Posicao -> Direcao -> Int -> Estado -> Bool
-caminhoLivre pos dir n estado =
-  let mapa = mapaEstado estado
-      posicoes = take n $ tail $ iterate (`calculaPosicaoDestino` dir) pos
-  in all (\p -> posValida p mapa &&
-                terrenoNaPos p mapa == Ar) posicoes
-
-deveSaltar :: Posicao -> Direcao -> Estado -> Bool
-deveSaltar pos dir estado =
-  let frente = calculaPosicaoDestino pos dir
-      frente2 = calculaPosicaoDestino frente dir
-      mapa = mapaEstado estado
-  in posValida frente mapa &&
-     terrenoNaPos frente mapa == Ar &&
-     posValida frente2 mapa &&
-     terrenoNaPos frente2 mapa == Terra
-
-alinhadoComDir :: Posicao -> Posicao -> Direcao -> Bool
-alinhadoComDir posBot posAdv dir =
-    let (x1, y1) = posBot
-        (x2, y2) = posAdv
-        (dxE, dyE) = (x2 - x1, y2 - y1)
-
-        -- vetor do disparo (1 passo na direção)
-        (xD, yD) = calculaPosicaoDestino posBot dir
-        (dxD, dyD) = (xD - x1, yD - y1)
-
-        -- produto escalar
-        dot = dxE * dxD + dyE * dyD
-    in dot > 0
-
-temBarril :: Posicao -> Estado -> Bool
-temBarril pos estado =
-  any (\obj -> case obj of
-                 Barril posObj _ -> posObj == pos
-                 _ -> False) (objetosEstado estado)
-
-bloqueado :: Posicao -> Direcao -> Estado -> Bool
-bloqueado pos dir estado =
-  let frente = calculaPosicaoDestino pos dir
-      mapa = mapaEstado estado
-  in not (posValida frente mapa) ||
-     terrenoNaPos frente mapa /= Ar
+-- | Verifica se uma minhoca está viva
+estaViva :: Minhoca -> Bool
+estaViva m = case vidaMinhoca m of
+    Viva v -> v > 0
+    Morta  -> False
