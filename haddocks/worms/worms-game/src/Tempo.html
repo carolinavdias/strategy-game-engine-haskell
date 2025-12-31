@@ -1,0 +1,963 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-|
+Module      : Tempo
+Description : Atualiza&#231;&#227;o temporal e sistema de turnos
+Copyright   : (c) Carolina Dias e Leonor Sousa, 2025
+License     : GPL-3
+
+Este m&#243;dulo controla a evolu&#231;&#227;o temporal do jogo.
+
+Responsabilidades:
+
+* Gest&#227;o do timer de turnos
+* Altern&#226;ncia entre jogadores
+* Execu&#231;&#227;o autom&#225;tica do bot
+* Integra&#231;&#227;o da f&#237;sica (Tarefa3)
+* Garantia de estados v&#225;lidos (vida, morte, vit&#243;ria)
+
+Inclui solu&#231;&#245;es espec&#237;ficas para mec&#226;nicas
+como o Jetpack, sem modificar a f&#237;sica base.
+
+-}</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Tempo</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="EstadoJogo.html"><span class="hs-identifier">EstadoJogo</span></a></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa3.html"><span class="hs-identifier">Tarefa3</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa4.html"><span class="hs-identifier">Tarefa4</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa4.html#jogadaTatica"><span class="hs-identifier">jogadaTatica</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa2.html"><span class="hs-identifier">Tarefa2</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa2.html#efetuaJogada"><span class="hs-identifier">efetuaJogada</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa1.html"><span class="hs-identifier">Tarefa1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa1.html#validaEstado"><span class="hs-identifier">validaEstado</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Mapas.html"><span class="hs-identifier">Mapas</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Mapas.html#selecionarMapa"><span class="hs-identifier">selecionarMapa</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Mapas.html#criarEstadoTreino"><span class="hs-identifier">criarEstadoTreino</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html"><span class="hs-identifier">Labs2025</span></a></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">type</span><span> </span><span id="Segundos"><span class="annot"><a href="Tempo.html#Segundos"><span class="hs-identifier hs-var">Segundos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-34"></span><span class="annot"><span class="hs-comment">-- * Atualiza&#231;&#227;o Principal</span></span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="annot"><span class="hs-comment">-- | Atualiza a partida completa a cada frame</span></span><span>
+</span><span id="line-37"></span><span class="annot"><a href="Tempo.html#atualizarPartidaCompleta"><span class="hs-identifier hs-type">atualizarPartidaCompleta</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tempo.html#Segundos"><span class="hs-identifier hs-type">Segundos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoJogo"><span class="hs-identifier hs-type">EstadoJogo</span></a></span><span>
+</span><span id="line-38"></span><span id="atualizarPartidaCompleta"><span class="annot"><span class="annottext">atualizarPartidaCompleta :: Float -&gt; EstadoPartida -&gt; EstadoJogo
+</span><a href="Tempo.html#atualizarPartidaCompleta"><span class="hs-identifier hs-var hs-var">atualizarPartidaCompleta</span></a></span></span><span> </span><span id="local-6989586621679107687"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107687"><span class="hs-identifier hs-var">dt</span></a></span></span><span> </span><span id="local-6989586621679107688"><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Bool
+</span><a href="EstadoJogo.html#pausado"><span class="hs-identifier hs-var">pausado</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Jogando"><span class="hs-identifier hs-var">Jogando</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-41"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span class="hs-comment">-- ^ 1. Se modo VsBot e turno do bot, executa jogada</span><span>
+</span><span id="line-42"></span><span>          </span><span id="local-6989586621679107698"><span class="annot"><span class="annottext">deveJogarBot :: Bool
+</span><a href="#local-6989586621679107698"><span class="hs-identifier hs-var hs-var">deveJogarBot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoPartida"><span class="hs-identifier hs-var">modoPartida</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#VsBot"><span class="hs-identifier hs-var">VsBot</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span>
+</span><span id="line-43"></span><span>                        </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#jogadorAtual"><span class="hs-identifier hs-var">jogadorAtual</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span>
+</span><span id="line-44"></span><span>                        </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Float
+</span><a href="EstadoJogo.html#tempoRestante"><span class="hs-identifier hs-var">tempoRestante</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">29.0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span>
+</span><span id="line-45"></span><span>                        </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#frameCounter"><span class="hs-identifier hs-var">frameCounter</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-46"></span><span>          </span><span>
+</span><span id="line-47"></span><span>          </span><span id="local-6989586621679107706"><span class="annot"><span class="annottext">partidaComBot :: EstadoPartida
+</span><a href="#local-6989586621679107706"><span class="hs-identifier hs-var hs-var">partidaComBot</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107698"><span class="hs-identifier hs-var">deveJogarBot</span></a></span><span>
+</span><span id="line-48"></span><span>                          </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#executarJogadaBot"><span class="hs-identifier hs-var">executarJogadaBot</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-49"></span><span>                          </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107688"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-50"></span><span>          </span><span>
+</span><span id="line-51"></span><span>          </span><span class="hs-comment">-- ^  2. Atualiza timer</span><span>
+</span><span id="line-52"></span><span>          </span><span id="local-6989586621679107708"><span class="annot"><span class="annottext">partidaComTimer :: EstadoPartida
+</span><a href="#local-6989586621679107708"><span class="hs-identifier hs-var hs-var">partidaComTimer</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#atualizarTimer"><span class="hs-identifier hs-var">atualizarTimer</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107687"><span class="hs-identifier hs-var">dt</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107706"><span class="hs-identifier hs-var">partidaComBot</span></a></span><span>
+</span><span id="line-53"></span><span>          </span><span>
+</span><span id="line-54"></span><span>          </span><span class="hs-comment">-- ^ 3. Atualiza frame counter</span><span>
+</span><span id="line-55"></span><span>          </span><span id="local-6989586621679107714"><span class="annot"><span class="annottext">novoFrame :: Int
+</span><a href="#local-6989586621679107714"><span class="hs-identifier hs-var hs-var">novoFrame</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Ord a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">max</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#frameCounter"><span class="hs-identifier hs-var">frameCounter</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107708"><span class="hs-identifier hs-var">partidaComTimer</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>          </span><span id="local-6989586621679107716"><span class="annot"><span class="annottext">partidaComFrame :: EstadoPartida
+</span><a href="#local-6989586621679107716"><span class="hs-identifier hs-var hs-var">partidaComFrame</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107708"><span class="hs-identifier hs-var">partidaComTimer</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#frameCounter"><span class="hs-identifier hs-var">frameCounter</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679107714"><span class="hs-identifier hs-type">novoFrame</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-57"></span><span>          </span><span>
+</span><span id="line-58"></span><span>          </span><span class="hs-comment">-- ^ 4. Atualiza anima&#231;&#245;es</span><span>
+</span><span id="line-59"></span><span>          </span><span id="local-6989586621679107717"><span class="annot"><span class="annottext">partidaComAnimacoes :: EstadoPartida
+</span><a href="#local-6989586621679107717"><span class="hs-identifier hs-var hs-var">partidaComAnimacoes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107716"><span class="hs-identifier hs-var">partidaComFrame</span></a></span><span> </span><span>
+</span><span id="line-60"></span><span>            </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#animacoes"><span class="hs-identifier hs-var">animacoes</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Tempo.html#atualizarAnimacoes"><span class="hs-identifier hs-type">atualizarAnimacoes</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107687"><span class="hs-identifier hs-type">dt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#animacoes"><span class="hs-identifier hs-var">animacoes</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107716"><span class="hs-identifier hs-type">partidaComFrame</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-61"></span><span>          </span><span>
+</span><span id="line-62"></span><span>          </span><span class="hs-comment">-- ^  5. Avan&#231;a f&#237;sica (com verifica&#231;&#227;o de modo voo!)</span><span>
+</span><span id="line-63"></span><span>          </span><span id="local-6989586621679107720"><span class="annot"><span class="annottext">partidaComFisica :: EstadoPartida
+</span><a href="#local-6989586621679107720"><span class="hs-identifier hs-var hs-var">partidaComFisica</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#avancarFisicaComModoVoo"><span class="hs-identifier hs-var">avancarFisicaComModoVoo</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107687"><span class="hs-identifier hs-var">dt</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107717"><span class="hs-identifier hs-var">partidaComAnimacoes</span></a></span><span>
+</span><span id="line-64"></span><span>          </span><span>
+</span><span id="line-65"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="Tempo.html#verificarCondicaoVitoria"><span class="hs-identifier hs-var">verificarCondicaoVitoria</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107720"><span class="hs-identifier hs-var">partidaComFisica</span></a></span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-68"></span><span class="annot"><span class="hs-comment">-- * Bot (Modo VsBot)</span></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="annot"><span class="hs-comment">-- | Executa jogada do bot - faz UMA jogada e passa turno</span></span><span>
+</span><span id="line-71"></span><span class="annot"><a href="Tempo.html#executarJogadaBot"><span class="hs-identifier hs-type">executarJogadaBot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span>
+</span><span id="line-72"></span><span id="executarJogadaBot"><span class="annot"><span class="annottext">executarJogadaBot :: EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#executarJogadaBot"><span class="hs-identifier hs-var hs-var">executarJogadaBot</span></a></span></span><span> </span><span id="local-6989586621679107723"><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107723"><span class="hs-identifier hs-var">partida</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107724"><span class="annot"><span class="annottext">estadoAtual :: Estado
+</span><a href="#local-6989586621679107724"><span class="hs-identifier hs-var hs-var">estadoAtual</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Estado
+</span><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107723"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-74"></span><span>      </span><span id="local-6989586621679107726"><span class="annot"><span class="annottext">minhocas :: [Minhoca]
+</span><a href="#local-6989586621679107726"><span class="hs-identifier hs-var hs-var">minhocas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107724"><span class="hs-identifier hs-var">estadoAtual</span></a></span><span>
+</span><span id="line-75"></span><span>      </span><span>
+</span><span id="line-76"></span><span>      </span><span class="hs-comment">-- ^ Encontra minhoca azul viva (&#237;ndice &#237;mpar)</span><span>
+</span><span id="line-77"></span><span>      </span><span id="local-6989586621679107739"><span class="annot"><span class="annottext">minhocasAzuis :: [(Int, Minhoca)]
+</span><a href="#local-6989586621679107739"><span class="hs-identifier hs-var hs-var">minhocasAzuis</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107740"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107741"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107740"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107740"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107741"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107741"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Minhoca] -&gt; [(Int, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107726"><span class="hs-identifier hs-var">minhocas</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">odd</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107740"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107741"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-78"></span><span>      </span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[(Int, Minhoca)]
+</span><a href="#local-6989586621679107739"><span class="hs-identifier hs-var">minhocasAzuis</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-80"></span><span>       </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-var">trocarTurno</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107723"><span class="hs-identifier hs-var">partida</span></a></span><span>  </span><span class="hs-comment">-- ^ Sem minhocas azuis vivas, passa turno</span><span>
+</span><span id="line-81"></span><span>       </span><span class="hs-special">(</span><span class="hs-special">(</span><span id="local-6989586621679107745"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107745"><span class="hs-identifier hs-var">numMinhoca</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[(Int, Minhoca)]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-82"></span><span>         </span><span class="hs-keyword">let</span><span> </span><span class="hs-comment">-- ^ Usa turnoAtual como seed para variar jogadas</span><span>
+</span><span id="line-83"></span><span>             </span><span id="local-6989586621679107746"><span class="annot"><span class="annottext">turno :: Int
+</span><a href="#local-6989586621679107746"><span class="hs-identifier hs-var hs-var">turno</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#turnoAtual"><span class="hs-identifier hs-var">turnoAtual</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107723"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-84"></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107748"><span class="annot"><span class="annottext">Jogada
+</span><a href="#local-6989586621679107748"><span class="hs-identifier hs-var">jogada</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Estado -&gt; (Int, Jogada)
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa4.html#jogadaTatica"><span class="hs-identifier hs-var">jogadaTatica</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107746"><span class="hs-identifier hs-var">turno</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107724"><span class="hs-identifier hs-var">estadoAtual</span></a></span><span>
+</span><span id="line-85"></span><span>             </span><span id="local-6989586621679107749"><span class="annot"><span class="annottext">novoEstado :: Estado
+</span><a href="#local-6989586621679107749"><span class="hs-identifier hs-var hs-var">novoEstado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Jogada -&gt; Estado -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa2.html#efetuaJogada"><span class="hs-identifier hs-var">efetuaJogada</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107745"><span class="hs-identifier hs-var">numMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Jogada
+</span><a href="#local-6989586621679107748"><span class="hs-identifier hs-var">jogada</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107724"><span class="hs-identifier hs-var">estadoAtual</span></a></span><span>
+</span><span id="line-86"></span><span>         </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; Bool
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa1.html#validaEstado"><span class="hs-identifier hs-var">validaEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107749"><span class="hs-identifier hs-var">novoEstado</span></a></span><span>
+</span><span id="line-87"></span><span>            </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-var">trocarTurno</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107723"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679107749"><span class="hs-identifier hs-type">novoEstado</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-var">trocarTurno</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107723"><span class="hs-identifier hs-var">partida</span></a></span><span>  </span><span class="hs-comment">-- ^ Jogada inv&#225;lida, passa turno</span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-91"></span><span class="annot"><span class="hs-comment">-- * Timer e Turnos</span></span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span class="hs-comment">-- | Atualiza o timer de turno</span><span>
+</span><span id="line-94"></span><span class="hs-comment">-- MODIFICADO: No modo Treino, n&#227;o decrementa o timer</span><span>
+</span><span id="line-95"></span><span class="annot"><a href="Tempo.html#atualizarTimer"><span class="hs-identifier hs-type">atualizarTimer</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tempo.html#Segundos"><span class="hs-identifier hs-type">Segundos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span>
+</span><span id="line-96"></span><span id="atualizarTimer"><span class="annot"><span class="annottext">atualizarTimer :: Float -&gt; EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#atualizarTimer"><span class="hs-identifier hs-var hs-var">atualizarTimer</span></a></span></span><span> </span><span id="local-6989586621679107750"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107750"><span class="hs-identifier hs-var">dt</span></a></span></span><span> </span><span id="local-6989586621679107751"><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107751"><span class="hs-identifier hs-var">partida</span></a></span></span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoPartida"><span class="hs-identifier hs-var">modoPartida</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107751"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107751"><span class="hs-identifier hs-var">partida</span></a></span><span>  </span><span class="hs-comment">-- ^ Treino: sem timer!</span><span>
+</span><span id="line-98"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-99"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107754"><span class="annot"><span class="annottext">novoTempo :: Float
+</span><a href="#local-6989586621679107754"><span class="hs-identifier hs-var hs-var">novoTempo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Float
+</span><a href="EstadoJogo.html#tempoRestante"><span class="hs-identifier hs-var">tempoRestante</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107751"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107750"><span class="hs-identifier hs-var">dt</span></a></span><span>
+</span><span id="line-100"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107754"><span class="hs-identifier hs-var">novoTempo</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-101"></span><span>         </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-var">trocarTurno</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107751"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-102"></span><span>         </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107751"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#tempoRestante"><span class="hs-identifier hs-var">tempoRestante</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679107754"><span class="hs-identifier hs-type">novoTempo</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span class="annot"><span class="hs-comment">-- | Troca o turno entre jogadores</span></span><span>
+</span><span id="line-105"></span><span class="annot"><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-type">trocarTurno</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span>
+</span><span id="line-106"></span><span id="trocarTurno"><span class="annot"><span class="annottext">trocarTurno :: EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-var hs-var">trocarTurno</span></a></span></span><span> </span><span id="local-6989586621679107756"><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107756"><span class="hs-identifier hs-var">partida</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107761"><span class="annot"><span class="annottext">novoJogador :: Int
+</span><a href="#local-6989586621679107761"><span class="hs-identifier hs-var hs-var">novoJogador</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#jogadorAtual"><span class="hs-identifier hs-var">jogadorAtual</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107756"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-108"></span><span>      </span><span id="local-6989586621679107762"><span class="annot"><span class="annottext">minhocas :: [Minhoca]
+</span><a href="#local-6989586621679107762"><span class="hs-identifier hs-var hs-var">minhocas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoPartida -&gt; Estado
+</span><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107756"><span class="hs-identifier hs-var">partida</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-109"></span><span>      </span><span>
+</span><span id="line-110"></span><span>      </span><span class="hs-comment">-- ^ Verifica se o pr&#243;ximo jogador tem minhocas vivas</span><span>
+</span><span id="line-111"></span><span>      </span><span id="local-6989586621679107790"><span class="annot"><span class="annottext">temMinhocasProximoJogador :: Bool
+</span><a href="#local-6989586621679107790"><span class="hs-identifier hs-var hs-var">temMinhocasProximoJogador</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-112"></span><span>        </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107761"><span class="hs-identifier hs-var">novoJogador</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-113"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">((Integer, Minhoca) -&gt; Bool) -&gt; [(Integer, Minhoca)] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">any</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679107792"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679107792"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107793"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107793"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679107792"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107793"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Integer] -&gt; [Minhoca] -&gt; [(Integer, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107762"><span class="hs-identifier hs-var">minhocas</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-114"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">((Integer, Minhoca) -&gt; Bool) -&gt; [(Integer, Minhoca)] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">any</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679107795"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679107795"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107796"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107796"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">odd</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679107795"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107796"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Integer] -&gt; [Minhoca] -&gt; [(Integer, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107762"><span class="hs-identifier hs-var">minhocas</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span>      </span><span>
+</span><span id="line-116"></span><span>      </span><span class="hs-comment">-- ^ Se pr&#243;ximo jogador n&#227;o tem minhocas, mant&#233;m o atual</span><span>
+</span><span id="line-117"></span><span>      </span><span id="local-6989586621679107797"><span class="annot"><span class="annottext">jogadorFinal :: Int
+</span><a href="#local-6989586621679107797"><span class="hs-identifier hs-var hs-var">jogadorFinal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107790"><span class="hs-identifier hs-var">temMinhocasProximoJogador</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107761"><span class="hs-identifier hs-var">novoJogador</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#jogadorAtual"><span class="hs-identifier hs-var">jogadorAtual</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107756"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-118"></span><span>      </span><span>
+</span><span id="line-119"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107756"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-120"></span><span>       </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#jogadorAtual"><span class="hs-identifier hs-var">jogadorAtual</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679107797"><span class="hs-identifier hs-type">jogadorFinal</span></a></span><span>
+</span><span id="line-121"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#tempoRestante"><span class="hs-identifier hs-var">tempoRestante</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="EstadoJogo.html#tempoTotal"><span class="hs-identifier hs-var">tempoTotal</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107756"><span class="hs-identifier hs-type">partida</span></a></span><span>
+</span><span id="line-122"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#turnoAtual"><span class="hs-identifier hs-var">turnoAtual</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="EstadoJogo.html#turnoAtual"><span class="hs-identifier hs-var">turnoAtual</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107756"><span class="hs-identifier hs-type">partida</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-123"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#menuArmasAbertoP1"><span class="hs-identifier hs-var">menuArmasAbertoP1</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span>
+</span><span id="line-124"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#menuArmasAbertoP2"><span class="hs-identifier hs-var">menuArmasAbertoP2</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span>
+</span><span id="line-125"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#armaSelecionadaP1"><span class="hs-identifier hs-var">armaSelecionadaP1</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span>
+</span><span id="line-126"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#armaSelecionadaP2"><span class="hs-identifier hs-var">armaSelecionadaP2</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span>
+</span><span id="line-127"></span><span>       </span><span class="hs-comment">-- ^  Desativa modo voo ao trocar turno</span><span>
+</span><span id="line-128"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoVooP1"><span class="hs-identifier hs-var">modoVooP1</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span>
+</span><span id="line-129"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoVooP2"><span class="hs-identifier hs-var">modoVooP2</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span>
+</span><span id="line-130"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#frameCounter"><span class="hs-identifier hs-var">frameCounter</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-131"></span><span>       </span><span class="hs-special">}</span><span>
+</span><span id="line-132"></span><span>
+</span><span id="line-133"></span><span class="annot"><span class="hs-comment">-- | Passa o turno manualmente</span></span><span>
+</span><span id="line-134"></span><span class="annot"><a href="Tempo.html#passarTurno"><span class="hs-identifier hs-type">passarTurno</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span>
+</span><span id="line-135"></span><span id="passarTurno"><span class="annot"><span class="annottext">passarTurno :: EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#passarTurno"><span class="hs-identifier hs-var hs-var">passarTurno</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#trocarTurno"><span class="hs-identifier hs-var">trocarTurno</span></a></span><span>
+</span><span id="line-136"></span><span>
+</span><span id="line-137"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-138"></span><span class="annot"><span class="hs-comment">-- * F&#237;sica com Modo Voo</span></span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span class="hs-comment">-- | Avan&#231;a a f&#237;sica do jogo, respeitando o modo voo do Jetpack</span><span>
+</span><span id="line-141"></span><span class="hs-comment">--</span><span>
+</span><span id="line-142"></span><span class="hs-comment">-- Quando uma minhoca est&#225; em modo voo:</span><span>
+</span><span id="line-143"></span><span class="hs-comment">--</span><span>
+</span><span id="line-144"></span><span class="hs-comment">--   * A gravidade __n&#227;o__ a afeta</span><span>
+</span><span id="line-145"></span><span class="hs-comment">--   * Pode mover-se livremente no ar</span><span>
+</span><span id="line-146"></span><span class="annot"><a href="Tempo.html#avancarFisicaComModoVoo"><span class="hs-identifier hs-type">avancarFisicaComModoVoo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tempo.html#Segundos"><span class="hs-identifier hs-type">Segundos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span>
+</span><span id="line-147"></span><span id="avancarFisicaComModoVoo"><span class="annot"><span class="annottext">avancarFisicaComModoVoo :: Float -&gt; EstadoPartida -&gt; EstadoPartida
+</span><a href="Tempo.html#avancarFisicaComModoVoo"><span class="hs-identifier hs-var hs-var">avancarFisicaComModoVoo</span></a></span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679107807"><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107807"><span class="hs-identifier hs-var">partida</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-148"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107808"><span class="annot"><span class="annottext">estadoAtual :: Estado
+</span><a href="#local-6989586621679107808"><span class="hs-identifier hs-var hs-var">estadoAtual</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Estado
+</span><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107807"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-149"></span><span>      </span><span>
+</span><span id="line-150"></span><span>      </span><span class="hs-comment">-- ^ Aplica f&#237;sica normal (Tarefa3)</span><span>
+</span><span id="line-151"></span><span>      </span><span id="local-6989586621679107809"><span class="annot"><span class="annottext">estadoComFisica :: Estado
+</span><a href="#local-6989586621679107809"><span class="hs-identifier hs-var hs-var">estadoComFisica</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa3.html#avancaEstado"><span class="hs-identifier hs-var">avancaEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107808"><span class="hs-identifier hs-var">estadoAtual</span></a></span><span>
+</span><span id="line-152"></span><span>      </span><span>
+</span><span id="line-153"></span><span>      </span><span class="hs-comment">-- ^ Se alguma minhoca est&#225; em modo voo, restaura a sua posi&#231;&#227;o (n&#227;o cai)</span><span>
+</span><span id="line-154"></span><span>      </span><span id="local-6989586621679107811"><span class="annot"><span class="annottext">minhocasOriginais :: [Minhoca]
+</span><a href="#local-6989586621679107811"><span class="hs-identifier hs-var hs-var">minhocasOriginais</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107808"><span class="hs-identifier hs-var">estadoAtual</span></a></span><span>
+</span><span id="line-155"></span><span>      </span><span id="local-6989586621679107812"><span class="annot"><span class="annottext">minhocasComFisica :: [Minhoca]
+</span><a href="#local-6989586621679107812"><span class="hs-identifier hs-var hs-var">minhocasComFisica</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107809"><span class="hs-identifier hs-var">estadoComFisica</span></a></span><span>
+</span><span id="line-156"></span><span>      </span><span>
+</span><span id="line-157"></span><span>      </span><span class="hs-comment">-- ^ Corrige posi&#231;&#245;es das minhocas em modo voo</span><span>
+</span><span id="line-158"></span><span>      </span><span id="local-6989586621679107815"><span class="annot"><span class="annottext">minhocasCorrigidas :: [Minhoca]
+</span><a href="#local-6989586621679107815"><span class="hs-identifier hs-var hs-var">minhocasCorrigidas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Minhoca -&gt; Minhoca -&gt; Minhoca)
+-&gt; [Int] -&gt; [Minhoca] -&gt; [Minhoca] -&gt; [Minhoca]
+forall a b c d. (a -&gt; b -&gt; c -&gt; d) -&gt; [a] -&gt; [b] -&gt; [c] -&gt; [d]
+</span><span class="hs-identifier hs-var">zipWith3</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Minhoca -&gt; Minhoca -&gt; Minhoca
+</span><a href="#local-6989586621679107817"><span class="hs-identifier hs-var">corrigirModoVoo</span></a></span><span> </span><span>
+</span><span id="line-159"></span><span>                                    </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span>
+</span><span id="line-160"></span><span>                                    </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107811"><span class="hs-identifier hs-var">minhocasOriginais</span></a></span><span> </span><span>
+</span><span id="line-161"></span><span>                                    </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107812"><span class="hs-identifier hs-var">minhocasComFisica</span></a></span><span>
+</span><span id="line-162"></span><span>      </span><span>
+</span><span id="line-163"></span><span>      </span><span class="hs-comment">-- ^  Garante que minhocas com HP &lt;= 0 ficam Mortas</span><span>
+</span><span id="line-164"></span><span>      </span><span id="local-6989586621679107818"><span class="annot"><span class="annottext">minhocasFinais :: [Minhoca]
+</span><a href="#local-6989586621679107818"><span class="hs-identifier hs-var hs-var">minhocasFinais</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Minhoca -&gt; Minhoca) -&gt; [Minhoca] -&gt; [Minhoca]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Minhoca
+</span><a href="#local-6989586621679107819"><span class="hs-identifier hs-var">garantirMorteSeVida0</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107815"><span class="hs-identifier hs-var">minhocasCorrigidas</span></a></span><span>
+</span><span id="line-165"></span><span>      </span><span>
+</span><span id="line-166"></span><span>      </span><span id="local-6989586621679107820"><span class="annot"><span class="annottext">novoEstado :: Estado
+</span><a href="#local-6989586621679107820"><span class="hs-identifier hs-var hs-var">novoEstado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107809"><span class="hs-identifier hs-var">estadoComFisica</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679107818"><span class="hs-identifier hs-type">minhocasFinais</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-167"></span><span>      </span><span>
+</span><span id="line-168"></span><span>      </span><span id="local-6989586621679107821"><span class="annot"><span class="annottext">novasAnimacoes :: [AnimacaoAtiva]
+</span><a href="#local-6989586621679107821"><span class="hs-identifier hs-var hs-var">novasAnimacoes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; Estado -&gt; [AnimacaoAtiva]
+</span><a href="Tempo.html#detectarExplosoes"><span class="hs-identifier hs-var">detectarExplosoes</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107808"><span class="hs-identifier hs-var">estadoAtual</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107820"><span class="hs-identifier hs-var">novoEstado</span></a></span><span>
+</span><span id="line-169"></span><span>      </span><span>
+</span><span id="line-170"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107807"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span>
+</span><span id="line-171"></span><span>       </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679107820"><span class="hs-identifier hs-type">novoEstado</span></a></span><span>
+</span><span id="line-172"></span><span>       </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="EstadoJogo.html#animacoes"><span class="hs-identifier hs-var">animacoes</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="EstadoJogo.html#animacoes"><span class="hs-identifier hs-var">animacoes</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107807"><span class="hs-identifier hs-type">partida</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">++</span></span><span> </span><span class="annot"><a href="#local-6989586621679107821"><span class="hs-identifier hs-type">novasAnimacoes</span></a></span><span>
+</span><span id="line-173"></span><span>       </span><span class="hs-special">}</span><span>
+</span><span id="line-174"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-175"></span><span>    </span><span class="hs-comment">-- ^ Corrige posi&#231;&#227;o se minhoca est&#225; em modo voo</span><span>
+</span><span id="line-176"></span><span>    </span><span class="annot"><a href="#local-6989586621679107817"><span class="hs-identifier hs-type">corrigirModoVoo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-177"></span><span>    </span><span id="local-6989586621679107817"><span class="annot"><span class="annottext">corrigirModoVoo :: Int -&gt; Minhoca -&gt; Minhoca -&gt; Minhoca
+</span><a href="#local-6989586621679107817"><span class="hs-identifier hs-var hs-var">corrigirModoVoo</span></a></span></span><span> </span><span id="local-6989586621679107823"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107823"><span class="hs-identifier hs-var">idx</span></a></span></span><span> </span><span id="local-6989586621679107824"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107824"><span class="hs-identifier hs-var">original</span></a></span></span><span> </span><span id="local-6989586621679107825"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107825"><span class="hs-identifier hs-var">comFisica</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-178"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107828"><span class="annot"><span class="annottext">emModoVoo :: Bool
+</span><a href="#local-6989586621679107828"><span class="hs-identifier hs-var hs-var">emModoVoo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107823"><span class="hs-identifier hs-var">idx</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Bool
+</span><a href="EstadoJogo.html#modoVooP1"><span class="hs-identifier hs-var">modoVooP1</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107807"><span class="hs-identifier hs-var">partida</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span>
+</span><span id="line-179"></span><span>                      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">odd</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107823"><span class="hs-identifier hs-var">idx</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Bool
+</span><a href="EstadoJogo.html#modoVooP2"><span class="hs-identifier hs-var">modoVooP2</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107807"><span class="hs-identifier hs-var">partida</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-180"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107828"><span class="hs-identifier hs-var">emModoVoo</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107824"><span class="hs-identifier hs-var">original</span></a></span><span>
+</span><span id="line-181"></span><span>         </span><span class="hs-keyword">then</span><span> </span><span class="hs-comment">-- ^ Mant&#233;m posi&#231;&#227;o original (n&#227;o cai)</span><span>
+</span><span id="line-182"></span><span>              </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107825"><span class="hs-identifier hs-var">comFisica</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107824"><span class="hs-identifier hs-type">original</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-183"></span><span>         </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107825"><span class="hs-identifier hs-var">comFisica</span></a></span><span>
+</span><span id="line-184"></span><span>    </span><span>
+</span><span id="line-185"></span><span>    </span><span class="hs-comment">-- ^  Se minhoca tem Viva 0 ou menos, marca como Morta</span><span>
+</span><span id="line-186"></span><span>    </span><span class="annot"><a href="#local-6989586621679107819"><span class="hs-identifier hs-type">garantirMorteSeVida0</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-187"></span><span>    </span><span id="local-6989586621679107819"><span class="annot"><span class="annottext">garantirMorteSeVida0 :: Minhoca -&gt; Minhoca
+</span><a href="#local-6989586621679107819"><span class="hs-identifier hs-var hs-var">garantirMorteSeVida0</span></a></span></span><span> </span><span id="local-6989586621679107831"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107831"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107831"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-188"></span><span>      </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107834"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107834"><span class="hs-identifier hs-var">hp</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107834"><span class="hs-identifier hs-var">hp</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107831"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Morta"><span class="hs-identifier hs-type">Morta</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-189"></span><span>      </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107831"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><span id="line-190"></span><span>
+</span><span id="line-191"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-192"></span><span class="annot"><span class="hs-comment">-- * Dete&#231;&#227;o de Eventos</span></span><span>
+</span><span id="line-193"></span><span>
+</span><span id="line-194"></span><span class="annot"><span class="hs-comment">-- | Detecta explos&#245;es e danos entre estados</span></span><span>
+</span><span id="line-195"></span><span class="annot"><a href="Tempo.html#detectarExplosoes"><span class="hs-identifier hs-type">detectarExplosoes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="EstadoJogo.html#AnimacaoAtiva"><span class="hs-identifier hs-type">AnimacaoAtiva</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-196"></span><span id="detectarExplosoes"><span class="annot"><span class="annottext">detectarExplosoes :: Estado -&gt; Estado -&gt; [AnimacaoAtiva]
+</span><a href="Tempo.html#detectarExplosoes"><span class="hs-identifier hs-var hs-var">detectarExplosoes</span></a></span></span><span> </span><span id="local-6989586621679107836"><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107836"><span class="hs-identifier hs-var">estadoAntes</span></a></span></span><span> </span><span id="local-6989586621679107837"><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107837"><span class="hs-identifier hs-var">estadoDepois</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-197"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107838"><span class="annot"><span class="annottext">objetosAntes :: [Objeto]
+</span><a href="#local-6989586621679107838"><span class="hs-identifier hs-var hs-var">objetosAntes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Objeto]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107836"><span class="hs-identifier hs-var">estadoAntes</span></a></span><span>
+</span><span id="line-198"></span><span>      </span><span id="local-6989586621679107840"><span class="annot"><span class="annottext">objetosDepois :: [Objeto]
+</span><a href="#local-6989586621679107840"><span class="hs-identifier hs-var hs-var">objetosDepois</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Objeto]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#objetosEstado"><span class="hs-identifier hs-var">objetosEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107837"><span class="hs-identifier hs-var">estadoDepois</span></a></span><span>
+</span><span id="line-199"></span><span>      </span><span id="local-6989586621679107844"><span class="annot"><span class="annottext">objetosRemovidos :: [Objeto]
+</span><a href="#local-6989586621679107844"><span class="hs-identifier hs-var hs-var">objetosRemovidos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679107845"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679107845"><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679107845"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Objeto]
+</span><a href="#local-6989586621679107838"><span class="hs-identifier hs-var">objetosAntes</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679107845"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Objeto -&gt; [Objeto] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-operator hs-var">`notElem`</span></span><span> </span><span class="annot"><span class="annottext">[Objeto]
+</span><a href="#local-6989586621679107840"><span class="hs-identifier hs-var">objetosDepois</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-200"></span><span>      </span><span id="local-6989586621679107847"><span class="annot"><span class="annottext">explosoes :: [AnimacaoAtiva]
+</span><a href="#local-6989586621679107847"><span class="hs-identifier hs-var hs-var">explosoes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Float -&gt; Int -&gt; AnimacaoAtiva
+</span><a href="EstadoJogo.html#AnimExplosao"><span class="hs-identifier hs-var">AnimExplosao</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Objeto -&gt; Posicao
+</span><a href="Tempo.html#posicaoObjeto"><span class="hs-identifier hs-var">posicaoObjeto</span></a></span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679107850"><span class="hs-identifier hs-var">obj</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span>
+</span><span id="line-201"></span><span>                  </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679107850"><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679107850"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Objeto]
+</span><a href="#local-6989586621679107844"><span class="hs-identifier hs-var">objetosRemovidos</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Objeto -&gt; Bool
+</span><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-var">eObjetoExplosivo</span></a></span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><a href="#local-6989586621679107850"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-202"></span><span>      </span><span id="local-6989586621679107852"><span class="annot"><span class="annottext">minhocasAntes :: [Minhoca]
+</span><a href="#local-6989586621679107852"><span class="hs-identifier hs-var hs-var">minhocasAntes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107836"><span class="hs-identifier hs-var">estadoAntes</span></a></span><span>
+</span><span id="line-203"></span><span>      </span><span id="local-6989586621679107853"><span class="annot"><span class="annottext">minhocasDepois :: [Minhoca]
+</span><a href="#local-6989586621679107853"><span class="hs-identifier hs-var hs-var">minhocasDepois</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="annot"><span class="annottext">Estado
+</span><a href="#local-6989586621679107837"><span class="hs-identifier hs-var">estadoDepois</span></a></span><span>
+</span><span id="line-204"></span><span>      </span><span id="local-6989586621679107854"><span class="annot"><span class="annottext">danos :: [AnimacaoAtiva]
+</span><a href="#local-6989586621679107854"><span class="hs-identifier hs-var hs-var">danos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Minhoca] -&gt; [Minhoca] -&gt; [AnimacaoAtiva]
+</span><a href="Tempo.html#detectarDanosMinhocas"><span class="hs-identifier hs-var">detectarDanosMinhocas</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107852"><span class="hs-identifier hs-var">minhocasAntes</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107853"><span class="hs-identifier hs-var">minhocasDepois</span></a></span><span>
+</span><span id="line-205"></span><span>  </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">[AnimacaoAtiva]
+</span><a href="#local-6989586621679107847"><span class="hs-identifier hs-var">explosoes</span></a></span><span> </span><span class="annot"><span class="annottext">[AnimacaoAtiva] -&gt; [AnimacaoAtiva] -&gt; [AnimacaoAtiva]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[AnimacaoAtiva]
+</span><a href="#local-6989586621679107854"><span class="hs-identifier hs-var">danos</span></a></span><span>
+</span><span id="line-206"></span><span>
+</span><span id="line-207"></span><span class="annot"><span class="hs-comment">-- | Verifica se objeto &#233; explosivo</span></span><span>
+</span><span id="line-208"></span><span class="annot"><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-type">eObjetoExplosivo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-209"></span><span id="eObjetoExplosivo"><span class="annot"><span class="annottext">eObjetoExplosivo :: Objeto -&gt; Bool
+</span><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-var hs-var">eObjetoExplosivo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-type">Barril</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-210"></span><span class="annot"><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-var">eObjetoExplosivo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-type">Disparo</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Int
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-211"></span><span class="annot"><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-var">eObjetoExplosivo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-type">Disparo</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-212"></span><span class="annot"><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-var">eObjetoExplosivo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-type">Disparo</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-213"></span><span class="annot"><a href="Tempo.html#eObjetoExplosivo"><span class="hs-identifier hs-var">eObjetoExplosivo</span></a></span><span> </span><span class="annot"><span class="annottext">Objeto
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-214"></span><span>
+</span><span id="line-215"></span><span class="annot"><span class="hs-comment">-- | Obt&#233;m posi&#231;&#227;o de um objeto</span></span><span>
+</span><span id="line-216"></span><span class="annot"><a href="Tempo.html#posicaoObjeto"><span class="hs-identifier hs-type">posicaoObjeto</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Objeto"><span class="hs-identifier hs-type">Objeto</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span>
+</span><span id="line-217"></span><span id="posicaoObjeto"><span class="annot"><span class="annottext">posicaoObjeto :: Objeto -&gt; Posicao
+</span><a href="Tempo.html#posicaoObjeto"><span class="hs-identifier hs-var hs-var">posicaoObjeto</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-type">Barril</span></a></span><span> </span><span id="local-6989586621679107861"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107861"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107861"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-218"></span><span class="annot"><a href="Tempo.html#posicaoObjeto"><span class="hs-identifier hs-var">posicaoObjeto</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-type">Disparo</span></a></span><span> </span><span id="local-6989586621679107862"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107862"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Maybe Int
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107862"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-219"></span><span>
+</span><span id="line-220"></span><span class="annot"><span class="hs-comment">-- | Detecta danos nas minhocas</span></span><span>
+</span><span id="line-221"></span><span class="annot"><a href="Tempo.html#detectarDanosMinhocas"><span class="hs-identifier hs-type">detectarDanosMinhocas</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="EstadoJogo.html#AnimacaoAtiva"><span class="hs-identifier hs-type">AnimacaoAtiva</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-222"></span><span id="detectarDanosMinhocas"><span class="annot"><span class="annottext">detectarDanosMinhocas :: [Minhoca] -&gt; [Minhoca] -&gt; [AnimacaoAtiva]
+</span><a href="Tempo.html#detectarDanosMinhocas"><span class="hs-identifier hs-var hs-var">detectarDanosMinhocas</span></a></span></span><span> </span><span id="local-6989586621679107863"><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107863"><span class="hs-identifier hs-var">antes</span></a></span></span><span> </span><span id="local-6989586621679107864"><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107864"><span class="hs-identifier hs-var">depois</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-223"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Int -&gt; Float -&gt; AnimacaoAtiva
+</span><a href="EstadoJogo.html#AnimDano"><span class="hs-identifier hs-var">AnimDano</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107866"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107867"><span class="hs-identifier hs-var">dano</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.0</span></span><span>
+</span><span id="line-224"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107868"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107868"><span class="hs-identifier hs-var">m1</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107869"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107869"><span class="hs-identifier hs-var">m2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Minhoca] -&gt; [Minhoca] -&gt; [(Minhoca, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107863"><span class="hs-identifier hs-var">antes</span></a></span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107864"><span class="hs-identifier hs-var">depois</span></a></span><span>
+</span><span id="line-225"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107866"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107866"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Minhoca -&gt; Maybe Posicao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107869"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-226"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107867"><span class="annot"><span class="annottext">dano :: Int
+</span><a href="#local-6989586621679107867"><span class="hs-identifier hs-var hs-var">dano</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">VidaMinhoca -&gt; VidaMinhoca -&gt; Int
+</span><a href="Tempo.html#calcularDano"><span class="hs-identifier hs-var">calcularDano</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minhoca -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107868"><span class="hs-identifier hs-var">m1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minhoca -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107869"><span class="hs-identifier hs-var">m2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-227"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107867"><span class="hs-identifier hs-var">dano</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-228"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-229"></span><span>
+</span><span id="line-230"></span><span class="annot"><span class="hs-comment">-- | Calcula dano entre dois estados de vida</span></span><span>
+</span><span id="line-231"></span><span class="annot"><a href="Tempo.html#calcularDano"><span class="hs-identifier hs-type">calcularDano</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#VidaMinhoca"><span class="hs-identifier hs-type">VidaMinhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#VidaMinhoca"><span class="hs-identifier hs-type">VidaMinhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-232"></span><span id="calcularDano"><span class="annot"><span class="annottext">calcularDano :: VidaMinhoca -&gt; VidaMinhoca -&gt; Int
+</span><a href="Tempo.html#calcularDano"><span class="hs-identifier hs-var hs-var">calcularDano</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107872"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107872"><span class="hs-identifier hs-var">v1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107873"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107873"><span class="hs-identifier hs-var">v2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Ord a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">max</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107872"><span class="hs-identifier hs-var">v1</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107873"><span class="hs-identifier hs-var">v2</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-233"></span><span class="annot"><a href="Tempo.html#calcularDano"><span class="hs-identifier hs-var">calcularDano</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107874"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107874"><span class="hs-identifier hs-var">v1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Morta"><span class="hs-identifier hs-var">Morta</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107874"><span class="hs-identifier hs-var">v1</span></a></span><span>
+</span><span id="line-234"></span><span class="annot"><a href="Tempo.html#calcularDano"><span class="hs-identifier hs-var">calcularDano</span></a></span><span> </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-235"></span><span>
+</span><span id="line-236"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-237"></span><span class="annot"><span class="hs-comment">-- * Anima&#231;&#245;es</span></span><span>
+</span><span id="line-238"></span><span>
+</span><span id="line-239"></span><span class="annot"><span class="hs-comment">-- | Atualiza todas as anima&#231;&#245;es ativas</span></span><span>
+</span><span id="line-240"></span><span class="annot"><a href="Tempo.html#atualizarAnimacoes"><span class="hs-identifier hs-type">atualizarAnimacoes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tempo.html#Segundos"><span class="hs-identifier hs-type">Segundos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="EstadoJogo.html#AnimacaoAtiva"><span class="hs-identifier hs-type">AnimacaoAtiva</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="EstadoJogo.html#AnimacaoAtiva"><span class="hs-identifier hs-type">AnimacaoAtiva</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-241"></span><span id="atualizarAnimacoes"><span class="annot"><span class="annottext">atualizarAnimacoes :: Float -&gt; [AnimacaoAtiva] -&gt; [AnimacaoAtiva]
+</span><a href="Tempo.html#atualizarAnimacoes"><span class="hs-identifier hs-var hs-var">atualizarAnimacoes</span></a></span></span><span> </span><span id="local-6989586621679107875"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107875"><span class="hs-identifier hs-var">dt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(AnimacaoAtiva -&gt; Bool) -&gt; [AnimacaoAtiva] -&gt; [AnimacaoAtiva]
+forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="annot"><span class="annottext">AnimacaoAtiva -&gt; Bool
+</span><a href="#local-6989586621679107876"><span class="hs-identifier hs-var">animacaoAtiva</span></a></span><span> </span><span class="annot"><span class="annottext">([AnimacaoAtiva] -&gt; [AnimacaoAtiva])
+-&gt; ([AnimacaoAtiva] -&gt; [AnimacaoAtiva])
+-&gt; [AnimacaoAtiva]
+-&gt; [AnimacaoAtiva]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(AnimacaoAtiva -&gt; AnimacaoAtiva)
+-&gt; [AnimacaoAtiva] -&gt; [AnimacaoAtiva]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Float -&gt; AnimacaoAtiva -&gt; AnimacaoAtiva
+</span><a href="#local-6989586621679107878"><span class="hs-identifier hs-var">atualizarAnimacao</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107875"><span class="hs-identifier hs-var">dt</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-242"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-243"></span><span>    </span><span class="annot"><a href="#local-6989586621679107878"><span class="hs-identifier hs-type">atualizarAnimacao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Tempo.html#Segundos"><span class="hs-identifier hs-type">Segundos</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#AnimacaoAtiva"><span class="hs-identifier hs-type">AnimacaoAtiva</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#AnimacaoAtiva"><span class="hs-identifier hs-type">AnimacaoAtiva</span></a></span><span>
+</span><span id="line-244"></span><span>    </span><span id="local-6989586621679107878"><span class="annot"><span class="annottext">atualizarAnimacao :: Float -&gt; AnimacaoAtiva -&gt; AnimacaoAtiva
+</span><a href="#local-6989586621679107878"><span class="hs-identifier hs-var hs-var">atualizarAnimacao</span></a></span></span><span> </span><span id="local-6989586621679107879"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107879"><span class="hs-identifier hs-var">dtLocal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#AnimExplosao"><span class="hs-identifier hs-type">AnimExplosao</span></a></span><span> </span><span id="local-6989586621679107880"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107880"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621679107881"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107881"><span class="hs-identifier hs-var">tempo</span></a></span></span><span> </span><span id="local-6989586621679107882"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107882"><span class="hs-identifier hs-var">frame</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-245"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107884"><span class="annot"><span class="annottext">novoTempo :: Float
+</span><a href="#local-6989586621679107884"><span class="hs-identifier hs-var hs-var">novoTempo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107881"><span class="hs-identifier hs-var">tempo</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107879"><span class="hs-identifier hs-var">dtLocal</span></a></span><span>
+</span><span id="line-246"></span><span>          </span><span id="local-6989586621679107894"><span class="annot"><span class="annottext">novoFrame :: Int
+</span><a href="#local-6989586621679107894"><span class="hs-identifier hs-var hs-var">novoFrame</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107884"><span class="hs-identifier hs-var">novoTempo</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.15</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Float
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107882"><span class="hs-identifier hs-var">frame</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-247"></span><span>                      </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107882"><span class="hs-identifier hs-var">frame</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107882"><span class="hs-identifier hs-var">frame</span></a></span><span>
+</span><span id="line-248"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Float -&gt; Int -&gt; AnimacaoAtiva
+</span><a href="EstadoJogo.html#AnimExplosao"><span class="hs-identifier hs-var">AnimExplosao</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107880"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107884"><span class="hs-identifier hs-var">novoTempo</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107894"><span class="hs-identifier hs-var">novoFrame</span></a></span><span>
+</span><span id="line-249"></span><span>    </span><span class="annot"><a href="#local-6989586621679107878"><span class="hs-identifier hs-var">atualizarAnimacao</span></a></span><span> </span><span id="local-6989586621679107896"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107896"><span class="hs-identifier hs-var">dtLocal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#AnimDano"><span class="hs-identifier hs-type">AnimDano</span></a></span><span> </span><span id="local-6989586621679107897"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107897"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621679107898"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107898"><span class="hs-identifier hs-var">dano</span></a></span></span><span> </span><span id="local-6989586621679107899"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107899"><span class="hs-identifier hs-var">tempo</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-250"></span><span>      </span><span class="annot"><span class="annottext">Posicao -&gt; Int -&gt; Float -&gt; AnimacaoAtiva
+</span><a href="EstadoJogo.html#AnimDano"><span class="hs-identifier hs-var">AnimDano</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107897"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107898"><span class="hs-identifier hs-var">dano</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107899"><span class="hs-identifier hs-var">tempo</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107896"><span class="hs-identifier hs-var">dtLocal</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-251"></span><span>    </span><span class="annot"><a href="#local-6989586621679107878"><span class="hs-identifier hs-var">atualizarAnimacao</span></a></span><span> </span><span id="local-6989586621679107900"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107900"><span class="hs-identifier hs-var">dtLocal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#AnimMovimento"><span class="hs-identifier hs-type">AnimMovimento</span></a></span><span> </span><span id="local-6989586621679107902"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107902"><span class="hs-identifier hs-var">num</span></a></span></span><span> </span><span id="local-6989586621679107903"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107903"><span class="hs-identifier hs-var">de</span></a></span></span><span> </span><span id="local-6989586621679107904"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107904"><span class="hs-identifier hs-var">para</span></a></span></span><span> </span><span id="local-6989586621679107905"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107905"><span class="hs-identifier hs-var">prog</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-252"></span><span>      </span><span class="annot"><span class="annottext">Int -&gt; Posicao -&gt; Posicao -&gt; Float -&gt; AnimacaoAtiva
+</span><a href="EstadoJogo.html#AnimMovimento"><span class="hs-identifier hs-var">AnimMovimento</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107902"><span class="hs-identifier hs-var">num</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107903"><span class="hs-identifier hs-var">de</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679107904"><span class="hs-identifier hs-var">para</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Ord a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">min</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107905"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107900"><span class="hs-identifier hs-var">dtLocal</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Float
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-253"></span><span>    </span><span>
+</span><span id="line-254"></span><span>    </span><span id="local-6989586621679107876"><span class="annot"><span class="annottext">animacaoAtiva :: AnimacaoAtiva -&gt; Bool
+</span><a href="#local-6989586621679107876"><span class="hs-identifier hs-var hs-var">animacaoAtiva</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#AnimExplosao"><span class="hs-identifier hs-type">AnimExplosao</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679107913"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107913"><span class="hs-identifier hs-var">frame</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107913"><span class="hs-identifier hs-var">frame</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-255"></span><span>    </span><span class="annot"><a href="#local-6989586621679107876"><span class="hs-identifier hs-var">animacaoAtiva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#AnimDano"><span class="hs-identifier hs-type">AnimDano</span></a></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679107914"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107914"><span class="hs-identifier hs-var">tempo</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107914"><span class="hs-identifier hs-var">tempo</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-256"></span><span>    </span><span class="annot"><a href="#local-6989586621679107876"><span class="hs-identifier hs-var">animacaoAtiva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#AnimMovimento"><span class="hs-identifier hs-type">AnimMovimento</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679107915"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107915"><span class="hs-identifier hs-var">prog</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107915"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.0</span></span><span>
+</span><span id="line-257"></span><span>
+</span><span id="line-258"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-259"></span><span class="annot"><span class="hs-comment">-- * Condi&#231;&#227;o de Vit&#243;ria</span></span><span>
+</span><span id="line-260"></span><span>
+</span><span id="line-261"></span><span class="hs-comment">-- | Verifica se algum jogador venceu</span><span>
+</span><span id="line-262"></span><span class="hs-comment">-- | No modo Treino, faz restart autom&#225;tico quando morre</span><span>
+</span><span id="line-263"></span><span class="annot"><a href="Tempo.html#verificarCondicaoVitoria"><span class="hs-identifier hs-type">verificarCondicaoVitoria</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoPartida"><span class="hs-identifier hs-type">EstadoPartida</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoJogo"><span class="hs-identifier hs-type">EstadoJogo</span></a></span><span>
+</span><span id="line-264"></span><span id="verificarCondicaoVitoria"><span class="annot"><span class="annottext">verificarCondicaoVitoria :: EstadoPartida -&gt; EstadoJogo
+</span><a href="Tempo.html#verificarCondicaoVitoria"><span class="hs-identifier hs-var hs-var">verificarCondicaoVitoria</span></a></span></span><span> </span><span id="local-6989586621679107916"><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span></span><span>
+</span><span id="line-265"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoPartida"><span class="hs-identifier hs-var">modoPartida</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-266"></span><span>      </span><span class="hs-comment">-- ^ Verifica se minhoca de treino morreu</span><span>
+</span><span id="line-267"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107917"><span class="annot"><span class="annottext">minhocas :: [Minhoca]
+</span><a href="#local-6989586621679107917"><span class="hs-identifier hs-var hs-var">minhocas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoPartida -&gt; Estado
+</span><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-268"></span><span>          </span><span id="local-6989586621679107921"><span class="annot"><span class="annottext">verdesVivas :: Int
+</span><a href="#local-6989586621679107921"><span class="hs-identifier hs-var hs-var">verdesVivas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Minhoca] -&gt; Int
+forall a. [a] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107923"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107924"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107924"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107923"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107923"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Minhoca] -&gt; [(Int, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107917"><span class="hs-identifier hs-var">minhocas</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107924"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#estaRealmenteViva"><span class="hs-identifier hs-var">estaRealmenteViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107923"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-269"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107921"><span class="hs-identifier hs-var">verdesVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-270"></span><span>         </span><span class="hs-keyword">then</span><span> </span><span class="hs-comment">-- ^ RESTART AUTOM&#193;TICO!</span><span>
+</span><span id="line-271"></span><span>              </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107926"><span class="annot"><span class="annottext">idx :: Int
+</span><a href="#local-6989586621679107926"><span class="hs-identifier hs-var hs-var">idx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; Int
+</span><a href="EstadoJogo.html#mapaAtualIdx"><span class="hs-identifier hs-var">mapaAtualIdx</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-272"></span><span>                  </span><span id="local-6989586621679107928"><span class="annot"><span class="annottext">mapa :: MapaCompleto
+</span><a href="#local-6989586621679107928"><span class="hs-identifier hs-var hs-var">mapa</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MapaCompleto
+</span><a href="Mapas.html#selecionarMapa"><span class="hs-identifier hs-var">selecionarMapa</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107926"><span class="hs-identifier hs-var">idx</span></a></span><span>
+</span><span id="line-273"></span><span>              </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Jogando"><span class="hs-identifier hs-var">Jogando</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModoJogo -&gt; Estado -&gt; Int -&gt; EstadoPartida
+</span><a href="EstadoJogo.html#criarPartidaComMapa"><span class="hs-identifier hs-var">criarPartidaComMapa</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MapaCompleto -&gt; Estado
+</span><a href="Mapas.html#criarEstadoTreino"><span class="hs-identifier hs-var">criarEstadoTreino</span></a></span><span> </span><span class="annot"><span class="annottext">MapaCompleto
+</span><a href="#local-6989586621679107928"><span class="hs-identifier hs-var">mapa</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107926"><span class="hs-identifier hs-var">idx</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-274"></span><span>         </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Jogando"><span class="hs-identifier hs-var">Jogando</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-275"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-276"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679107930"><span class="annot"><span class="annottext">minhocas :: [Minhoca]
+</span><a href="#local-6989586621679107930"><span class="hs-identifier hs-var hs-var">minhocas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Estado -&gt; [Minhoca]
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minhocasEstado"><span class="hs-identifier hs-var">minhocasEstado</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoPartida -&gt; Estado
+</span><a href="EstadoJogo.html#estadoWorms"><span class="hs-identifier hs-var">estadoWorms</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-277"></span><span>          </span><span id="local-6989586621679107931"><span class="annot"><span class="annottext">modo :: ModoJogo
+</span><a href="#local-6989586621679107931"><span class="hs-identifier hs-var hs-var">modo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoPartida"><span class="hs-identifier hs-var">modoPartida</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-278"></span><span>          </span><span>
+</span><span id="line-279"></span><span>          </span><span id="local-6989586621679107935"><span class="annot"><span class="annottext">verdesVivas :: Int
+</span><a href="#local-6989586621679107935"><span class="hs-identifier hs-var hs-var">verdesVivas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Minhoca] -&gt; Int
+forall a. [a] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107936"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107937"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107937"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107936"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107936"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Minhoca] -&gt; [(Int, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107930"><span class="hs-identifier hs-var">minhocas</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">even</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107937"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#estaRealmenteViva"><span class="hs-identifier hs-var">estaRealmenteViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107936"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-280"></span><span>          </span><span id="local-6989586621679107941"><span class="annot"><span class="annottext">azuisVivas :: Int
+</span><a href="#local-6989586621679107941"><span class="hs-identifier hs-var hs-var">azuisVivas</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Minhoca] -&gt; Int
+forall a. [a] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107942"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107943"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107943"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107942"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107942"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Minhoca] -&gt; [(Int, Minhoca)]
+forall a b. [a] -&gt; [b] -&gt; [(a, b)]
+</span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Minhoca]
+</span><a href="#local-6989586621679107930"><span class="hs-identifier hs-var">minhocas</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Bool
+forall a. Integral a =&gt; a -&gt; Bool
+</span><span class="hs-identifier hs-var">odd</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107943"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#estaRealmenteViva"><span class="hs-identifier hs-var">estaRealmenteViva</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107942"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-281"></span><span>      </span><span class="hs-keyword">in</span><span> </span><span>
+</span><span id="line-282"></span><span>         </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107935"><span class="hs-identifier hs-var">verdesVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107941"><span class="hs-identifier hs-var">azuisVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-283"></span><span>         </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">EstadoFinal -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Victory"><span class="hs-identifier hs-var">Victory</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Maybe VencedorJogo -&gt; OpcaoFinal -&gt; ModoJogo -&gt; EstadoFinal
+</span><a href="EstadoJogo.html#EstadoFinal"><span class="hs-identifier hs-var">EstadoFinal</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">VencedorJogo -&gt; Maybe VencedorJogo
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">VencedorJogo
+</span><a href="EstadoJogo.html#VenceuAzul"><span class="hs-identifier hs-var">VenceuAzul</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">OpcaoFinal
+</span><a href="EstadoJogo.html#VoltarMenu"><span class="hs-identifier hs-var">VoltarMenu</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107931"><span class="hs-identifier hs-var">modo</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-284"></span><span>         </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107941"><span class="hs-identifier hs-var">azuisVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107935"><span class="hs-identifier hs-var">verdesVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-285"></span><span>         </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">EstadoFinal -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Victory"><span class="hs-identifier hs-var">Victory</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Maybe VencedorJogo -&gt; OpcaoFinal -&gt; ModoJogo -&gt; EstadoFinal
+</span><a href="EstadoJogo.html#EstadoFinal"><span class="hs-identifier hs-var">EstadoFinal</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">VencedorJogo -&gt; Maybe VencedorJogo
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">VencedorJogo
+</span><a href="EstadoJogo.html#VenceuVerde"><span class="hs-identifier hs-var">VenceuVerde</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">OpcaoFinal
+</span><a href="EstadoJogo.html#VoltarMenu"><span class="hs-identifier hs-var">VoltarMenu</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107931"><span class="hs-identifier hs-var">modo</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-286"></span><span>         </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107935"><span class="hs-identifier hs-var">verdesVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107941"><span class="hs-identifier hs-var">azuisVivas</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-287"></span><span>         </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">EstadoFinal -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Victory"><span class="hs-identifier hs-var">Victory</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Maybe VencedorJogo -&gt; OpcaoFinal -&gt; ModoJogo -&gt; EstadoFinal
+</span><a href="EstadoJogo.html#EstadoFinal"><span class="hs-identifier hs-var">EstadoFinal</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Maybe VencedorJogo
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">OpcaoFinal
+</span><a href="EstadoJogo.html#VoltarMenu"><span class="hs-identifier hs-var">VoltarMenu</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107931"><span class="hs-identifier hs-var">modo</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-288"></span><span>         </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Jogando"><span class="hs-identifier hs-var">Jogando</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoPartida
+</span><a href="#local-6989586621679107916"><span class="hs-identifier hs-var">partida</span></a></span><span>
+</span><span id="line-289"></span><span>
+</span><span id="line-290"></span><span class="annot"><span class="hs-comment">-- | Verifica se minhoca est&#225; REALMENTE viva (Viva com hp &gt;= 1)</span></span><span>
+</span><span id="line-291"></span><span class="annot"><a href="Tempo.html#estaRealmenteViva"><span class="hs-identifier hs-type">estaRealmenteViva</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-292"></span><span id="estaRealmenteViva"><span class="annot"><span class="annottext">estaRealmenteViva :: Minhoca -&gt; Bool
+</span><a href="Tempo.html#estaRealmenteViva"><span class="hs-identifier hs-var hs-var">estaRealmenteViva</span></a></span></span><span> </span><span id="local-6989586621679107949"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107949"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107949"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-293"></span><span>  </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107950"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107950"><span class="hs-identifier hs-var">hp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107950"><span class="hs-identifier hs-var">hp</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-294"></span><span>  </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Morta"><span class="hs-identifier hs-var">Morta</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-295"></span><span>
+</span><span id="line-296"></span><span class="annot"><span class="hs-comment">-- | Verifica se minhoca tem vida &gt;= 1 (MUITO SIMPLES)</span></span><span>
+</span><span id="line-297"></span><span class="annot"><a href="Tempo.html#vidaPositiva"><span class="hs-identifier hs-type">vidaPositiva</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-298"></span><span id="vidaPositiva"><span class="annot"><span class="annottext">vidaPositiva :: Minhoca -&gt; Bool
+</span><a href="Tempo.html#vidaPositiva"><span class="hs-identifier hs-var hs-var">vidaPositiva</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Bool
+</span><a href="Tempo.html#estaRealmenteViva"><span class="hs-identifier hs-var">estaRealmenteViva</span></a></span><span>
+</span><span id="line-299"></span><span>
+</span><span id="line-300"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-301"></span><span class="annot"><span class="hs-comment">-- * Utilidades</span></span><span>
+</span><span id="line-302"></span><span>
+</span><span id="line-303"></span><span class="hs-comment">-- | Verifica se minhoca est&#225; viva (vida &gt;= 1)</span><span>
+</span><span id="line-304"></span><span class="hs-comment">--</span><span>
+</span><span id="line-305"></span><span class="hs-comment">-- __IMPORTANTE:__ Uma minhoca com @Viva 0@ ou menos est&#225; morta!</span><span>
+</span><span id="line-306"></span><span class="annot"><a href="Tempo.html#minhocaViva"><span class="hs-identifier hs-type">minhocaViva</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-307"></span><span id="minhocaViva"><span class="annot"><span class="annottext">minhocaViva :: Minhoca -&gt; Bool
+</span><a href="Tempo.html#minhocaViva"><span class="hs-identifier hs-var hs-var">minhocaViva</span></a></span></span><span> </span><span id="local-6989586621679107952"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107952"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107952"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-308"></span><span>  </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107953"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107953"><span class="hs-identifier hs-var">hp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107953"><span class="hs-identifier hs-var">hp</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-309"></span><span>  </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Morta"><span class="hs-identifier hs-var">Morta</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-310"></span><span>
+</span><span id="line-311"></span><span class="annot"><span class="hs-comment">-- | Verifica se minhoca tem posi&#231;&#227;o v&#225;lida e vida &gt;= 1</span></span><span>
+</span><span id="line-312"></span><span class="annot"><a href="Tempo.html#minhocaAtiva"><span class="hs-identifier hs-type">minhocaAtiva</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-313"></span><span id="minhocaAtiva"><span class="annot"><span class="annottext">minhocaAtiva :: Minhoca -&gt; Bool
+</span><a href="Tempo.html#minhocaAtiva"><span class="hs-identifier hs-var hs-var">minhocaAtiva</span></a></span></span><span> </span><span id="local-6989586621679107955"><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107955"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Minhoca -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107955"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Minhoca -&gt; Maybe Posicao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="annot"><span class="annottext">Minhoca
+</span><a href="#local-6989586621679107955"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-314"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-type">Viva</span></a></span><span> </span><span id="local-6989586621679107956"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107956"><span class="hs-identifier hs-var">hp</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679107956"><span class="hs-identifier hs-var">hp</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-315"></span><span>  </span><span class="annot"><span class="annottext">(VidaMinhoca, Maybe Posicao)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span></pre></body></html>

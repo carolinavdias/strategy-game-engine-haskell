@@ -11,10 +11,12 @@ import Magic
 -- | Testes do grupo para a Tarefa 4
 testesTarefa4 :: [Estado]
 testesTarefa4 = 
-    [ testeDestruicaoTerra
-    , testeComInimigos
-    , testeMisto
+    [ testeCombateBasico
+    , testeCombate2v2
+    , testeComBarris
+    , testeDestruicaoTerra
     , testeMapaGrande
+    , testeAguaProxima
     ]
 
 --------------------------------------------------------------------------------
@@ -44,6 +46,17 @@ mapaGrande =
     , [Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra]
     ]
 
+-- | Mapa com água para testar evitar perigos
+mapaComAgua :: Mapa
+mapaComAgua =
+    [ [Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra]
+    , [Pedra, Ar,    Ar,    Ar,    Ar,    Ar,    Ar,    Ar,    Ar,    Pedra]
+    , [Pedra, Ar,    Agua,  Agua,  Terra, Terra, Agua,  Agua,  Ar,    Pedra]
+    , [Pedra, Ar,    Terra, Terra, Terra, Terra, Terra, Ar,    Ar,    Pedra]
+    , [Pedra, Terra, Terra, Terra, Terra, Terra, Terra, Terra, Ar,    Pedra]
+    , [Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra, Pedra]
+    ]
+
 --------------------------------------------------------------------------------
 -- * Criação de minhocas
 
@@ -59,40 +72,74 @@ minhocaViva pos = Minhoca
     , dinamiteMinhoca = 3
     }
 
+-- | Cria uma minhoca com armas limitadas
+minhocaSemArmas :: Posicao -> Minhoca
+minhocaSemArmas pos = Minhoca
+    { posicaoMinhoca = Just pos
+    , vidaMinhoca = Viva 100
+    , jetpackMinhoca = 0
+    , escavadoraMinhoca = 0
+    , bazucaMinhoca = 1
+    , minaMinhoca = 0
+    , dinamiteMinhoca = 0
+    }
+
 --------------------------------------------------------------------------------
 -- * Estados de teste
 
--- | Teste 1: foco em destruição de Terra
--- Minhoca sozinha com muita Terra disponível para destruir
+-- | Teste 1: Combate básico 1v1
+-- Minhoca 0 (BOT) vs Minhoca 1 (INIMIGO)
+testeCombateBasico :: Estado
+testeCombateBasico = Estado mapaSimples []
+    [ minhocaViva (1, 2)  -- índice 0 (par) - BOT
+    , minhocaViva (1, 7)  -- índice 1 (ímpar) - INIMIGO
+    ]
+
+-- | Teste 2: Combate 2v2
+-- Minhocas 0,2 (BOT) vs Minhocas 1,3 (INIMIGOS)
+testeCombate2v2 :: Estado
+testeCombate2v2 = Estado mapaSimples []
+    [ minhocaViva (1, 2)  -- índice 0 (par) - BOT
+    , minhocaViva (3, 7)  -- índice 1 (ímpar) - INIMIGO
+    , minhocaViva (1, 8)  -- índice 2 (par) - BOT (aliado)
+    , minhocaViva (3, 2)  -- índice 3 (ímpar) - INIMIGO
+    ]
+
+-- | Teste 3: Cenário com barris (teste de segurança)
+-- Bot deve evitar explodir barris próximos de si mesmo
+testeComBarris :: Estado
+testeComBarris = Estado mapaSimples 
+    [ Barril (2, 4) False
+    , Barril (3, 6) False
+    ]
+    [ minhocaViva (2, 2)  -- índice 0 (par) - BOT perto de barril
+    , minhocaViva (2, 7)  -- índice 1 (ímpar) - INIMIGO também perto
+    ]
+
+-- | Teste 4: Destruição de terra
+-- Bot deve focar em destruir terra quando não há pressão de combate
 testeDestruicaoTerra :: Estado
 testeDestruicaoTerra = Estado mapaSimples []
-    [ minhocaViva (1, 5)
+    [ minhocaViva (1, 5)  -- índice 0 (par) - BOT no centro do mapa
+    , minhocaSemArmas (4, 8)  -- índice 1 (ímpar) - INIMIGO longe e fraco
     ]
 
--- | Teste 2: cenário com inimigos para atacar
--- Uma minhoca nossa e duas inimigas
-testeComInimigos :: Estado
-testeComInimigos = Estado mapaSimples []
-    [ minhocaViva (1, 1)
-    , minhocaViva (1, 7)
-    , minhocaViva (3, 5)
-    ]
-
--- | Teste 3: cenário misto (Terra e inimigos)
--- Testa capacidade de equilibrar destruição e combate
-testeMisto :: Estado
-testeMisto = Estado mapaSimples []
-    [ minhocaViva (1, 2)
-    , minhocaViva (3, 7)
-    ]
-
--- | Teste 4: mapa grande com muitas oportunidades
--- Testa otimização em mapas maiores
+-- | Teste 5: Mapa grande com múltiplas oportunidades
+-- Testa capacidade de otimização em espaços maiores
 testeMapaGrande :: Estado
 testeMapaGrande = Estado mapaGrande []
-    [ minhocaViva (1, 7)
-    , minhocaViva (2, 2)
-    , minhocaViva (3, 12)
+    [ minhocaViva (1, 7)   -- índice 0 (par) - BOT
+    , minhocaViva (2, 2)   -- índice 1 (ímpar) - INIMIGO
+    , minhocaViva (3, 12)  -- índice 2 (par) - BOT (aliado)
+    , minhocaViva (4, 8)   -- índice 3 (ímpar) - INIMIGO
+    ]
+
+-- | Teste 6: Mapa com água próxima
+-- Bot deve evitar cair em água
+testeAguaProxima :: Estado
+testeAguaProxima = Estado mapaComAgua []
+    [ minhocaViva (1, 4)  -- índice 0 (par) - BOT cercado por água
+    , minhocaViva (3, 7)  -- índice 1 (ímpar) - INIMIGO em posição segura
     ]
 
 --------------------------------------------------------------------------------

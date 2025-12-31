@@ -1,0 +1,654 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-|
+Module      : SelecaoModo
+Description : Sele&#231;&#227;o do modo de jogo.
+Copyright   : Carolina Dias e Leonor Sousa, 2025
+License     : GPL-3
+
+Este m&#243;dulo implementa o ecr&#227; de sele&#231;&#227;o de modos.
+
+Modos dispon&#237;veis:
+
+* 2 Jogadores
+* VS Bot
+* Treino
+* Voltar ao menu
+
+Cada op&#231;&#227;o &#233; totalmente naveg&#225;vel com teclado,
+mantendo consist&#234;ncia com o resto da interface.
+
+-}</span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">SelecaoModo</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.html"><span class="hs-identifier">Graphics.Gloss</span></a></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Interface.Pure.Game.html"><span class="hs-identifier">Graphics.Gloss.Interface.Pure.Game</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="EstadoJogo.html"><span class="hs-identifier">EstadoJogo</span></a></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Assets.html"><span class="hs-identifier">Assets</span></a></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html"><span class="hs-identifier">Labs2025</span></a></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Mapas.html"><span class="hs-identifier">Mapas</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="annot"><span class="hs-comment">-- * Desenha a tela de sele&#231;&#227;o de modo</span></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="SelecaoModo.html#desenharSelecao"><span class="hs-identifier hs-type">desenharSelecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoSelecao"><span class="hs-identifier hs-type">EstadoSelecao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-32"></span><span id="desenharSelecao"><span class="annot"><span class="annottext">desenharSelecao :: Assets -&gt; EstadoSelecao -&gt; Picture
+</span><a href="SelecaoModo.html#desenharSelecao"><span class="hs-identifier hs-var hs-var">desenharSelecao</span></a></span></span><span> </span><span id="local-6989586621679107465"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107465"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span id="local-6989586621679107466"><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107466"><span class="hs-identifier hs-var">estado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Picture
+</span><a href="SelecaoModo.html#desenharBackgroundSelecao"><span class="hs-identifier hs-var">desenharBackgroundSelecao</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107465"><span class="hs-identifier hs-var">assets</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Picture
+</span><a href="SelecaoModo.html#desenharTituloSelecao"><span class="hs-identifier hs-var">desenharTituloSelecao</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107465"><span class="hs-identifier hs-var">assets</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; EstadoSelecao -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModos"><span class="hs-identifier hs-var">desenharModos</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107465"><span class="hs-identifier hs-var">assets</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107466"><span class="hs-identifier hs-var">estado</span></a></span><span>   </span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Picture
+</span><a href="SelecaoModo.html#desenharInstrucoesSelecao"><span class="hs-identifier hs-var">desenharInstrucoesSelecao</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107465"><span class="hs-identifier hs-var">assets</span></a></span><span> </span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- * Background escurecido</span></span><span>
+</span><span id="line-40"></span><span class="annot"><a href="SelecaoModo.html#desenharBackgroundSelecao"><span class="hs-identifier hs-type">desenharBackgroundSelecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-41"></span><span id="desenharBackgroundSelecao"><span class="annot"><span class="annottext">desenharBackgroundSelecao :: Assets -&gt; Picture
+</span><a href="SelecaoModo.html#desenharBackgroundSelecao"><span class="hs-identifier hs-var hs-var">desenharBackgroundSelecao</span></a></span></span><span> </span><span id="local-6989586621679107472"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107472"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeBackground"><span class="hs-identifier hs-var">modeBackground</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107472"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-43"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107475"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107475"><span class="hs-identifier hs-var">bg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107475"><span class="hs-identifier hs-var">bg</span></a></span><span>
+</span><span id="line-44"></span><span>    </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Int -&gt; Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Color.html#makeColorI"><span class="hs-identifier hs-var">makeColorI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">40</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">30</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">60</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">200</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#rectangleSolid"><span class="hs-identifier hs-var">rectangleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1920</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1200</span></span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="annot"><span class="hs-comment">-- | T&#237;tulo &quot;ESCOLHE UM MODO&quot;</span></span><span>
+</span><span id="line-47"></span><span class="annot"><a href="SelecaoModo.html#desenharTituloSelecao"><span class="hs-identifier hs-type">desenharTituloSelecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-48"></span><span id="desenharTituloSelecao"><span class="annot"><span class="annottext">desenharTituloSelecao :: Assets -&gt; Picture
+</span><a href="SelecaoModo.html#desenharTituloSelecao"><span class="hs-identifier hs-var hs-var">desenharTituloSelecao</span></a></span></span><span> </span><span id="local-6989586621679107479"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107479"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeTitle"><span class="hs-identifier hs-var">modeTitle</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107479"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-50"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107481"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107481"><span class="hs-identifier hs-var">title</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">360</span></span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107481"><span class="hs-identifier hs-var">title</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">400</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-52"></span><span>               </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="annot"><span class="annottext">Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Color.html#white"><span class="hs-identifier hs-var">white</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-53"></span><span>               </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.4</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.4</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-54"></span><span>               </span><span class="annot"><span class="annottext">String -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Text"><span class="hs-identifier hs-var">Text</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;ESCOLHE UM MODO&quot;</span></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="annot"><span class="hs-comment">-- * Desenha os 3 modos mais bot&#227;o voltar como op&#231;&#227;o naveg&#225;vel</span></span><span>
+</span><span id="line-57"></span><span class="annot"><a href="SelecaoModo.html#desenharModos"><span class="hs-identifier hs-type">desenharModos</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoSelecao"><span class="hs-identifier hs-type">EstadoSelecao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-58"></span><span id="desenharModos"><span class="annot"><span class="annottext">desenharModos :: Assets -&gt; EstadoSelecao -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModos"><span class="hs-identifier hs-var hs-var">desenharModos</span></a></span></span><span> </span><span id="local-6989586621679107486"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107486"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span id="local-6989586621679107487"><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107487"><span class="hs-identifier hs-var">estado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Bool -&gt; (Float, Float) -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModo2P"><span class="hs-identifier hs-var">desenharModo2P</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107486"><span class="hs-identifier hs-var">assets</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107487"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#DoisJogadores"><span class="hs-identifier hs-var">DoisJogadores</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">450</span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">60</span></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Bool -&gt; (Float, Float) -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModoBot"><span class="hs-identifier hs-var">desenharModoBot</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107486"><span class="hs-identifier hs-var">assets</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107487"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#VsBot"><span class="hs-identifier hs-var">VsBot</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">60</span></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Bool -&gt; (Float, Float) -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModoTraining"><span class="hs-identifier hs-var">desenharModoTraining</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107486"><span class="hs-identifier hs-var">assets</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107487"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">450</span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">60</span></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Assets -&gt; Bool -&gt; Picture
+</span><a href="SelecaoModo.html#desenharBotaoVoltarSelecionavel"><span class="hs-identifier hs-var">desenharBotaoVoltarSelecionavel</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107486"><span class="hs-identifier hs-var">assets</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107487"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo -&gt; ModoJogo -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="annot"><span class="hs-comment">-- | Modo 2 Jogadores</span></span><span>
+</span><span id="line-66"></span><span class="annot"><a href="SelecaoModo.html#desenharModo2P"><span class="hs-identifier hs-type">desenharModo2P</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-67"></span><span id="desenharModo2P"><span class="annot"><span class="annottext">desenharModo2P :: Assets -&gt; Bool -&gt; (Float, Float) -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModo2P"><span class="hs-identifier hs-var hs-var">desenharModo2P</span></a></span></span><span> </span><span id="local-6989586621679107497"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107497"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span id="local-6989586621679107498"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107498"><span class="hs-identifier hs-var">selecionado</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107499"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107499"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107500"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107500"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107499"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107500"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Picture
+</span><a href="#local-6989586621679107501"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107498"><span class="hs-identifier hs-var">selecionado</span></a></span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107502"><span class="hs-identifier hs-var">personagens</span></a></span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-71"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679107507"><span class="annot"><span class="annottext">escala :: Float
+</span><a href="#local-6989586621679107507"><span class="hs-identifier hs-var hs-var">escala</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107498"><span class="hs-identifier hs-var">selecionado</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.9</span></span><span>
+</span><span id="line-73"></span><span>    </span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679107502"><span class="annot"><span class="annottext">personagens :: Picture
+</span><a href="#local-6989586621679107502"><span class="hs-identifier hs-var hs-var">personagens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeButton2P"><span class="hs-identifier hs-var">modeButton2P</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107497"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-75"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107509"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107509"><span class="hs-identifier hs-var">img</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107507"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107507"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107509"><span class="hs-identifier hs-var">img</span></a></span><span>
+</span><span id="line-76"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="annot"><span class="annottext">Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Color.html#green"><span class="hs-identifier hs-var">green</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#circleSolid"><span class="hs-identifier hs-var">circleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">100</span></span><span>
+</span><span id="line-77"></span><span>    </span><span>
+</span><span id="line-78"></span><span>    </span><span id="local-6989586621679107501"><span class="annot"><span class="annottext">feedback :: Bool -&gt; Picture
+</span><a href="#local-6989586621679107501"><span class="hs-identifier hs-var hs-var">feedback</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-79"></span><span>                    </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Int -&gt; Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Color.html#makeColorI"><span class="hs-identifier hs-var">makeColorI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">40</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-80"></span><span>                    </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#rectangleSolid"><span class="hs-identifier hs-var">rectangleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">420</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">520</span></span><span>
+</span><span id="line-81"></span><span>    </span><span class="annot"><a href="#local-6989586621679107501"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="annot"><span class="hs-comment">-- | Modo VS Bot</span></span><span>
+</span><span id="line-84"></span><span class="annot"><a href="SelecaoModo.html#desenharModoBot"><span class="hs-identifier hs-type">desenharModoBot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-85"></span><span id="desenharModoBot"><span class="annot"><span class="annottext">desenharModoBot :: Assets -&gt; Bool -&gt; (Float, Float) -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModoBot"><span class="hs-identifier hs-var hs-var">desenharModoBot</span></a></span></span><span> </span><span id="local-6989586621679107513"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107513"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span id="local-6989586621679107514"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107514"><span class="hs-identifier hs-var">selecionado</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107515"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107515"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107516"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107516"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107515"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107516"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Picture
+</span><a href="#local-6989586621679107517"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107514"><span class="hs-identifier hs-var">selecionado</span></a></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107518"><span class="hs-identifier hs-var">personagens</span></a></span><span>
+</span><span id="line-88"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-89"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679107522"><span class="annot"><span class="annottext">escala :: Float
+</span><a href="#local-6989586621679107522"><span class="hs-identifier hs-var hs-var">escala</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107514"><span class="hs-identifier hs-var">selecionado</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.9</span></span><span>
+</span><span id="line-91"></span><span>    </span><span>
+</span><span id="line-92"></span><span>    </span><span id="local-6989586621679107518"><span class="annot"><span class="annottext">personagens :: Picture
+</span><a href="#local-6989586621679107518"><span class="hs-identifier hs-var hs-var">personagens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeButtonBot"><span class="hs-identifier hs-var">modeButtonBot</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107513"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-93"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107524"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107524"><span class="hs-identifier hs-var">img</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107522"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107522"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107524"><span class="hs-identifier hs-var">img</span></a></span><span>
+</span><span id="line-94"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="annot"><span class="annottext">Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Color.html#magenta"><span class="hs-identifier hs-var">magenta</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#circleSolid"><span class="hs-identifier hs-var">circleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">100</span></span><span>
+</span><span id="line-95"></span><span>    </span><span>
+</span><span id="line-96"></span><span>    </span><span id="local-6989586621679107517"><span class="annot"><span class="annottext">feedback :: Bool -&gt; Picture
+</span><a href="#local-6989586621679107517"><span class="hs-identifier hs-var hs-var">feedback</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-97"></span><span>                    </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Int -&gt; Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Color.html#makeColorI"><span class="hs-identifier hs-var">makeColorI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">40</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-98"></span><span>                    </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#rectangleSolid"><span class="hs-identifier hs-var">rectangleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">420</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">520</span></span><span>
+</span><span id="line-99"></span><span>    </span><span class="annot"><a href="#local-6989586621679107517"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>
+</span><span id="line-100"></span><span>
+</span><span id="line-101"></span><span class="annot"><span class="hs-comment">-- | Modo Treino</span></span><span>
+</span><span id="line-102"></span><span class="annot"><a href="SelecaoModo.html#desenharModoTraining"><span class="hs-identifier hs-type">desenharModoTraining</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-103"></span><span id="desenharModoTraining"><span class="annot"><span class="annottext">desenharModoTraining :: Assets -&gt; Bool -&gt; (Float, Float) -&gt; Picture
+</span><a href="SelecaoModo.html#desenharModoTraining"><span class="hs-identifier hs-var hs-var">desenharModoTraining</span></a></span></span><span> </span><span id="local-6989586621679107526"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107526"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span id="local-6989586621679107527"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107527"><span class="hs-identifier hs-var">selecionado</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679107528"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107528"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679107529"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107529"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107528"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107529"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Picture
+</span><a href="#local-6989586621679107530"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107527"><span class="hs-identifier hs-var">selecionado</span></a></span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107531"><span class="hs-identifier hs-var">personagens</span></a></span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-108"></span><span>    </span><span id="local-6989586621679107535"><span class="annot"><span class="annottext">escala :: Float
+</span><a href="#local-6989586621679107535"><span class="hs-identifier hs-var hs-var">escala</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107527"><span class="hs-identifier hs-var">selecionado</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.1</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.9</span></span><span>
+</span><span id="line-109"></span><span>    </span><span>
+</span><span id="line-110"></span><span>    </span><span id="local-6989586621679107531"><span class="annot"><span class="annottext">personagens :: Picture
+</span><a href="#local-6989586621679107531"><span class="hs-identifier hs-var hs-var">personagens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeButtonTraining"><span class="hs-identifier hs-var">modeButtonTraining</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107526"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-111"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107537"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107537"><span class="hs-identifier hs-var">img</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107535"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107535"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107537"><span class="hs-identifier hs-var">img</span></a></span><span>
+</span><span id="line-112"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="annot"><span class="annottext">Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Color.html#orange"><span class="hs-identifier hs-var">orange</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#circleSolid"><span class="hs-identifier hs-var">circleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">100</span></span><span>
+</span><span id="line-113"></span><span>    </span><span>
+</span><span id="line-114"></span><span>    </span><span id="local-6989586621679107530"><span class="annot"><span class="annottext">feedback :: Bool -&gt; Picture
+</span><a href="#local-6989586621679107530"><span class="hs-identifier hs-var hs-var">feedback</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-115"></span><span>                    </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Int -&gt; Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Color.html#makeColorI"><span class="hs-identifier hs-var">makeColorI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">40</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span>
+</span><span id="line-116"></span><span>                    </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#rectangleSolid"><span class="hs-identifier hs-var">rectangleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">420</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">520</span></span><span>
+</span><span id="line-117"></span><span>    </span><span class="annot"><a href="#local-6989586621679107530"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span>
+</span><span id="line-120"></span><span class="annot"><span class="hs-comment">-- * Outros Bot&#245;es </span></span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span class="annot"><span class="hs-comment">-- | Bot&#227;o voltar como op&#231;&#227;o selecion&#225;vel e naveg&#225;vel</span></span><span>
+</span><span id="line-123"></span><span class="annot"><a href="SelecaoModo.html#desenharBotaoVoltarSelecionavel"><span class="hs-identifier hs-type">desenharBotaoVoltarSelecionavel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-124"></span><span id="desenharBotaoVoltarSelecionavel"><span class="annot"><span class="annottext">desenharBotaoVoltarSelecionavel :: Assets -&gt; Bool -&gt; Picture
+</span><a href="SelecaoModo.html#desenharBotaoVoltarSelecionavel"><span class="hs-identifier hs-var hs-var">desenharBotaoVoltarSelecionavel</span></a></span></span><span> </span><span id="local-6989586621679107539"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107539"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span id="local-6989586621679107540"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107540"><span class="hs-identifier hs-var">selecionado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">850</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">480</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-125"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Picture
+</span><a href="#local-6989586621679107541"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107540"><span class="hs-identifier hs-var">selecionado</span></a></span><span>
+</span><span id="line-126"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107542"><span class="hs-identifier hs-var">botao</span></a></span><span>
+</span><span id="line-127"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-128"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-129"></span><span>    </span><span id="local-6989586621679107546"><span class="annot"><span class="annottext">escala :: Float
+</span><a href="#local-6989586621679107546"><span class="hs-identifier hs-var hs-var">escala</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679107540"><span class="hs-identifier hs-var">selecionado</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1.3</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-130"></span><span>    </span><span>
+</span><span id="line-131"></span><span>    </span><span id="local-6989586621679107542"><span class="annot"><span class="annottext">botao :: Picture
+</span><a href="#local-6989586621679107542"><span class="hs-identifier hs-var hs-var">botao</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonBack"><span class="hs-identifier hs-var">buttonBack</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107539"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-132"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107548"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107548"><span class="hs-identifier hs-var">img</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107546"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107546"><span class="hs-identifier hs-var">escala</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107548"><span class="hs-identifier hs-var">img</span></a></span><span>
+</span><span id="line-133"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Picture] -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Pictures"><span class="hs-identifier hs-var">Pictures</span></a></span><span>
+</span><span id="line-134"></span><span>                   </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="annot"><span class="annottext">Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Color.html#red"><span class="hs-identifier hs-var">red</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#circleSolid"><span class="hs-identifier hs-var">circleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">50</span></span><span>
+</span><span id="line-135"></span><span>                   </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="annot"><span class="annottext">Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Color.html#white"><span class="hs-identifier hs-var">white</span></a></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.3</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.3</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Text"><span class="hs-identifier hs-var">Text</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&lt;&quot;</span></span><span>
+</span><span id="line-136"></span><span>                   </span><span class="hs-special">]</span><span>
+</span><span id="line-137"></span><span>    </span><span>
+</span><span id="line-138"></span><span>    </span><span id="local-6989586621679107541"><span class="annot"><span class="annottext">feedback :: Bool -&gt; Picture
+</span><a href="#local-6989586621679107541"><span class="hs-identifier hs-var hs-var">feedback</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Color -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Color"><span class="hs-identifier hs-var">Color</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Int -&gt; Color
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Color.html#makeColorI"><span class="hs-identifier hs-var">makeColorI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">255</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">60</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Data.Picture.html#circleSolid"><span class="hs-identifier hs-var">circleSolid</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">80</span></span><span>
+</span><span id="line-139"></span><span>    </span><span class="annot"><a href="#local-6989586621679107541"><span class="hs-identifier hs-var">feedback</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span class="annot"><span class="hs-comment">-- | Instru&#231;&#245;es discretas no canto superior direito</span></span><span>
+</span><span id="line-142"></span><span class="annot"><a href="SelecaoModo.html#desenharInstrucoesSelecao"><span class="hs-identifier hs-type">desenharInstrucoesSelecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-143"></span><span id="desenharInstrucoesSelecao"><span class="annot"><span class="annottext">desenharInstrucoesSelecao :: Assets -&gt; Picture
+</span><a href="SelecaoModo.html#desenharInstrucoesSelecao"><span class="hs-identifier hs-var hs-var">desenharInstrucoesSelecao</span></a></span></span><span> </span><span id="local-6989586621679107550"><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107550"><span class="hs-identifier hs-var">assets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeInstructions"><span class="hs-identifier hs-var">modeInstructions</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Assets
+</span><a href="#local-6989586621679107550"><span class="hs-identifier hs-var">assets</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-145"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679107552"><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107552"><span class="hs-identifier hs-var">img</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Translate"><span class="hs-identifier hs-var">Translate</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">720</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">480</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Float -&gt; Float -&gt; Picture -&gt; Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Scale"><span class="hs-identifier hs-var">Scale</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.5</span></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.5</span></span><span> </span><span class="annot"><span class="annottext">(Picture -&gt; Picture) -&gt; Picture -&gt; Picture
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="#local-6989586621679107552"><span class="hs-identifier hs-var">img</span></a></span><span>
+</span><span id="line-146"></span><span>    </span><span class="annot"><span class="annottext">Maybe Picture
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Picture
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Blank"><span class="hs-identifier hs-var">Blank</span></a></span><span>
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span><span class="annot"><span class="hs-comment">-- * Eventos </span></span><span>
+</span><span id="line-149"></span><span>
+</span><span id="line-150"></span><span class="annot"><span class="hs-comment">-- | Processa input na sele&#231;&#227;o de modo</span></span><span>
+</span><span id="line-151"></span><span class="annot"><a href="SelecaoModo.html#eventoSelecao"><span class="hs-identifier hs-type">eventoSelecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#Event"><span class="hs-identifier hs-type">Event</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoSelecao"><span class="hs-identifier hs-type">EstadoSelecao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoJogo"><span class="hs-identifier hs-type">EstadoJogo</span></a></span><span>
+</span><span id="line-152"></span><span id="eventoSelecao"><span class="annot"><span class="annottext">eventoSelecao :: Event -&gt; EstadoSelecao -&gt; EstadoJogo
+</span><a href="SelecaoModo.html#eventoSelecao"><span class="hs-identifier hs-var hs-var">eventoSelecao</span></a></span></span><span> </span><span id="local-6989586621679107554"><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679107554"><span class="hs-identifier hs-var">evento</span></a></span></span><span> </span><span id="local-6989586621679107555"><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Event
+</span><a href="#local-6989586621679107554"><span class="hs-identifier hs-var">evento</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-153"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyDown"><span class="hs-identifier hs-var">KeyDown</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-154"></span><span>    </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-type">proximoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107555"><span class="hs-identifier hs-type">estado</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-155"></span><span>  </span><span>
+</span><span id="line-156"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyUp"><span class="hs-identifier hs-var">KeyUp</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-157"></span><span>    </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-type">modoAnterior</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107555"><span class="hs-identifier hs-type">estado</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-158"></span><span>  </span><span>
+</span><span id="line-159"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyRight"><span class="hs-identifier hs-var">KeyRight</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-160"></span><span>    </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-type">proximoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107555"><span class="hs-identifier hs-type">estado</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-161"></span><span>  </span><span>
+</span><span id="line-162"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyLeft"><span class="hs-identifier hs-var">KeyLeft</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-163"></span><span>    </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-type">modoAnterior</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107555"><span class="hs-identifier hs-type">estado</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-164"></span><span>  </span><span>
+</span><span id="line-165"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyTab"><span class="hs-identifier hs-var">KeyTab</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-166"></span><span>    </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-type">proximoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107555"><span class="hs-identifier hs-type">estado</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-167"></span><span>  </span><span>
+</span><span id="line-168"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyEnter"><span class="hs-identifier hs-var">KeyEnter</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-169"></span><span>    </span><span class="annot"><span class="annottext">ModoJogo -&gt; EstadoJogo
+</span><a href="SelecaoModo.html#iniciarJogo"><span class="hs-identifier hs-var">iniciarJogo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao -&gt; ModoJogo
+</span><a href="EstadoJogo.html#modoSelecionado"><span class="hs-identifier hs-var">modoSelecionado</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-170"></span><span>  </span><span>
+</span><span id="line-171"></span><span>  </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Event.html#EventKey"><span class="hs-identifier hs-type">EventKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#SpecialKey"><span class="hs-identifier hs-type">SpecialKey</span></a></span><span> </span><span class="annot"><span class="annottext">SpecialKey
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#KeyEsc"><span class="hs-identifier hs-var">KeyEsc</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">KeyState
+</span><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.Internals.Interface.Backend.Types.html#Down"><span class="hs-identifier hs-var">Down</span></a></span><span> </span><span class="annot"><span class="annottext">Modifiers
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">(Float, Float)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-172"></span><span>    </span><span class="annot"><span class="annottext">EstadoMenu -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Menu"><span class="hs-identifier hs-var">Menu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">OpcaoMenu -&gt; Float -&gt; EstadoMenu
+</span><a href="EstadoJogo.html#EstadoMenu"><span class="hs-identifier hs-var">EstadoMenu</span></a></span><span> </span><span class="annot"><span class="annottext">OpcaoMenu
+</span><a href="EstadoJogo.html#OpcaoPlay"><span class="hs-identifier hs-var">OpcaoPlay</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-173"></span><span>  </span><span>
+</span><span id="line-174"></span><span>  </span><span class="annot"><span class="annottext">Event
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107555"><span class="hs-identifier hs-var">estado</span></a></span><span>
+</span><span id="line-175"></span><span>
+</span><span id="line-176"></span><span class="annot"><span class="hs-comment">-- | Avan&#231;a para o pr&#243;ximo modo</span></span><span>
+</span><span id="line-177"></span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-type">proximoModo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#ModoJogo"><span class="hs-identifier hs-type">ModoJogo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#ModoJogo"><span class="hs-identifier hs-type">ModoJogo</span></a></span><span>
+</span><span id="line-178"></span><span id="proximoModo"><span class="annot"><span class="annottext">proximoModo :: ModoJogo -&gt; ModoJogo
+</span><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-var hs-var">proximoModo</span></a></span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#DoisJogadores"><span class="hs-identifier hs-var">DoisJogadores</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#VsBot"><span class="hs-identifier hs-var">VsBot</span></a></span><span>
+</span><span id="line-179"></span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-var">proximoModo</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#VsBot"><span class="hs-identifier hs-var">VsBot</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span>
+</span><span id="line-180"></span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-var">proximoModo</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span>
+</span><span id="line-181"></span><span class="annot"><a href="SelecaoModo.html#proximoModo"><span class="hs-identifier hs-var">proximoModo</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#DoisJogadores"><span class="hs-identifier hs-var">DoisJogadores</span></a></span><span>
+</span><span id="line-182"></span><span>
+</span><span id="line-183"></span><span class="annot"><span class="hs-comment">-- | Volta para o modo anterior</span></span><span>
+</span><span id="line-184"></span><span class="annot"><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-type">modoAnterior</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#ModoJogo"><span class="hs-identifier hs-type">ModoJogo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#ModoJogo"><span class="hs-identifier hs-type">ModoJogo</span></a></span><span>
+</span><span id="line-185"></span><span id="modoAnterior"><span class="annot"><span class="annottext">modoAnterior :: ModoJogo -&gt; ModoJogo
+</span><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-var hs-var">modoAnterior</span></a></span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#DoisJogadores"><span class="hs-identifier hs-var">DoisJogadores</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span>
+</span><span id="line-186"></span><span class="annot"><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-var">modoAnterior</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#VsBot"><span class="hs-identifier hs-var">VsBot</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#DoisJogadores"><span class="hs-identifier hs-var">DoisJogadores</span></a></span><span>
+</span><span id="line-187"></span><span class="annot"><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-var">modoAnterior</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#VsBot"><span class="hs-identifier hs-var">VsBot</span></a></span><span>
+</span><span id="line-188"></span><span class="annot"><a href="SelecaoModo.html#modoAnterior"><span class="hs-identifier hs-var">modoAnterior</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Treino"><span class="hs-identifier hs-var">Treino</span></a></span><span>
+</span><span id="line-189"></span><span>
+</span><span id="line-190"></span><span class="annot"><span class="hs-comment">-- | Inicia uma partida no modo selecionado ou volta ao menu</span></span><span>
+</span><span id="line-191"></span><span class="annot"><a href="SelecaoModo.html#iniciarJogoComMapa"><span class="hs-identifier hs-type">iniciarJogoComMapa</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#ModoJogo"><span class="hs-identifier hs-type">ModoJogo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Mapas.html#MapaCompleto"><span class="hs-identifier hs-type">MapaCompleto</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoJogo"><span class="hs-identifier hs-type">EstadoJogo</span></a></span><span>
+</span><span id="line-192"></span><span id="iniciarJogoComMapa"><span class="annot"><span class="annottext">iniciarJogoComMapa :: ModoJogo -&gt; MapaCompleto -&gt; EstadoJogo
+</span><a href="SelecaoModo.html#iniciarJogoComMapa"><span class="hs-identifier hs-var hs-var">iniciarJogoComMapa</span></a></span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span> </span><span class="annot"><span class="annottext">MapaCompleto
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoMenu -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Menu"><span class="hs-identifier hs-var">Menu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">OpcaoMenu -&gt; Float -&gt; EstadoMenu
+</span><a href="EstadoJogo.html#EstadoMenu"><span class="hs-identifier hs-var">EstadoMenu</span></a></span><span> </span><span class="annot"><span class="annottext">OpcaoMenu
+</span><a href="EstadoJogo.html#OpcaoPlay"><span class="hs-identifier hs-var">OpcaoPlay</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-193"></span><span class="annot"><a href="SelecaoModo.html#iniciarJogoComMapa"><span class="hs-identifier hs-var">iniciarJogoComMapa</span></a></span><span> </span><span id="local-6989586621679107574"><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107574"><span class="hs-identifier hs-var">modo</span></a></span></span><span> </span><span id="local-6989586621679107575"><span class="annot"><span class="annottext">MapaCompleto
+</span><a href="#local-6989586621679107575"><span class="hs-identifier hs-var">mapaEscolhido</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-194"></span><span>  </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Jogando"><span class="hs-identifier hs-var">Jogando</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModoJogo -&gt; Estado -&gt; EstadoPartida
+</span><a href="EstadoJogo.html#criarPartida"><span class="hs-identifier hs-var">criarPartida</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107574"><span class="hs-identifier hs-var">modo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MapaCompleto -&gt; Estado
+</span><a href="Mapas.html#criarEstadoDoMapa"><span class="hs-identifier hs-var">criarEstadoDoMapa</span></a></span><span> </span><span class="annot"><span class="annottext">MapaCompleto
+</span><a href="#local-6989586621679107575"><span class="hs-identifier hs-var">mapaEscolhido</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-195"></span><span>
+</span><span id="line-196"></span><span class="annot"><span class="hs-comment">-- * Esta fun&#231;&#227;o agora &#233; s&#243; um placeholder - ser&#225; chamada do Main.hs</span></span><span>
+</span><span id="line-197"></span><span class="annot"><a href="SelecaoModo.html#iniciarJogo"><span class="hs-identifier hs-type">iniciarJogo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="EstadoJogo.html#ModoJogo"><span class="hs-identifier hs-type">ModoJogo</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoJogo"><span class="hs-identifier hs-type">EstadoJogo</span></a></span><span>
+</span><span id="line-198"></span><span id="iniciarJogo"><span class="annot"><span class="annottext">iniciarJogo :: ModoJogo -&gt; EstadoJogo
+</span><a href="SelecaoModo.html#iniciarJogo"><span class="hs-identifier hs-var hs-var">iniciarJogo</span></a></span></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="EstadoJogo.html#Voltar"><span class="hs-identifier hs-var">Voltar</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoMenu -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Menu"><span class="hs-identifier hs-var">Menu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">OpcaoMenu -&gt; Float -&gt; EstadoMenu
+</span><a href="EstadoJogo.html#EstadoMenu"><span class="hs-identifier hs-var">EstadoMenu</span></a></span><span> </span><span class="annot"><span class="annottext">OpcaoMenu
+</span><a href="EstadoJogo.html#OpcaoPlay"><span class="hs-identifier hs-var">OpcaoPlay</span></a></span><span> </span><span class="annot"><span class="annottext">Float
+</span><span class="hs-number">0.0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-199"></span><span class="annot"><a href="SelecaoModo.html#iniciarJogo"><span class="hs-identifier hs-var">iniciarJogo</span></a></span><span> </span><span id="local-6989586621679107579"><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107579"><span class="hs-identifier hs-var">modo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-200"></span><span>  </span><span class="hs-comment">-- ^ Usa o mapa cl&#225;ssico como fallback</span><span>
+</span><span id="line-201"></span><span>  </span><span class="annot"><span class="annottext">EstadoPartida -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#Jogando"><span class="hs-identifier hs-var">Jogando</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModoJogo -&gt; Estado -&gt; EstadoPartida
+</span><a href="EstadoJogo.html#criarPartida"><span class="hs-identifier hs-var">criarPartida</span></a></span><span> </span><span class="annot"><span class="annottext">ModoJogo
+</span><a href="#local-6989586621679107579"><span class="hs-identifier hs-var">modo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MapaCompleto -&gt; Estado
+</span><a href="Mapas.html#criarEstadoDoMapa"><span class="hs-identifier hs-var">criarEstadoDoMapa</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[MapaCompleto]
+</span><a href="Mapas.html#todosOsMapas"><span class="hs-identifier hs-var">todosOsMapas</span></a></span><span> </span><span class="annot"><span class="annottext">[MapaCompleto] -&gt; Int -&gt; MapaCompleto
+forall a. HasCallStack =&gt; [a] -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">!!</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-202"></span><span>
+</span><span id="line-203"></span><span class="annot"><span class="hs-comment">-- * Atualiza anima&#231;&#227;o da sele&#231;&#227;o</span></span><span>
+</span><span id="line-204"></span><span class="annot"><a href="SelecaoModo.html#atualizarSelecao"><span class="hs-identifier hs-type">atualizarSelecao</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoSelecao"><span class="hs-identifier hs-type">EstadoSelecao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="EstadoJogo.html#EstadoJogo"><span class="hs-identifier hs-type">EstadoJogo</span></a></span><span>
+</span><span id="line-205"></span><span id="atualizarSelecao"><span class="annot"><span class="annottext">atualizarSelecao :: Float -&gt; EstadoSelecao -&gt; EstadoJogo
+</span><a href="SelecaoModo.html#atualizarSelecao"><span class="hs-identifier hs-var hs-var">atualizarSelecao</span></a></span></span><span> </span><span id="local-6989586621679107583"><span class="annot"><span class="annottext">Float
+</span><a href="#local-6989586621679107583"><span class="hs-identifier hs-var">dt</span></a></span></span><span> </span><span id="local-6989586621679107584"><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107584"><span class="hs-identifier hs-var">estado</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">EstadoSelecao -&gt; EstadoJogo
+</span><a href="EstadoJogo.html#SelecaoModo"><span class="hs-identifier hs-var">SelecaoModo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">EstadoSelecao
+</span><a href="#local-6989586621679107584"><span class="hs-identifier hs-var">estado</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><a href="EstadoJogo.html#animacaoGlowSelecao"><span class="hs-identifier hs-var">animacaoGlowSelecao</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="EstadoJogo.html#animacaoGlowSelecao"><span class="hs-identifier hs-var">animacaoGlowSelecao</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679107584"><span class="hs-identifier hs-type">estado</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">+</span></span><span> </span><span class="annot"><a href="#local-6989586621679107583"><span class="hs-identifier hs-type">dt</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">*</span></span><span> </span><span class="annot"><span class="hs-number">5</span></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-206"></span></pre></body></html>

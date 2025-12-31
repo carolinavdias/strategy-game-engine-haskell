@@ -1,0 +1,728 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-|
+Module      : Assets
+Description : Gest&#227;o de recursos gr&#225;ficos
+Copyright   : Carolina Dias e Leonor Sousa, 2025
+License     : GPL-3
+
+Este m&#243;dulo controla a evolu&#231;&#227;o temporal do jogo.
+
+Responsabilidades:
+
+* Gest&#227;o do timer de turnos
+* Altern&#226;ncia entre jogadores
+* Execu&#231;&#227;o autom&#225;tica do bot
+* Integra&#231;&#227;o da f&#237;sica (Tarefa3)
+* Garantia de estados v&#225;lidos (vida, morte, vit&#243;ria)
+
+Inclui solu&#231;&#245;es espec&#237;ficas para mec&#226;nicas
+como o Jetpack, sem modificar a f&#237;sica base.
+
+-}</span></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Assets</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-1.13.2.2-18a45128884c8e3abb10bcebdd6f29a6a105f07c45487d4d89c484ad094bbe66/share/doc/html/src/Graphics.Gloss.html"><span class="hs-identifier">Graphics.Gloss</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="annot"><span class="hs-comment">-- | Container principal de todos os assets</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">data</span><span> </span><span id="Assets"><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-var">Assets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Assets"><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-var">Assets</span></a></span></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="menuAssets"><span class="annot"><span class="annottext">Assets -&gt; MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var hs-var">menuAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#MenuAssets"><span class="hs-identifier hs-type">MenuAssets</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="backgroundAssets"><span class="annot"><span class="annottext">Assets -&gt; BackgroundAssets
+</span><a href="Assets.html#backgroundAssets"><span class="hs-identifier hs-var hs-var">backgroundAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#BackgroundAssets"><span class="hs-identifier hs-type">BackgroundAssets</span></a></span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="spriteAssets"><span class="annot"><span class="annottext">Assets -&gt; SpriteAssets
+</span><a href="Assets.html#spriteAssets"><span class="hs-identifier hs-var hs-var">spriteAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#SpriteAssets"><span class="hs-identifier hs-type">SpriteAssets</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="objetoAssets"><span class="annot"><span class="annottext">Assets -&gt; ObjetoAssets
+</span><a href="Assets.html#objetoAssets"><span class="hs-identifier hs-var hs-var">objetoAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#ObjetoAssets"><span class="hs-identifier hs-type">ObjetoAssets</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="terrenoAsserts"><span class="annot"><span class="annottext">Assets -&gt; TerrenoAsserts
+</span><a href="Assets.html#terrenoAsserts"><span class="hs-identifier hs-var hs-var">terrenoAsserts</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#TerrenoAsserts"><span class="hs-identifier hs-type">TerrenoAsserts</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="uiAssets"><span class="annot"><span class="annottext">Assets -&gt; UIAssets
+</span><a href="Assets.html#uiAssets"><span class="hs-identifier hs-var hs-var">uiAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#UIAssets"><span class="hs-identifier hs-type">UIAssets</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="frameAssets"><span class="annot"><span class="annottext">Assets -&gt; FrameAssets
+</span><a href="Assets.html#frameAssets"><span class="hs-identifier hs-var hs-var">frameAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#FrameAssets"><span class="hs-identifier hs-type">FrameAssets</span></a></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapSelectionAssets"><span class="annot"><span class="annottext">Assets -&gt; MapSelectionAssets
+</span><a href="Assets.html#mapSelectionAssets"><span class="hs-identifier hs-var hs-var">mapSelectionAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#MapSelectionAssets"><span class="hs-identifier hs-type">MapSelectionAssets</span></a></span><span>  </span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="tutorialAssets"><span class="annot"><span class="annottext">Assets -&gt; TutorialAssets
+</span><a href="Assets.html#tutorialAssets"><span class="hs-identifier hs-var hs-var">tutorialAssets</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#TutorialAssets"><span class="hs-identifier hs-type">TutorialAssets</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106313"><span id="local-6989586621679106335"><span id="local-6989586621679106339"><span class="annot"><span class="annottext">Int -&gt; Assets -&gt; ShowS
+[Assets] -&gt; ShowS
+Assets -&gt; String
+(Int -&gt; Assets -&gt; ShowS)
+-&gt; (Assets -&gt; String) -&gt; ([Assets] -&gt; ShowS) -&gt; Show Assets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Assets -&gt; ShowS
+showsPrec :: Int -&gt; Assets -&gt; ShowS
+$cshow :: Assets -&gt; String
+show :: Assets -&gt; String
+$cshowList :: [Assets] -&gt; ShowS
+showList :: [Assets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | Assets do menu principal</span></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">data</span><span> </span><span id="MenuAssets"><span class="annot"><a href="Assets.html#MenuAssets"><span class="hs-identifier hs-var">MenuAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MenuAssets"><span class="annot"><a href="Assets.html#MenuAssets"><span class="hs-identifier hs-var">MenuAssets</span></a></span></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="menuBackground"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#menuBackground"><span class="hs-identifier hs-var hs-var">menuBackground</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="menuLogo"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#menuLogo"><span class="hs-identifier hs-var hs-var">menuLogo</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonPlay"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonPlay"><span class="hs-identifier hs-var hs-var">buttonPlay</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonTutorial"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonTutorial"><span class="hs-identifier hs-var hs-var">buttonTutorial</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonExit"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonExit"><span class="hs-identifier hs-var hs-var">buttonExit</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modeBackground"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeBackground"><span class="hs-identifier hs-var hs-var">modeBackground</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modeTitle"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeTitle"><span class="hs-identifier hs-var hs-var">modeTitle</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modeButton2P"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeButton2P"><span class="hs-identifier hs-var hs-var">modeButton2P</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modeButtonBot"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeButtonBot"><span class="hs-identifier hs-var hs-var">modeButtonBot</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modeButtonTraining"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeButtonTraining"><span class="hs-identifier hs-var hs-var">modeButtonTraining</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="modeInstructions"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#modeInstructions"><span class="hs-identifier hs-var hs-var">modeInstructions</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonBack"><span class="annot"><span class="annottext">MenuAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonBack"><span class="hs-identifier hs-var hs-var">buttonBack</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-53"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106356"><span id="local-6989586621679106373"><span id="local-6989586621679106376"><span class="annot"><span class="annottext">Int -&gt; MenuAssets -&gt; ShowS
+[MenuAssets] -&gt; ShowS
+MenuAssets -&gt; String
+(Int -&gt; MenuAssets -&gt; ShowS)
+-&gt; (MenuAssets -&gt; String)
+-&gt; ([MenuAssets] -&gt; ShowS)
+-&gt; Show MenuAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; MenuAssets -&gt; ShowS
+showsPrec :: Int -&gt; MenuAssets -&gt; ShowS
+$cshow :: MenuAssets -&gt; String
+show :: MenuAssets -&gt; String
+$cshowList :: [MenuAssets] -&gt; ShowS
+showList :: [MenuAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span class="annot"><span class="hs-comment">-- | Assets de backgrounds</span></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">data</span><span> </span><span id="BackgroundAssets"><span class="annot"><a href="Assets.html#BackgroundAssets"><span class="hs-identifier hs-var">BackgroundAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="BackgroundAssets"><span class="annot"><a href="Assets.html#BackgroundAssets"><span class="hs-identifier hs-var">BackgroundAssets</span></a></span></span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="gameBackground"><span class="annot"><span class="annottext">BackgroundAssets -&gt; Maybe Picture
+</span><a href="Assets.html#gameBackground"><span class="hs-identifier hs-var hs-var">gameBackground</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-58"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="victoryGreen"><span class="annot"><span class="annottext">BackgroundAssets -&gt; Maybe Picture
+</span><a href="Assets.html#victoryGreen"><span class="hs-identifier hs-var hs-var">victoryGreen</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="victoryBlue"><span class="annot"><span class="annottext">BackgroundAssets -&gt; Maybe Picture
+</span><a href="Assets.html#victoryBlue"><span class="hs-identifier hs-var hs-var">victoryBlue</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapSelectionBackground"><span class="annot"><span class="annottext">BackgroundAssets -&gt; Maybe Picture
+</span><a href="Assets.html#mapSelectionBackground"><span class="hs-identifier hs-var hs-var">mapSelectionBackground</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span> </span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106385"><span id="local-6989586621679106393"><span id="local-6989586621679106396"><span class="annot"><span class="annottext">Int -&gt; BackgroundAssets -&gt; ShowS
+[BackgroundAssets] -&gt; ShowS
+BackgroundAssets -&gt; String
+(Int -&gt; BackgroundAssets -&gt; ShowS)
+-&gt; (BackgroundAssets -&gt; String)
+-&gt; ([BackgroundAssets] -&gt; ShowS)
+-&gt; Show BackgroundAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; BackgroundAssets -&gt; ShowS
+showsPrec :: Int -&gt; BackgroundAssets -&gt; ShowS
+$cshow :: BackgroundAssets -&gt; String
+show :: BackgroundAssets -&gt; String
+$cshowList :: [BackgroundAssets] -&gt; ShowS
+showList :: [BackgroundAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span class="annot"><span class="hs-comment">-- |Assets de sprites das minhocas e rob&#244;</span></span><span>
+</span><span id="line-64"></span><span class="hs-keyword">data</span><span> </span><span id="SpriteAssets"><span class="annot"><a href="Assets.html#SpriteAssets"><span class="hs-identifier hs-var">SpriteAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SpriteAssets"><span class="annot"><a href="Assets.html#SpriteAssets"><span class="hs-identifier hs-var">SpriteAssets</span></a></span></span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="hs-comment">-- ^ Minhoca Verde</span></span><span>
+</span><span id="line-66"></span><span>    </span><span id="minhocaVerdeIdle"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaVerdeIdle"><span class="hs-identifier hs-var hs-var">minhocaVerdeIdle</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaVerdeWalk1"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaVerdeWalk1"><span class="hs-identifier hs-var hs-var">minhocaVerdeWalk1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaVerdeWalk2"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaVerdeWalk2"><span class="hs-identifier hs-var hs-var">minhocaVerdeWalk2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaVerdeSalta"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaVerdeSalta"><span class="hs-identifier hs-var hs-var">minhocaVerdeSalta</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span> </span><span>
+</span><span id="line-70"></span><span>  </span><span>
+</span><span id="line-71"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ Minhoca Azul</span></span><span>
+</span><span id="line-72"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaAzulIdle"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaAzulIdle"><span class="hs-identifier hs-var hs-var">minhocaAzulIdle</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaAzulWalk1"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaAzulWalk1"><span class="hs-identifier hs-var hs-var">minhocaAzulWalk1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaAzulWalk2"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaAzulWalk2"><span class="hs-identifier hs-var hs-var">minhocaAzulWalk2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-75"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minhocaAzulSalta"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minhocaAzulSalta"><span class="hs-identifier hs-var hs-var">minhocaAzulSalta</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-76"></span><span>  </span><span>
+</span><span id="line-77"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^Minhocas grandes (laterais)</span></span><span>
+</span><span id="line-78"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormGreenBig"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormGreenBig"><span class="hs-identifier hs-var hs-var">wormGreenBig</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormBlueBig"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormBlueBig"><span class="hs-identifier hs-var hs-var">wormBlueBig</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormTrainingBig"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormTrainingBig"><span class="hs-identifier hs-var hs-var">wormTrainingBig</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-81"></span><span>  </span><span>
+</span><span id="line-82"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ Minhoca Verde com armas</span></span><span>
+</span><span id="line-83"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormGreenBazuca"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormGreenBazuca"><span class="hs-identifier hs-var hs-var">wormGreenBazuca</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-84"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormGreenDinamite"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormGreenDinamite"><span class="hs-identifier hs-var hs-var">wormGreenDinamite</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-85"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormGreenMina"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormGreenMina"><span class="hs-identifier hs-var hs-var">wormGreenMina</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormGreenEscavadora"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormGreenEscavadora"><span class="hs-identifier hs-var hs-var">wormGreenEscavadora</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormGreenJetpack"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormGreenJetpack"><span class="hs-identifier hs-var hs-var">wormGreenJetpack</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-88"></span><span>  </span><span>
+</span><span id="line-89"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ Minhoca Azul com armas</span></span><span>
+</span><span id="line-90"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormBlueBazuca"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormBlueBazuca"><span class="hs-identifier hs-var hs-var">wormBlueBazuca</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-91"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormBlueDinamite"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormBlueDinamite"><span class="hs-identifier hs-var hs-var">wormBlueDinamite</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-92"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormBlueMina"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormBlueMina"><span class="hs-identifier hs-var hs-var">wormBlueMina</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-93"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormBlueEscavadora"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormBlueEscavadora"><span class="hs-identifier hs-var hs-var">wormBlueEscavadora</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="wormBlueJetpack"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#wormBlueJetpack"><span class="hs-identifier hs-var hs-var">wormBlueJetpack</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-95"></span><span>  </span><span>
+</span><span id="line-96"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ ROB&#212; (para modo VsBot)</span></span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotBig"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotBig"><span class="hs-identifier hs-var hs-var">robotBig</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-98"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotIdle"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotIdle"><span class="hs-identifier hs-var hs-var">robotIdle</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-99"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotWalk1"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotWalk1"><span class="hs-identifier hs-var hs-var">robotWalk1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-100"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotWalk2"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotWalk2"><span class="hs-identifier hs-var hs-var">robotWalk2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotBazuca"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotBazuca"><span class="hs-identifier hs-var hs-var">robotBazuca</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotDinamite"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotDinamite"><span class="hs-identifier hs-var hs-var">robotDinamite</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-103"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotMina"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotMina"><span class="hs-identifier hs-var hs-var">robotMina</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotEscavadora"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotEscavadora"><span class="hs-identifier hs-var hs-var">robotEscavadora</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="robotJetpack"><span class="annot"><span class="annottext">SpriteAssets -&gt; Maybe Picture
+</span><a href="Assets.html#robotJetpack"><span class="hs-identifier hs-var hs-var">robotJetpack</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106430"><span id="local-6989586621679106464"><span id="local-6989586621679106467"><span class="annot"><span class="annottext">Int -&gt; SpriteAssets -&gt; ShowS
+[SpriteAssets] -&gt; ShowS
+SpriteAssets -&gt; String
+(Int -&gt; SpriteAssets -&gt; ShowS)
+-&gt; (SpriteAssets -&gt; String)
+-&gt; ([SpriteAssets] -&gt; ShowS)
+-&gt; Show SpriteAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; SpriteAssets -&gt; ShowS
+showsPrec :: Int -&gt; SpriteAssets -&gt; ShowS
+$cshow :: SpriteAssets -&gt; String
+show :: SpriteAssets -&gt; String
+$cshowList :: [SpriteAssets] -&gt; ShowS
+showList :: [SpriteAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="annot"><span class="hs-comment">-- | Assets de objetos e armas</span></span><span>
+</span><span id="line-109"></span><span class="hs-keyword">data</span><span> </span><span id="ObjetoAssets"><span class="annot"><a href="Assets.html#ObjetoAssets"><span class="hs-identifier hs-var">ObjetoAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ObjetoAssets"><span class="annot"><a href="Assets.html#ObjetoAssets"><span class="hs-identifier hs-var">ObjetoAssets</span></a></span></span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="barrilSprite"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#barrilSprite"><span class="hs-identifier hs-var hs-var">barrilSprite</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="bazucaIcon"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#bazucaIcon"><span class="hs-identifier hs-var hs-var">bazucaIcon</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-112"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="dinamiteIcon"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#dinamiteIcon"><span class="hs-identifier hs-var hs-var">dinamiteIcon</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-113"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="minaIcon"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#minaIcon"><span class="hs-identifier hs-var hs-var">minaIcon</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-114"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="escavadoraIcon"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#escavadoraIcon"><span class="hs-identifier hs-var hs-var">escavadoraIcon</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-115"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="jetpackIcon"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#jetpackIcon"><span class="hs-identifier hs-var hs-var">jetpackIcon</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-116"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="explosao1"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#explosao1"><span class="hs-identifier hs-var hs-var">explosao1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-117"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="explosao2"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#explosao2"><span class="hs-identifier hs-var hs-var">explosao2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-118"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="explosao3"><span class="annot"><span class="annottext">ObjetoAssets -&gt; Maybe Picture
+</span><a href="Assets.html#explosao3"><span class="hs-identifier hs-var hs-var">explosao3</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-119"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106480"><span id="local-6989586621679106493"><span id="local-6989586621679106496"><span class="annot"><span class="annottext">Int -&gt; ObjetoAssets -&gt; ShowS
+[ObjetoAssets] -&gt; ShowS
+ObjetoAssets -&gt; String
+(Int -&gt; ObjetoAssets -&gt; ShowS)
+-&gt; (ObjetoAssets -&gt; String)
+-&gt; ([ObjetoAssets] -&gt; ShowS)
+-&gt; Show ObjetoAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; ObjetoAssets -&gt; ShowS
+showsPrec :: Int -&gt; ObjetoAssets -&gt; ShowS
+$cshow :: ObjetoAssets -&gt; String
+show :: ObjetoAssets -&gt; String
+$cshowList :: [ObjetoAssets] -&gt; ShowS
+showList :: [ObjetoAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="annot"><span class="hs-comment">-- | Terreno </span></span><span>
+</span><span id="line-122"></span><span class="hs-keyword">data</span><span> </span><span id="TerrenoAsserts"><span class="annot"><a href="Assets.html#TerrenoAsserts"><span class="hs-identifier hs-var">TerrenoAsserts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TerrenoAsserts"><span class="annot"><a href="Assets.html#TerrenoAsserts"><span class="hs-identifier hs-var">TerrenoAsserts</span></a></span></span><span>
+</span><span id="line-123"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="pedra"><span class="annot"><span class="annottext">TerrenoAsserts -&gt; Maybe Picture
+</span><a href="Assets.html#pedra"><span class="hs-identifier hs-var hs-var">pedra</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-124"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="agua"><span class="annot"><span class="annottext">TerrenoAsserts -&gt; Maybe Picture
+</span><a href="Assets.html#agua"><span class="hs-identifier hs-var hs-var">agua</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-125"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="terra"><span class="annot"><span class="annottext">TerrenoAsserts -&gt; Maybe Picture
+</span><a href="Assets.html#terra"><span class="hs-identifier hs-var hs-var">terra</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-126"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106503"><span id="local-6989586621679106510"><span id="local-6989586621679106513"><span class="annot"><span class="annottext">Int -&gt; TerrenoAsserts -&gt; ShowS
+[TerrenoAsserts] -&gt; ShowS
+TerrenoAsserts -&gt; String
+(Int -&gt; TerrenoAsserts -&gt; ShowS)
+-&gt; (TerrenoAsserts -&gt; String)
+-&gt; ([TerrenoAsserts] -&gt; ShowS)
+-&gt; Show TerrenoAsserts
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; TerrenoAsserts -&gt; ShowS
+showsPrec :: Int -&gt; TerrenoAsserts -&gt; ShowS
+$cshow :: TerrenoAsserts -&gt; String
+show :: TerrenoAsserts -&gt; String
+$cshowList :: [TerrenoAsserts] -&gt; ShowS
+showList :: [TerrenoAsserts] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="annot"><span class="hs-comment">-- | Assets da interface do jogo</span></span><span>
+</span><span id="line-129"></span><span class="hs-keyword">data</span><span> </span><span id="UIAssets"><span class="annot"><a href="Assets.html#UIAssets"><span class="hs-identifier hs-var">UIAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="UIAssets"><span class="annot"><a href="Assets.html#UIAssets"><span class="hs-identifier hs-var">UIAssets</span></a></span></span><span>
+</span><span id="line-130"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="hpBar0"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#hpBar0"><span class="hs-identifier hs-var hs-var">hpBar0</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-131"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="hpBar20"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#hpBar20"><span class="hs-identifier hs-var hs-var">hpBar20</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-132"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="hpBar40"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#hpBar40"><span class="hs-identifier hs-var hs-var">hpBar40</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-133"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="hpBar60"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#hpBar60"><span class="hs-identifier hs-var hs-var">hpBar60</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="hpBar80"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#hpBar80"><span class="hs-identifier hs-var hs-var">hpBar80</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="hpBar100"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#hpBar100"><span class="hs-identifier hs-var hs-var">hpBar100</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-136"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="textPlayer1"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#textPlayer1"><span class="hs-identifier hs-var hs-var">textPlayer1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-137"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="textPlayer2"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#textPlayer2"><span class="hs-identifier hs-var hs-var">textPlayer2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-138"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="textControls"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#textControls"><span class="hs-identifier hs-var hs-var">textControls</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-139"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="timerGreen"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#timerGreen"><span class="hs-identifier hs-var hs-var">timerGreen</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-140"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="timerBlue"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#timerBlue"><span class="hs-identifier hs-var hs-var">timerBlue</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-141"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonWeaponsGreen"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonWeaponsGreen"><span class="hs-identifier hs-var hs-var">buttonWeaponsGreen</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonWeaponsBlue"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonWeaponsBlue"><span class="hs-identifier hs-var hs-var">buttonWeaponsBlue</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-143"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonWeaponsRobot"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonWeaponsRobot"><span class="hs-identifier hs-var hs-var">buttonWeaponsRobot</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="heartIcon"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#heartIcon"><span class="hs-identifier hs-var hs-var">heartIcon</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-145"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="weaponSlot"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#weaponSlot"><span class="hs-identifier hs-var hs-var">weaponSlot</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-146"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonRestart"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonRestart"><span class="hs-identifier hs-var hs-var">buttonRestart</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-147"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="buttonMenu"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#buttonMenu"><span class="hs-identifier hs-var hs-var">buttonMenu</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-148"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="textTreino"><span class="annot"><span class="annottext">UIAssets -&gt; Maybe Picture
+</span><a href="Assets.html#textTreino"><span class="hs-identifier hs-var hs-var">textTreino</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>  </span><span>
+</span><span id="line-149"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106536"><span id="local-6989586621679106559"><span id="local-6989586621679106562"><span class="annot"><span class="annottext">Int -&gt; UIAssets -&gt; ShowS
+[UIAssets] -&gt; ShowS
+UIAssets -&gt; String
+(Int -&gt; UIAssets -&gt; ShowS)
+-&gt; (UIAssets -&gt; String) -&gt; ([UIAssets] -&gt; ShowS) -&gt; Show UIAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; UIAssets -&gt; ShowS
+showsPrec :: Int -&gt; UIAssets -&gt; ShowS
+$cshow :: UIAssets -&gt; String
+show :: UIAssets -&gt; String
+$cshowList :: [UIAssets] -&gt; ShowS
+showList :: [UIAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span class="annot"><span class="hs-comment">-- |Assets de molduras</span></span><span>
+</span><span id="line-152"></span><span class="hs-keyword">data</span><span> </span><span id="FrameAssets"><span class="annot"><a href="Assets.html#FrameAssets"><span class="hs-identifier hs-var">FrameAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FrameAssets"><span class="annot"><a href="Assets.html#FrameAssets"><span class="hs-identifier hs-var">FrameAssets</span></a></span></span><span>
+</span><span id="line-153"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="stoneFrame"><span class="annot"><span class="annottext">FrameAssets -&gt; Maybe Picture
+</span><a href="Assets.html#stoneFrame"><span class="hs-identifier hs-var hs-var">stoneFrame</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-154"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106567"><span id="local-6989586621679106572"><span id="local-6989586621679106575"><span class="annot"><span class="annottext">Int -&gt; FrameAssets -&gt; ShowS
+[FrameAssets] -&gt; ShowS
+FrameAssets -&gt; String
+(Int -&gt; FrameAssets -&gt; ShowS)
+-&gt; (FrameAssets -&gt; String)
+-&gt; ([FrameAssets] -&gt; ShowS)
+-&gt; Show FrameAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; FrameAssets -&gt; ShowS
+showsPrec :: Int -&gt; FrameAssets -&gt; ShowS
+$cshow :: FrameAssets -&gt; String
+show :: FrameAssets -&gt; String
+$cshowList :: [FrameAssets] -&gt; ShowS
+showList :: [FrameAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-155"></span><span>
+</span><span id="line-156"></span><span>
+</span><span id="line-157"></span><span class="hs-comment">--  |Assets para sele&#231;&#227;o de mapa</span><span>
+</span><span id="line-158"></span><span class="hs-keyword">data</span><span> </span><span id="MapSelectionAssets"><span class="annot"><a href="Assets.html#MapSelectionAssets"><span class="hs-identifier hs-var">MapSelectionAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MapSelectionAssets"><span class="annot"><a href="Assets.html#MapSelectionAssets"><span class="hs-identifier hs-var">MapSelectionAssets</span></a></span></span><span>
+</span><span id="line-159"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="textEscolheMapa"><span class="annot"><span class="annottext">MapSelectionAssets -&gt; Maybe Picture
+</span><a href="Assets.html#textEscolheMapa"><span class="hs-identifier hs-var hs-var">textEscolheMapa</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-160"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapIconClassico"><span class="annot"><span class="annottext">MapSelectionAssets -&gt; Maybe Picture
+</span><a href="Assets.html#mapIconClassico"><span class="hs-identifier hs-var hs-var">mapIconClassico</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-161"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapIconMontanhas"><span class="annot"><span class="annottext">MapSelectionAssets -&gt; Maybe Picture
+</span><a href="Assets.html#mapIconMontanhas"><span class="hs-identifier hs-var hs-var">mapIconMontanhas</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-162"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapIconLago"><span class="annot"><span class="annottext">MapSelectionAssets -&gt; Maybe Picture
+</span><a href="Assets.html#mapIconLago"><span class="hs-identifier hs-var hs-var">mapIconLago</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-163"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapIconPedreira"><span class="annot"><span class="annottext">MapSelectionAssets -&gt; Maybe Picture
+</span><a href="Assets.html#mapIconPedreira"><span class="hs-identifier hs-var hs-var">mapIconPedreira</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-164"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="mapIconIlhas"><span class="annot"><span class="annottext">MapSelectionAssets -&gt; Maybe Picture
+</span><a href="Assets.html#mapIconIlhas"><span class="hs-identifier hs-var hs-var">mapIconIlhas</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-165"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106585"><span id="local-6989586621679106595"><span id="local-6989586621679106598"><span class="annot"><span class="annottext">Int -&gt; MapSelectionAssets -&gt; ShowS
+[MapSelectionAssets] -&gt; ShowS
+MapSelectionAssets -&gt; String
+(Int -&gt; MapSelectionAssets -&gt; ShowS)
+-&gt; (MapSelectionAssets -&gt; String)
+-&gt; ([MapSelectionAssets] -&gt; ShowS)
+-&gt; Show MapSelectionAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; MapSelectionAssets -&gt; ShowS
+showsPrec :: Int -&gt; MapSelectionAssets -&gt; ShowS
+$cshow :: MapSelectionAssets -&gt; String
+show :: MapSelectionAssets -&gt; String
+$cshowList :: [MapSelectionAssets] -&gt; ShowS
+showList :: [MapSelectionAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-166"></span><span>
+</span><span id="line-167"></span><span>
+</span><span id="line-168"></span><span class="annot"><span class="hs-comment">-- |Assets do Tutorial </span></span><span>
+</span><span id="line-169"></span><span class="hs-keyword">data</span><span> </span><span id="TutorialAssets"><span class="annot"><a href="Assets.html#TutorialAssets"><span class="hs-identifier hs-var">TutorialAssets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TutorialAssets"><span class="annot"><a href="Assets.html#TutorialAssets"><span class="hs-identifier hs-var">TutorialAssets</span></a></span></span><span>
+</span><span id="line-170"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="tutorialPagina1"><span class="annot"><span class="annottext">TutorialAssets -&gt; Maybe Picture
+</span><a href="Assets.html#tutorialPagina1"><span class="hs-identifier hs-var hs-var">tutorialPagina1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-171"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="tutorialPagina2"><span class="annot"><span class="annottext">TutorialAssets -&gt; Maybe Picture
+</span><a href="Assets.html#tutorialPagina2"><span class="hs-identifier hs-var hs-var">tutorialPagina2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-172"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="tutorialPagina3"><span class="annot"><span class="annottext">TutorialAssets -&gt; Maybe Picture
+</span><a href="Assets.html#tutorialPagina3"><span class="hs-identifier hs-var hs-var">tutorialPagina3</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-173"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="tutorialPagina4"><span class="annot"><span class="annottext">TutorialAssets -&gt; Maybe Picture
+</span><a href="Assets.html#tutorialPagina4"><span class="hs-identifier hs-var hs-var">tutorialPagina4</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-174"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="tutorialPagina5"><span class="annot"><span class="annottext">TutorialAssets -&gt; Maybe Picture
+</span><a href="Assets.html#tutorialPagina5"><span class="hs-identifier hs-var hs-var">tutorialPagina5</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/.cabal/store/ghc-9.6.7/gloss-rendering-1.13.2.1-17bb2e3fb6716d06209a48dd1ec8dc3950e2f85db4a6f1e9485d0e17ce2466f8/share/doc/html/src/Graphics.Gloss.Internals.Data.Picture.html#Picture"><span class="hs-identifier hs-type">Picture</span></a></span><span>
+</span><span id="line-175"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679106607"><span id="local-6989586621679106616"><span id="local-6989586621679106619"><span class="annot"><span class="annottext">Int -&gt; TutorialAssets -&gt; ShowS
+[TutorialAssets] -&gt; ShowS
+TutorialAssets -&gt; String
+(Int -&gt; TutorialAssets -&gt; ShowS)
+-&gt; (TutorialAssets -&gt; String)
+-&gt; ([TutorialAssets] -&gt; ShowS)
+-&gt; Show TutorialAssets
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; TutorialAssets -&gt; ShowS
+showsPrec :: Int -&gt; TutorialAssets -&gt; ShowS
+$cshow :: TutorialAssets -&gt; String
+show :: TutorialAssets -&gt; String
+$cshowList :: [TutorialAssets] -&gt; ShowS
+showList :: [TutorialAssets] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-176"></span><span>
+</span><span id="line-177"></span><span>
+</span><span id="line-178"></span><span class="annot"><span class="hs-comment">-- | Assets vazios para inicializa&#231;&#227;o</span></span><span>
+</span><span id="line-179"></span><span class="annot"><a href="Assets.html#assetsVazios"><span class="hs-identifier hs-type">assetsVazios</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span>
+</span><span id="line-180"></span><span id="assetsVazios"><span class="annot"><span class="annottext">assetsVazios :: Assets
+</span><a href="Assets.html#assetsVazios"><span class="hs-identifier hs-var hs-var">assetsVazios</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Assets.html#Assets"><span class="hs-identifier hs-type">Assets</span></a></span><span>
+</span><span id="line-181"></span><span>  </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">menuAssets :: MenuAssets
+</span><a href="Assets.html#menuAssets"><span class="hs-identifier hs-var">menuAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; MenuAssets
+</span><a href="Assets.html#MenuAssets"><span class="hs-identifier hs-var">MenuAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span>
+</span><span id="line-182"></span><span>                            </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span>
+</span><span id="line-183"></span><span>                            </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-184"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">backgroundAssets :: BackgroundAssets
+</span><a href="Assets.html#backgroundAssets"><span class="hs-identifier hs-var">backgroundAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; BackgroundAssets
+</span><a href="Assets.html#BackgroundAssets"><span class="hs-identifier hs-var">BackgroundAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-185"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">spriteAssets :: SpriteAssets
+</span><a href="Assets.html#spriteAssets"><span class="hs-identifier hs-var">spriteAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; SpriteAssets
+</span><a href="Assets.html#SpriteAssets"><span class="hs-identifier hs-var">SpriteAssets</span></a></span><span> </span><span>
+</span><span id="line-186"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-187"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-188"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-189"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-190"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-191"></span><span>      </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-192"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">objetoAssets :: ObjetoAssets
+</span><a href="Assets.html#objetoAssets"><span class="hs-identifier hs-var">objetoAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; ObjetoAssets
+</span><a href="Assets.html#ObjetoAssets"><span class="hs-identifier hs-var">ObjetoAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span>
+</span><span id="line-193"></span><span>                                </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-194"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">terrenoAsserts :: TerrenoAsserts
+</span><a href="Assets.html#terrenoAsserts"><span class="hs-identifier hs-var">terrenoAsserts</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture -&gt; Maybe Picture -&gt; Maybe Picture -&gt; TerrenoAsserts
+</span><a href="Assets.html#TerrenoAsserts"><span class="hs-identifier hs-var">TerrenoAsserts</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-195"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">uiAssets :: UIAssets
+</span><a href="Assets.html#uiAssets"><span class="hs-identifier hs-var">uiAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; UIAssets
+</span><a href="Assets.html#UIAssets"><span class="hs-identifier hs-var">UIAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-196"></span><span>                        </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-197"></span><span>                        </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-198"></span><span>                        </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>  </span><span class="hs-comment">-- ^ textTreino</span><span>
+</span><span id="line-199"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">frameAssets :: FrameAssets
+</span><a href="Assets.html#frameAssets"><span class="hs-identifier hs-var">frameAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture -&gt; FrameAssets
+</span><a href="Assets.html#FrameAssets"><span class="hs-identifier hs-var">FrameAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-200"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">mapSelectionAssets :: MapSelectionAssets
+</span><a href="Assets.html#mapSelectionAssets"><span class="hs-identifier hs-var">mapSelectionAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; MapSelectionAssets
+</span><a href="Assets.html#MapSelectionAssets"><span class="hs-identifier hs-var">MapSelectionAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-201"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">tutorialAssets :: TutorialAssets
+</span><a href="Assets.html#tutorialAssets"><span class="hs-identifier hs-var">tutorialAssets</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; Maybe Picture
+-&gt; TutorialAssets
+</span><a href="Assets.html#TutorialAssets"><span class="hs-identifier hs-var">TutorialAssets</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Picture
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-202"></span><span>  </span><span class="hs-special">}</span></pre></body></html>

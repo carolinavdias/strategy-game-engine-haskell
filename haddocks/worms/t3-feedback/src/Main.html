@@ -1,0 +1,612 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">--ficheiro test/Tarefa3Test.hs ;)</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html"><span class="hs-identifier">Labs2025</span></a></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa3.html"><span class="hs-identifier">Tarefa3</span></a></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Magic.html"><span class="hs-identifier">Magic</span></a></span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="annot"><span class="hs-comment">-- *FUN&#199;&#213;ES AUXILIARES PARA TESTES</span></span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- &gt; mapa simples para testes (5x5)</span><span>
+</span><span id="line-11"></span><span class="annot"><a href="Main.html#mapaSimples"><span class="hs-identifier hs-type">mapaSimples</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span>
+</span><span id="line-12"></span><span id="mapaSimples"><span class="annot"><span class="annottext">mapaSimples :: Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var hs-var">mapaSimples</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-13"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-14"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">]</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- &gt; mapa com &#225;gua</span><span>
+</span><span id="line-21"></span><span class="annot"><a href="Main.html#mapaComAgua"><span class="hs-identifier hs-type">mapaComAgua</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mapa"><span class="hs-identifier hs-type">Mapa</span></a></span><span>
+</span><span id="line-22"></span><span id="mapaComAgua"><span class="annot"><span class="annottext">mapaComAgua :: Mapa
+</span><a href="Main.html#mapaComAgua"><span class="hs-identifier hs-var hs-var">mapaComAgua</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-25"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Agua"><span class="hs-identifier hs-var">Agua</span></a></span><span class="hs-special">,</span><span>  </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Ar"><span class="hs-identifier hs-var">Ar</span></a></span><span class="hs-special">,</span><span>    </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Agua"><span class="hs-identifier hs-var">Agua</span></a></span><span class="hs-special">,</span><span>  </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Terra"><span class="hs-identifier hs-var">Terra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Terreno
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Pedra"><span class="hs-identifier hs-var">Pedra</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">]</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- &gt;&gt; minhoca viva padr&#227;o</span><span>
+</span><span id="line-31"></span><span class="annot"><a href="Main.html#minhocaViva"><span class="hs-identifier hs-type">minhocaViva</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-32"></span><span id="minhocaViva"><span class="annot"><span class="annottext">minhocaViva :: Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var hs-var">minhocaViva</span></a></span></span><span> </span><span id="local-6989586621679072305"><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679072305"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">posicaoMinhoca :: Maybe Posicao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Maybe Posicao
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Posicao
+</span><a href="#local-6989586621679072305"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">vidaMinhoca :: VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks -&gt; VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Viva"><span class="hs-identifier hs-var">Viva</span></a></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">100</span></span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">jetpackMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#jetpackMinhoca"><span class="hs-identifier hs-var">jetpackMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">escavadoraMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#escavadoraMinhoca"><span class="hs-identifier hs-var">escavadoraMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">bazucaMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#bazucaMinhoca"><span class="hs-identifier hs-var">bazucaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">minaMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minaMinhoca"><span class="hs-identifier hs-var">minaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">dinamiteMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#dinamiteMinhoca"><span class="hs-identifier hs-var">dinamiteMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- &gt;&gt; minhoca morta</span><span>
+</span><span id="line-43"></span><span class="annot"><a href="Main.html#minhocaMorta"><span class="hs-identifier hs-type">minhocaMorta</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Posicao"><span class="hs-identifier hs-type">Posicao</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-44"></span><span id="minhocaMorta"><span class="annot"><span class="annottext">minhocaMorta :: Maybe Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaMorta"><span class="hs-identifier hs-var hs-var">minhocaMorta</span></a></span></span><span> </span><span id="local-6989586621679072316"><span class="annot"><span class="annottext">Maybe Posicao
+</span><a href="#local-6989586621679072316"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Minhoca"><span class="hs-identifier hs-type">Minhoca</span></a></span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">posicaoMinhoca :: Maybe Posicao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#posicaoMinhoca"><span class="hs-identifier hs-var">posicaoMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Posicao
+</span><a href="#local-6989586621679072316"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">vidaMinhoca :: VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#vidaMinhoca"><span class="hs-identifier hs-var">vidaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">VidaMinhoca
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Morta"><span class="hs-identifier hs-var">Morta</span></a></span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">jetpackMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#jetpackMinhoca"><span class="hs-identifier hs-var">jetpackMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">escavadoraMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#escavadoraMinhoca"><span class="hs-identifier hs-var">escavadoraMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">bazucaMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#bazucaMinhoca"><span class="hs-identifier hs-var">bazucaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">minaMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#minaMinhoca"><span class="hs-identifier hs-var">minaMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">dinamiteMinhoca :: Ticks
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#dinamiteMinhoca"><span class="hs-identifier hs-var">dinamiteMinhoca</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-52"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-comment">-- &gt;&gt;&gt;&gt; TESTES DA TAREFA 3! &lt;&lt;&lt;&lt;</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="annot"><a href="Main.html#testesTarefa3"><span class="hs-identifier hs-type">testesTarefa3</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-type">Estado</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-57"></span><span id="testesTarefa3"><span class="annot"><span class="annottext">testesTarefa3 :: [Estado]
+</span><a href="Main.html#testesTarefa3"><span class="hs-identifier hs-var hs-var">testesTarefa3</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-special">[</span><span> </span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-60"></span><span>    </span><span class="hs-comment">-- MINHOCAS</span><span>
+</span><span id="line-61"></span><span>    </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-comment">-- t1: minhoca no ar deve cair</span><span>
+</span><span id="line-64"></span><span>    </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span>    </span><span class="hs-comment">-- t2: minhoca no ch&#227;o mant&#233;m-se</span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-comment">-- t3: minhoca viva cai na &#225;gua e morre</span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaComAgua"><span class="hs-identifier hs-var">mapaComAgua</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span>    </span><span class="hs-comment">-- t4: minhoca morta cai na &#225;gua (mant&#233;m-se morta)</span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaComAgua"><span class="hs-identifier hs-var">mapaComAgua</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Maybe Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaMorta"><span class="hs-identifier hs-var">minhocaMorta</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Posicao -&gt; Maybe Posicao
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-comment">-- t5: minhoca sem posi&#231;&#227;o (n&#227;o deve alterar o estado)</span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Maybe Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaMorta"><span class="hs-identifier hs-var">minhocaMorta</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Posicao
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">]</span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-comment">-- BARRIS</span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-81"></span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-comment">-- t6: barril no ch&#227;o mant&#233;m-se</span><span>
+</span><span id="line-83"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span>    </span><span class="hs-comment">-- t7: barril no ar ativa-se (come&#231;a a cair)</span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span>    </span><span class="hs-comment">-- t8: barril na &#225;gua ativa-se</span><span>
+</span><span id="line-89"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaComAgua"><span class="hs-identifier hs-var">mapaComAgua</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-comment">-- t9: barril ativado explode</span><span>
+</span><span id="line-92"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span>    </span><span class="hs-comment">-- t10: explos&#227;o de barril ativa outro barril pr&#243;ximo</span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-96"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-97"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-98"></span><span>      </span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-comment">-- BAZUCA</span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span>    </span><span class="hs-comment">-- t11: bazuca avan&#231;a na dire&#231;&#227;o este</span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">5</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span>    </span><span class="hs-comment">-- t12: bazuca com tempo 0 explode</span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span>    </span><span class="hs-comment">-- t13: bazuca colide com terra e explode</span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span>    </span><span class="hs-comment">-- t14: bazuca com tempo &gt; 0 decrementa o contador</span><span>
+</span><span id="line-114"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-115"></span><span>
+</span><span id="line-116"></span><span>    </span><span class="hs-comment">-- t15: bazuca sem tempo definido (n&#227;o faz nada)</span><span>
+</span><span id="line-117"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Ticks
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-120"></span><span>  </span><span class="hs-comment">-- MINAS</span><span>
+</span><span id="line-121"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span>    </span><span class="hs-comment">-- t16: mina sem tempo e sem inimigos (fica inativa)</span><span>
+</span><span id="line-124"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-125"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Ticks
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span>
+</span><span id="line-126"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span>    </span><span class="hs-comment">-- t17: mina sem tempo mas com inimigo pr&#243;ximo (ativa)</span><span>
+</span><span id="line-129"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-130"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Ticks
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span>
+</span><span id="line-131"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span>
+</span><span id="line-133"></span><span>      </span><span class="hs-special">]</span><span>
+</span><span id="line-134"></span><span>
+</span><span id="line-135"></span><span>    </span><span class="hs-comment">-- t18: mina com tempo &gt; 0 diminui o contador</span><span>
+</span><span id="line-136"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span>    </span><span class="hs-comment">-- t19: mina com tempo 0 explode</span><span>
+</span><span id="line-139"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span>    </span><span class="hs-comment">-- t20: mina no ar cai para sul</span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Sul"><span class="hs-identifier hs-var">Sul</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Ticks
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-143"></span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-145"></span><span>  </span><span class="hs-comment">-- DINAMITE</span><span>
+</span><span id="line-146"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span><span>    </span><span class="hs-comment">-- t21: dinamite com tempo 0 explode</span><span>
+</span><span id="line-149"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span>    </span><span class="hs-comment">-- t22: dinamite sem tempo (mant&#233;m-se no mesmo s&#237;tio)</span><span>
+</span><span id="line-152"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Ticks
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-153"></span><span>
+</span><span id="line-154"></span><span>    </span><span class="hs-comment">-- t23: dinamite no ch&#227;o (n&#227;o se move)</span><span>
+</span><span id="line-155"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-156"></span><span>
+</span><span id="line-157"></span><span>    </span><span class="hs-comment">-- t24: dinamite segue trajet&#243;ria parab&#243;lica (Este &#8594; Sudeste)</span><span>
+</span><span id="line-158"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">5</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-159"></span><span>
+</span><span id="line-160"></span><span>    </span><span class="hs-comment">-- t25: dinamite lan&#231;ada para norte cai verticalmente</span><span>
+</span><span id="line-161"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Dinamite"><span class="hs-identifier hs-var">Dinamite</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">5</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-162"></span><span>
+</span><span id="line-163"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-164"></span><span>  </span><span class="hs-comment">-- EXPLOS&#213;ES</span><span>
+</span><span id="line-165"></span><span>  </span><span class="hs-comment">----------------------------------------------------------------------</span><span>
+</span><span id="line-166"></span><span>
+</span><span id="line-167"></span><span>    </span><span class="hs-comment">-- t26: explos&#227;o mata minhoca no centro</span><span>
+</span><span id="line-168"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-169"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">]</span><span>
+</span><span id="line-170"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-171"></span><span>
+</span><span id="line-172"></span><span>    </span><span class="hs-comment">-- t27: explos&#227;o reduz vida de minhoca pr&#243;xima</span><span>
+</span><span id="line-173"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-174"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">]</span><span>
+</span><span id="line-175"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-176"></span><span>
+</span><span id="line-177"></span><span>    </span><span class="hs-comment">-- t28: explos&#227;o com m&#250;ltiplas minhocas pr&#243;ximas</span><span>
+</span><span id="line-178"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-179"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Este"><span class="hs-identifier hs-var">Este</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Bazuca"><span class="hs-identifier hs-var">Bazuca</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span>
+</span><span id="line-180"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span>
+</span><span id="line-181"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">3</span></span><span class="hs-special">)</span><span>
+</span><span id="line-182"></span><span>      </span><span class="hs-special">]</span><span>
+</span><span id="line-183"></span><span>
+</span><span id="line-184"></span><span>    </span><span class="hs-comment">-- t29: mina explode (di&#226;metro de 3 casas)</span><span>
+</span><span id="line-185"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-186"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Direcao -&gt; TipoArma -&gt; Maybe Ticks -&gt; Ticks -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Disparo"><span class="hs-identifier hs-var">Disparo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Direcao
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa0_geral.html#Norte"><span class="hs-identifier hs-var">Norte</span></a></span><span> </span><span class="annot"><span class="annottext">TipoArma
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Mina"><span class="hs-identifier hs-var">Mina</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks -&gt; Maybe Ticks
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span>
+</span><span id="line-187"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaViva"><span class="hs-identifier hs-var">minhocaViva</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-188"></span><span>
+</span><span id="line-189"></span><span>    </span><span class="hs-comment">-- t30: explos&#227;o n&#227;o afeta minhoca j&#225; morta</span><span>
+</span><span id="line-190"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Mapa -&gt; [Objeto] -&gt; [Minhoca] -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Estado"><span class="hs-identifier hs-var">Estado</span></a></span><span> </span><span class="annot"><span class="annottext">Mapa
+</span><a href="Main.html#mapaSimples"><span class="hs-identifier hs-var">mapaSimples</span></a></span><span>
+</span><span id="line-191"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Posicao -&gt; Bool -&gt; Objeto
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Labs2025.html#Barril"><span class="hs-identifier hs-var">Barril</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">]</span><span>
+</span><span id="line-192"></span><span>      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Maybe Posicao -&gt; Minhoca
+</span><a href="Main.html#minhocaMorta"><span class="hs-identifier hs-var">minhocaMorta</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Posicao -&gt; Maybe Posicao
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Ticks
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-193"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-194"></span><span>
+</span><span id="line-195"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-196"></span><span class="annot"><span class="hs-comment">-- * MAIN</span></span><span>
+</span><span id="line-197"></span><span>
+</span><span id="line-198"></span><span class="annot"><a href="Main.html#dataTarefa3"><span class="hs-identifier hs-type">dataTarefa3</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Magic.html#TaskData"><span class="hs-identifier hs-type">TaskData</span></a></span><span>
+</span><span id="line-199"></span><span id="dataTarefa3"><span class="annot"><span class="annottext">dataTarefa3 :: IO TaskData
+</span><a href="Main.html#dataTarefa3"><span class="hs-identifier hs-var hs-var">dataTarefa3</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-200"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679072329"><span class="annot"><span class="annottext">ins :: [Estado]
+</span><a href="#local-6989586621679072329"><span class="hs-identifier hs-var hs-var">ins</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Estado]
+</span><a href="Main.html#testesTarefa3"><span class="hs-identifier hs-var">testesTarefa3</span></a></span><span>
+</span><span id="line-201"></span><span>  </span><span id="local-6989586621679072330"><span class="annot"><span class="annottext">[Error Estado]
+</span><a href="#local-6989586621679072330"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Estado -&gt; IO (Error Estado)) -&gt; [Estado] -&gt; IO [Error Estado]
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m (t b)
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; [a] -&gt; m [b]
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Estado -&gt; IO (Error Estado)
+forall a. NFData a =&gt; a -&gt; IO (Error a)
+</span><a href="Magic.html#runTest"><span class="hs-identifier hs-var">runTest</span></a></span><span> </span><span class="annot"><span class="annottext">(Estado -&gt; IO (Error Estado))
+-&gt; (Estado -&gt; Estado) -&gt; Estado -&gt; IO (Error Estado)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Estado -&gt; Estado
+</span><a href="file:///home/leonor/haskell/2025l1g053/dist-newstyle/build/x86_64-linux/ghc-9.6.7/worms-0.0.0.0/doc/html/worms/src/Tarefa3.html#avancaEstado"><span class="hs-identifier hs-var">avancaEstado</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Estado]
+</span><a href="#local-6989586621679072329"><span class="hs-identifier hs-var">ins</span></a></span><span>
+</span><span id="line-202"></span><span>  </span><span class="annot"><span class="annottext">TaskData -&gt; IO TaskData
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(TaskData -&gt; IO TaskData) -&gt; TaskData -&gt; IO TaskData
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Estado] -&gt; [Error Estado] -&gt; TaskData
+</span><a href="Magic.html#T3"><span class="hs-identifier hs-var">T3</span></a></span><span> </span><span class="annot"><span class="annottext">[Estado]
+</span><a href="#local-6989586621679072329"><span class="hs-identifier hs-var">ins</span></a></span><span> </span><span class="annot"><span class="annottext">[Error Estado]
+</span><a href="#local-6989586621679072330"><span class="hs-identifier hs-var">outs</span></a></span><span>
+</span><span id="line-203"></span><span>
+</span><span id="line-204"></span><span class="annot"><a href="Main.html#main"><span class="hs-identifier hs-type">main</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-205"></span><span id="main"><span class="annot"><span class="annottext">IO ()
+</span><a href="Main.html#main"><span class="hs-identifier hs-var hs-var hs-var">main</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TaskData -&gt; IO ()
+</span><a href="Magic.html#runFeedback"><span class="hs-identifier hs-var">runFeedback</span></a></span><span> </span><span class="annot"><span class="annottext">(TaskData -&gt; IO ()) -&gt; IO TaskData -&gt; IO ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">IO TaskData
+</span><a href="Main.html#dataTarefa3"><span class="hs-identifier hs-var">dataTarefa3</span></a></span></pre></body></html>
