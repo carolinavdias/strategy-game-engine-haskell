@@ -14,6 +14,7 @@ import qualified Data.ByteString as B
 import Graphics.Gloss.Juicy (fromDynamicImage)
 import System.Directory (doesFileExist)
 import Data.IORef
+import System.Exit (exitSuccess)
 
 import EstadoJogo
 import Assets
@@ -235,23 +236,19 @@ desenhar assets estado = case estado of
   GameOver estadoFinal -> desenharGameOver assets estadoFinal
   Victory estadoFinal -> desenharVictory assets estadoFinal
   Tutorial estadoTut -> desenharTutorial assets estadoTut
+  Sair -> Blank 
 
 -- EVENTOS COM CONTADOR
 eventoComContador :: Assets -> IORef Int -> Event -> EstadoJogo -> IO EstadoJogo
 eventoComContador assets contadorRef ev estado = case estado of
   Menu estadoMenu -> return $ eventoMenu ev estadoMenu
-  
   SelecaoModo estadoSel -> eventoSelecaoContador contadorRef ev estadoSel
-  
   SelecaoMapaTreino estadoSel -> return $ eventoSelecaoMapa ev estadoSel  -- NOVO!
-  
   Jogando partida -> return $ eventoJogo ev partida
-  
   GameOver estadoFinal -> eventoVictoryContador contadorRef ev estadoFinal
-  
   Victory estadoFinal -> eventoVictoryContador contadorRef ev estadoFinal
-  
   Tutorial estadoTut -> return $ eventoTutorial ev estadoTut
+  Sair -> exitSuccess 
 
 -- EVENTOS NA SELEÇÃO COM CONTADOR
 eventoSelecaoContador :: IORef Int -> Event -> EstadoSelecao -> IO EstadoJogo
@@ -398,4 +395,5 @@ atualizar assets dt estado = case estado of
   SelecaoModo estadoSel -> atualizarSelecao dt estadoSel
   SelecaoMapaTreino estadoSel -> SelecaoMapaTreino (estadoSel { animacaoSelecaoMapa = animacaoSelecaoMapa estadoSel + dt })
   Jogando partida -> atualizarPartidaCompleta dt partida
+  Sair -> exitSuccess `seq` Sair 
   _ -> estado

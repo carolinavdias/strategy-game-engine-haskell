@@ -142,7 +142,7 @@ opcaoAnterior OpcaoExit = OpcaoTutorial
 selecionarOpcao :: OpcaoMenu -> EstadoJogo
 selecionarOpcao OpcaoPlay = SelecaoModo (EstadoSelecao DoisJogadores 0.0)
 selecionarOpcao OpcaoTutorial = Tutorial (EstadoTutorial 0 False)
-selecionarOpcao OpcaoExit = error "Jogo encerrado pelo utilizador"
+selecionarOpcao OpcaoExit = Sair 
 
 
 -- | Atualiza animação do menu (efeito glow pulsante)

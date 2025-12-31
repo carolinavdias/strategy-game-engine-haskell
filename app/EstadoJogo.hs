@@ -24,6 +24,7 @@ data EstadoJogo
   | GameOver EstadoFinal         -- ^ Fim de jogo (derrota)
   | Victory EstadoFinal          -- ^ Fim de jogo (vitória)
   | Tutorial EstadoTutorial      -- ^ Ecrã de tutorial
+  | Sair 
   deriving (Show)
 
 --------------------------------------------------------------------------------
