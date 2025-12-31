@@ -163,7 +163,6 @@ data TutorialAssets = TutorialAssets
   } deriving (Show)
 
 
->>>>>>> Stashed changes
 -- Assets vazios para inicialização
 assetsVazios :: Assets
 assetsVazios = Assets

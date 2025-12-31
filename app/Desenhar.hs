@@ -740,14 +740,14 @@ desenharSelecaoMapa assets estado = Pictures
   , desenharBotaoVoltarMapa assets (mapaSelecionado estado == 5)
   
   -- Instruções (canto superior direito)
-  , Translate 720 520 $ case modeInstructions (menuAssets assets) of
+  , Translate 720 480 $ case modeInstructions (menuAssets assets) of
       Just img -> Scale 0.5 0.5 img
       Nothing -> Blank
   ]
 
 -- Botão voltar IGUAL ao do ecrã de modos
 desenharBotaoVoltarMapa :: Assets -> Bool -> Picture
-desenharBotaoVoltarMapa assets selecionado = Translate (-850) 520 $ Pictures
+desenharBotaoVoltarMapa assets selecionado = Translate (-850) 480 $ Pictures
   [ feedback
   , botao
   ]

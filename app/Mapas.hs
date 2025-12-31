@@ -63,9 +63,9 @@ mapaClassico =
 -- Posicionados na linha 9 (última linha de Ar, em cima da Terra).
 barrisClassico :: [Objeto]
 barrisClassico = 
-  [ Barril (9, 12) False
-  , Barril (9, 17) False
-  , Barril (9, 22) False
+  [ Barril (9, 10) False
+  , Barril (9, 16) False
+  , Barril (9, 21) False
   ]
 
 -- | Minhocas do mapa clássico.

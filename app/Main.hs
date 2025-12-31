@@ -230,7 +230,7 @@ desenhar :: Assets -> EstadoJogo -> Picture
 desenhar assets estado = case estado of
   Menu estadoMenu -> desenharMenu assets estadoMenu
   SelecaoModo estadoSel -> desenharSelecao assets estadoSel
-  SelecaoMapaTreino estadoSel -> desenharSelecaoMapa assets estadoSel  -- NOVO!
+  SelecaoMapaTreino estadoSel -> desenharSelecaoMapa assets estadoSel  
   Jogando partida -> Desenhar.desenha assets partida
   GameOver estadoFinal -> desenharGameOver assets estadoFinal
   Victory estadoFinal -> desenharVictory assets estadoFinal
