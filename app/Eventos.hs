@@ -41,6 +41,7 @@ import Labs2025
 import Tarefa2
 import Tarefa1
 import Tempo (passarTurno)
+import Tutorial (eventoTutorialCompleto)
 
 --------------------------------------------------------------------------------
 -- * Processamento Principal
@@ -424,6 +425,4 @@ eventoGameOver ev estado = eventoVictory ev estado
 
 -- | Processa eventos no tutorial
 eventoTutorial :: Event -> EstadoTutorial -> EstadoJogo
-eventoTutorial (EventKey (Char 'x') Down _ _) _ = Menu (EstadoMenu OpcaoPlay 0.0)
-eventoTutorial (EventKey (Char 'X') Down _ _) _ = Menu (EstadoMenu OpcaoPlay 0.0)
-eventoTutorial _ tut = Tutorial tut
+eventoTutorial evento estado = eventoTutorialCompleto evento estado

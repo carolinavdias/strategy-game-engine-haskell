@@ -43,8 +43,8 @@ desenharLogo assets tempo =
 desenharBotoes :: Assets -> EstadoMenu -> Picture
 desenharBotoes assets estado = Pictures
   [ desenharBotao assets OpcaoPlay (opcaoSelecionadaMenu estado == OpcaoPlay) (0, -360)
-  , desenharBotao assets OpcaoTutorial (opcaoSelecionadaMenu estado == OpcaoTutorial) (0, -500)
-  , desenharBotao assets OpcaoExit (opcaoSelecionadaMenu estado == OpcaoExit) (-850, 520)
+  , desenharBotao assets OpcaoTutorial (opcaoSelecionadaMenu estado == OpcaoTutorial) (0, -480)
+  , desenharBotao assets OpcaoExit (opcaoSelecionadaMenu estado == OpcaoExit) (-850, 480)
   ]
 
 -- | Desenha um botão individual
@@ -141,7 +141,7 @@ opcaoAnterior OpcaoExit = OpcaoTutorial
 -- | Executa ação da opção selecionada
 selecionarOpcao :: OpcaoMenu -> EstadoJogo
 selecionarOpcao OpcaoPlay = SelecaoModo (EstadoSelecao DoisJogadores 0.0)
-selecionarOpcao OpcaoTutorial = Tutorial (EstadoTutorial 0)
+selecionarOpcao OpcaoTutorial = Tutorial (EstadoTutorial 0 False)
 selecionarOpcao OpcaoExit = error "Jogo encerrado pelo utilizador"
 
 
@@ -153,5 +153,5 @@ atualizarMenu dt estado = Menu (estado { animacaoMenu = animacaoMenu estado + dt
 desenharInstrucoesMenu :: Assets -> Picture
 desenharInstrucoesMenu assets =
   case modeInstructions (menuAssets assets) of
-    Just img -> Translate 720 520 $ Scale 0.5 0.5 $ img  -- Canto superior direito, pequeno
+    Just img -> Translate 720 480 $ Scale 0.5 0.5 $ img  -- Canto superior direito, pequeno
     Nothing -> Blank

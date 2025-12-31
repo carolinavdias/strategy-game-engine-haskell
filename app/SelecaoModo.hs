@@ -107,7 +107,7 @@ desenharModoTraining assets selecionado (x, y) = Translate x y $ Pictures
 
 -- Botão voltar como opção selecionável e navegável
 desenharBotaoVoltarSelecionavel :: Assets -> Bool -> Picture
-desenharBotaoVoltarSelecionavel assets selecionado = Translate (-850) 520 $ Pictures
+desenharBotaoVoltarSelecionavel assets selecionado = Translate (-850) 480 $ Pictures
   [ feedback selecionado
   , botao
   ]
@@ -128,7 +128,7 @@ desenharBotaoVoltarSelecionavel assets selecionado = Translate (-850) 520 $ Pict
 desenharInstrucoesSelecao :: Assets -> Picture
 desenharInstrucoesSelecao assets =
   case modeInstructions (menuAssets assets) of
-    Just img -> Translate 720 520 $ Scale 0.5 0.5 $ img
+    Just img -> Translate 720 480 $ Scale 0.5 0.5 $ img
     Nothing -> Blank
 
 -- Processa input na seleção de modo

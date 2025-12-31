@@ -21,6 +21,7 @@ import Assets
 import Labs2025
 import Menu (desenharMenu)
 import SelecaoModo (desenharSelecao)
+import Tutorial
 
 -- Função principal de renderização do jogo
 desenha :: Assets -> EstadoPartida -> Picture
@@ -149,7 +150,7 @@ desenharTimer assets partida =
                  then timerGreen (uiAssets assets)
                  else timerBlue (uiAssets assets)
       segundos = round (tempoRestante partida) :: Int
-  in Translate 10 530 $ Pictures
+  in Translate 10 480 $ Pictures
      [ case timerImg of
          Just img -> Scale 1.1 1.1 $ img
          Nothing -> Color (if isVerde then green else cyan) $ circleSolid 60
@@ -707,10 +708,7 @@ desenharGameOver assets estadoFinal = desenharVictory assets estadoFinal
 
 -- Tela de tutorial
 desenharTutorial :: Assets -> EstadoTutorial -> Picture
-desenharTutorial _ _ = Pictures
-  [ Color (makeColorI 20 20 100 255) $ rectangleSolid 1920 1200
-  , Color white $ Translate (-150) 400 $ Scale 0.4 0.4 $ Text "TUTORIAL"
-  ]
+desenharTutorial assets estado = desenharTutorialCompleto assets estado
 
 -- Sobreposição de pausa
 desenharPausaSeNecessario :: Bool -> Picture

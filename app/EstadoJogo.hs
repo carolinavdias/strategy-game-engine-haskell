@@ -105,7 +105,7 @@ data EstadoPartida = EstadoPartida
   , frameAnimacao :: Int            -- ^ Frame atual de animação
   , tempoAnimacao :: Float          -- ^ Tempo de animação
   
-  -- NOVO: Índice do mapa (para restart no treino)
+  -- Índice do mapa (para restart no treino)
   , mapaAtualIdx :: Int             -- ^ Índice do mapa atual
   } deriving (Show)
 
@@ -152,8 +152,9 @@ data VencedorJogo
 -- * Tutorial
 
 -- | Estado do ecrã de tutorial
-data EstadoTutorial = EstadoTutorial
-  { paginaTutorial :: Int  -- ^ Página atual do tutorial
+data EstadoTutorial = EstadoTutorial 
+  { paginaTutorial :: Int
+  , menuSelecionado :: Bool
   } deriving (Show)
 
 --------------------------------------------------------------------------------
@@ -194,7 +195,7 @@ criarPartida modo estadoInicial = EstadoPartida
   , tempoAnimacao = 0.0
   , frameCounter = 0
   
-  -- NOVO: Índice do mapa (será definido depois)
+  -- Índice do mapa (será definido depois)
   , mapaAtualIdx = 0
   }
 

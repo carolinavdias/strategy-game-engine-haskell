@@ -23,6 +23,7 @@ import Tempo
 import Menu
 import SelecaoModo
 import Mapas
+import Tutorial
 
 -- Configuração da janela do jogo
 window :: Display
@@ -159,6 +160,14 @@ carregarAssets = do
   
   putStrLn "\n  Molduras:"
   stoneF <- carregarImagem "assets/frames/stone_frame.png" "Moldura de pedra"
+
+  putStrLn "\n Tutorial"
+  im1 <- carregarImagem "assets/tutorial/im1.png" "1 pagina"
+  im2 <- carregarImagem "assets/tutorial/im2.png" "2 pagina"
+  im3 <- carregarImagem "assets/tutorial/im3.png" "3 pagina"
+  im4 <- carregarImagem "assets/tutorial/im4.png" "4 pagina"
+  im5 <- carregarImagem "assets/tutorial/im5.png" "5 pagina"
+
   
   putStrLn "\nAssets carregados com sucesso!\n"
   
@@ -186,6 +195,7 @@ carregarAssets = do
     , mapSelectionAssets = MapSelectionAssets textEscolheMapaImg 
                                               mapIconClassicoImg mapIconMontanhasImg
                                               mapIconLagoImg mapIconPedreiraImg mapIconIlhasImg
+    , tutorialAssets = TutorialAssets im1 im2 im3 im4 im5
     }
 
 -- Carrega uma imagem PNG do disco

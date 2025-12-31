@@ -20,7 +20,8 @@ data Assets = Assets
   , terrenoAsserts :: TerrenoAsserts
   , uiAssets :: UIAssets
   , frameAssets :: FrameAssets
-  , mapSelectionAssets :: MapSelectionAssets  -- NOVO!
+  , mapSelectionAssets :: MapSelectionAssets  
+  , tutorialAssets :: TutorialAssets
   } deriving (Show)
 
 -- Assets do menu principal
@@ -132,7 +133,7 @@ data UIAssets = UIAssets
   , weaponSlot :: Maybe Picture
   , buttonRestart :: Maybe Picture
   , buttonMenu :: Maybe Picture
-  , textTreino :: Maybe Picture  -- NOVO!
+  , textTreino :: Maybe Picture  
   } deriving (Show)
 
 -- Assets de molduras
@@ -140,7 +141,8 @@ data FrameAssets = FrameAssets
   { stoneFrame :: Maybe Picture
   } deriving (Show)
 
--- NOVO: Assets para seleção de mapa
+
+--  Assets para seleção de mapa
 data MapSelectionAssets = MapSelectionAssets
   { textEscolheMapa :: Maybe Picture
   , mapIconClassico :: Maybe Picture
@@ -150,6 +152,18 @@ data MapSelectionAssets = MapSelectionAssets
   , mapIconIlhas :: Maybe Picture
   } deriving (Show)
 
+
+-- Assets do Tutorial 
+data TutorialAssets = TutorialAssets
+  { tutorialPagina1 :: Maybe Picture
+  , tutorialPagina2 :: Maybe Picture
+  , tutorialPagina3 :: Maybe Picture
+  , tutorialPagina4 :: Maybe Picture
+  , tutorialPagina5 :: Maybe Picture
+  } deriving (Show)
+
+
+>>>>>>> Stashed changes
 -- Assets vazios para inicialização
 assetsVazios :: Assets
 assetsVazios = Assets
@@ -173,4 +187,5 @@ assetsVazios = Assets
                         Nothing  -- textTreino
   , frameAssets = FrameAssets Nothing
   , mapSelectionAssets = MapSelectionAssets Nothing Nothing Nothing Nothing Nothing Nothing
+  , tutorialAssets = TutorialAssets Nothing Nothing Nothing Nothing Nothing
   }
