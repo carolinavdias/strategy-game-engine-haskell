@@ -20,6 +20,7 @@ data Assets = Assets
   , terrenoAsserts :: TerrenoAsserts
   , uiAssets :: UIAssets
   , frameAssets :: FrameAssets
+  , mapSelectionAssets :: MapSelectionAssets  -- NOVO!
   } deriving (Show)
 
 -- Assets do menu principal
@@ -42,31 +43,53 @@ data MenuAssets = MenuAssets
 data BackgroundAssets = BackgroundAssets
   { gameBackground :: Maybe Picture
   , victoryGreen :: Maybe Picture
-  , victoryBlue :: Maybe Picture 
+  , victoryBlue :: Maybe Picture
+  , mapSelectionBackground :: Maybe Picture  -- NOVO!
   } deriving (Show)
 
--- Assets de sprites das minhocas
+-- Assets de sprites das minhocas e robô
 data SpriteAssets = SpriteAssets
-  { minhocaVerdeIdle :: Maybe Picture
+  { -- Minhoca Verde
+    minhocaVerdeIdle :: Maybe Picture
   , minhocaVerdeWalk1 :: Maybe Picture
   , minhocaVerdeWalk2 :: Maybe Picture
   , minhocaVerdeSalta :: Maybe Picture 
+  
+  -- Minhoca Azul
   , minhocaAzulIdle :: Maybe Picture
   , minhocaAzulWalk1 :: Maybe Picture
   , minhocaAzulWalk2 :: Maybe Picture
   , minhocaAzulSalta :: Maybe Picture
+  
+  -- Minhocas grandes (laterais)
   , wormGreenBig :: Maybe Picture
   , wormBlueBig :: Maybe Picture
+  , wormTrainingBig :: Maybe Picture
+  
+  -- Minhoca Verde com armas
   , wormGreenBazuca :: Maybe Picture
   , wormGreenDinamite :: Maybe Picture
   , wormGreenMina :: Maybe Picture
   , wormGreenEscavadora :: Maybe Picture
   , wormGreenJetpack :: Maybe Picture
+  
+  -- Minhoca Azul com armas
   , wormBlueBazuca :: Maybe Picture
   , wormBlueDinamite :: Maybe Picture
   , wormBlueMina :: Maybe Picture
   , wormBlueEscavadora :: Maybe Picture
   , wormBlueJetpack :: Maybe Picture
+  
+  -- ROBÔ (para modo VsBot)
+  , robotBig :: Maybe Picture
+  , robotIdle :: Maybe Picture
+  , robotWalk1 :: Maybe Picture
+  , robotWalk2 :: Maybe Picture
+  , robotBazuca :: Maybe Picture
+  , robotDinamite :: Maybe Picture
+  , robotMina :: Maybe Picture
+  , robotEscavadora :: Maybe Picture
+  , robotJetpack :: Maybe Picture
   } deriving (Show)
 
 -- Assets de objetos e armas
@@ -104,15 +127,27 @@ data UIAssets = UIAssets
   , timerBlue :: Maybe Picture
   , buttonWeaponsGreen :: Maybe Picture
   , buttonWeaponsBlue :: Maybe Picture
+  , buttonWeaponsRobot :: Maybe Picture
   , heartIcon :: Maybe Picture
   , weaponSlot :: Maybe Picture
   , buttonRestart :: Maybe Picture
   , buttonMenu :: Maybe Picture
+  , textTreino :: Maybe Picture  -- NOVO!
   } deriving (Show)
 
 -- Assets de molduras
 data FrameAssets = FrameAssets
   { stoneFrame :: Maybe Picture
+  } deriving (Show)
+
+-- NOVO: Assets para seleção de mapa
+data MapSelectionAssets = MapSelectionAssets
+  { textEscolheMapa :: Maybe Picture
+  , mapIconClassico :: Maybe Picture
+  , mapIconMontanhas :: Maybe Picture
+  , mapIconLago :: Maybe Picture
+  , mapIconPedreira :: Maybe Picture
+  , mapIconIlhas :: Maybe Picture
   } deriving (Show)
 
 -- Assets vazios para inicialização
@@ -121,18 +156,21 @@ assetsVazios = Assets
   { menuAssets = MenuAssets Nothing Nothing Nothing Nothing Nothing 
                             Nothing Nothing Nothing Nothing Nothing 
                             Nothing Nothing
-  , backgroundAssets = BackgroundAssets Nothing Nothing Nothing
+  , backgroundAssets = BackgroundAssets Nothing Nothing Nothing Nothing
   , spriteAssets = SpriteAssets 
       Nothing Nothing Nothing Nothing
       Nothing Nothing Nothing Nothing
-      Nothing Nothing
+      Nothing Nothing Nothing
       Nothing Nothing Nothing Nothing Nothing
       Nothing Nothing Nothing Nothing Nothing
+      Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
   , objetoAssets = ObjetoAssets Nothing Nothing Nothing Nothing Nothing 
                                 Nothing Nothing Nothing Nothing
   , terrenoAsserts = TerrenoAsserts Nothing Nothing Nothing
   , uiAssets = UIAssets Nothing Nothing Nothing Nothing Nothing Nothing
                         Nothing Nothing Nothing Nothing Nothing
-                        Nothing Nothing Nothing Nothing Nothing Nothing
+                        Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+                        Nothing  -- textTreino
   , frameAssets = FrameAssets Nothing
+  , mapSelectionAssets = MapSelectionAssets Nothing Nothing Nothing Nothing Nothing Nothing
   }
