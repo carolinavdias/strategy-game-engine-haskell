@@ -1,4 +1,4 @@
-# Worms -> Turn-Based Strategy Game Engine
+# WORMS - Turn-Based Strategy Game Engine
 
 > Academic project developed for **Laboratórios de Informática I** @ University of Minho  
 > Final grade: **17/20** ⭐
