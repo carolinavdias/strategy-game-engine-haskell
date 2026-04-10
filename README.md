@@ -86,7 +86,5 @@ homplexity-cli --format=HTML lib/ > homplexity.html
 
 ## 👩‍💻 Authors
 
-Made with 💜 by two 1st-year Computer Engineering students @ University of Minho
-
 **Carolina Dias** - [@carolinavdias](https://github.com/carolinavdias)  
 **Leonor Sousa** - [@Leonor1369](https://github.com/Leonor1369)
